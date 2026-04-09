@@ -117,7 +117,7 @@ function App() {
           <div className="flex items-center gap-4 group cursor-pointer animate-fade-in">
             <div className="bg-white p-1.5 rounded-2xl shadow-xl shadow-blue-500/20 group-hover:scale-105 transition-all duration-300 animate-float">
               <img 
-                src="/logo_original.png" 
+                src={`${import.meta.env.BASE_URL}logo_original.png`}
                 alt="Automotores Marcos" 
                 className="h-12 w-auto object-contain"
               />
@@ -224,7 +224,7 @@ function App() {
         </div>
 
         {/* Dashboard Table */}
-        <div className="table-container animate-fade-in mb-20 overflow-hidden">
+        <div className="table-container animate-fade-in mb-20 overflow-x-auto overflow-y-hidden shadow-sm rounded-xl">
           <table className="w-full text-left border-collapse min-w-[1200px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold text-[11px] uppercase tracking-[0.15em]">
