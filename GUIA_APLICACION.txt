@@ -1,0 +1,69 @@
+================================================================================
+          SISTEMA DE GESTIÓN AUTOMOTRIZ - AUTOMOTORES MARCOS
+================================================================================
+
+Este sistema es una solución integral que conecta la gestión interna de stock
+con una Landing Page pública para clientes, optimizando las ventas y el seguimiento
+de interesados (leads).
+
+--------------------------------------------------------------------------------
+1. COMPONENTES DEL SISTEMA
+--------------------------------------------------------------------------------
+
+A. EL GESTOR DE STOCK (Uso Interno)
+   - Acceso: http://[tu-ip]:5173
+   - Función: Control total del inventario.
+   - Herramientas:
+     * Carga de vehículos con datos técnicos completos.
+     * Gestor de fotos (arrastrar y soltar) para cada auto.
+     * Registro de ventas y estadísticas.
+     * Importación masiva desde archivos Excel.
+     * NUEVO: Pestaña "Consultas" donde llegan los mensajes de la web.
+
+B. LA LANDING PAGE (Uso Público)
+   - Acceso: http://[tu-ip]:5000
+   - Función: Catálogo online para clientes.
+   - Herramientas:
+     * Catálogo sincronizado en tiempo real con el gestor.
+     * Galería de fotos interactiva en cada vehículo.
+     * Botón "Muy Visto" (Fuego 🔥) para destacar oportunidades.
+     * Formulario de contacto directo que guarda el interesado en el gestor.
+     * Botón de WhatsApp directo por cada vehículo.
+
+C. EL SERVIDOR (Backend)
+   - Motor: Node.js + Express.
+   - Base de Datos: SQLite (Archivo database.sqlite).
+   - Almacenamiento: Carpeta /uploads para las fotos de los vehículos.
+
+--------------------------------------------------------------------------------
+2. FUNCIONALIDADES DESTACADAS
+--------------------------------------------------------------------------------
+
+- ESTADO "MUY VISTO": Al marcar un vehículo como "Muy Visto" en el gestor, este 
+  aparecerá primero en la web, con un borde naranja, un icono de fuego y un
+  resplandor animado para atraer clics.
+
+- GESTIÓN DE CONSULTAS (LEADS): Cada vez que un cliente llena el formulario en
+  la web, el gestor de stock recibe una notificación (badge rojo). Desde allí
+  podés ver el auto que le interesa y tocar un botón para hablarle por WhatsApp.
+
+- WHATSAPP PERSONALIZADO: Los botones en la web ya están configurados para enviar
+  un mensaje al número 3562529773 con el texto: "Hola, vi tu anuncio sobre el [Auto]".
+
+- PRIORIZACIÓN AUTOMÁTICA: El catálogo ordena los autos primero por su estado
+  especial (Muy Visto) y luego por la cantidad de fotos que tienen.
+
+--------------------------------------------------------------------------------
+3. MANTENIMIENTO Y EJECUCIÓN
+--------------------------------------------------------------------------------
+
+Para iniciar el sistema completo:
+1. Servidor: Abrir terminal en /server y ejecutar: node index.js
+2. Gestor: Abrir terminal en /client y ejecutar: npm run dev
+
+Los cambios hechos en el código se encuentran respaldados en el repositorio
+GitHub de la aplicación.
+
+================================================================================
+Desarrollado para Automotores Marcos
+================================================================================

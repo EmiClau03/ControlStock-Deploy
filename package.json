@@ -1,0 +1,13 @@
+{
+  "name": "manejo_stock",
+  "version": "1.0.0",
+  "description": "App de manejo de stock",
+  "scripts": {
+    "postinstall": "npm install --prefix server && npm install --prefix client",
+    "build": "npm run build --prefix client",
+    "start": "npm start --prefix server"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

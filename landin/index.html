@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>Automotores Marcos | Autos y Motos en Morteros, Córdoba</title>
+  <meta name="description" content="Encontrá tu auto o moto ideal en Automotores Marcos. Usados seleccionados con garantía y financiación en Morteros, Córdoba.">
+  <meta name="keywords" content="autos usados, motos, concesionaria, Morteros, Córdoba, financiación, Automotores Marcos">
+  <meta name="author" content="Automotores Marcos">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Automotores Marcos | Autos y Motos en Morteros, Córdoba">
+  <meta property="og:description" content="Encontrá tu auto o moto ideal. Usados seleccionados con garantía y financiación.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              950: '#050a15',
+              900: '#0B1426',
+              800: '#12203D',
+              700: '#1E3A5F',
+              600: '#2A4A7F',
+              500: '#3B82F6',
+              400: '#60A5FA',
+              300: '#93C5FD',
+              200: '#BFDBFE',
+              100: '#DBEAFE',
+              50: '#EFF6FF',
+            }
+          },
+          fontFamily: {
+            heading: ['Outfit', 'sans-serif'],
+            body: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css?v=1.1">
+</head>
+
+<body class="font-body bg-white text-slate-800">
+
+  <!-- ═══════════════════════════════════════════
+       NAVBAR
+       ═══════════════════════════════════════════ -->
+  <nav id="navbar" class="navbar fixed top-0 left-0 right-0 z-50 bg-transparent">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-3 group">
+          <img src="assets/logo.png" alt="Automotores Marcos" class="h-16 w-auto transition-all duration-300" style="mix-blend-mode: multiply;"
+               onerror="this.style.display='none'">
+          <div class="flex flex-col leading-tight">
+            <span class="logo-text font-heading font-bold text-lg text-white tracking-tight">
+              Automotores
+              <span class="logo-accent" style="color: #1B079C;">Marcos</span>
+            </span>
+          </div>
+        </a>
+
+        <!-- Desktop Nav Links -->
+        <div class="hidden lg:flex items-center gap-8">
+          <a href="#inicio" class="nav-link text-sm font-medium text-white/90 hover:text-white" data-section="inicio">Inicio</a>
+          <a href="#catalogo" class="nav-link text-sm font-medium text-white/90 hover:text-white" data-section="catalogo">Catálogo</a>
+          <a href="#nosotros" class="nav-link text-sm font-medium text-white/90 hover:text-white" data-section="nosotros">Nosotros</a>
+          <a href="#contacto" class="nav-link text-sm font-medium text-white/90 hover:text-white" data-section="contacto">Contacto</a>
+        </div>
+
+        <!-- CTA Button (Desktop) -->
+        <div class="hidden lg:block">
+          <a href="#contacto"
+             class="nav-cta bg-white/10 backdrop-blur-sm hover:bg-[#1B079C] text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all duration-300 border border-white/20 hover:border-[#1B079C]">
+            Consultar
+          </a>
+        </div>
+
+        <!-- Hamburger (Mobile) -->
+        <button id="hamburger" class="hamburger lg:hidden flex flex-col gap-1.5 p-2 z-50" aria-label="Menú">
+          <span class="w-6 h-0.5 bg-white rounded-full"></span>
+          <span class="w-6 h-0.5 bg-white rounded-full"></span>
+          <span class="w-6 h-0.5 bg-white rounded-full"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed inset-0 bg-brand-900/98 backdrop-blur-lg z-40 flex flex-col items-center justify-center gap-8 lg:hidden">
+      <a href="#inicio" class="text-2xl font-heading font-semibold text-white hover:text-brand-400 transition-colors">Inicio</a>
+      <a href="#catalogo" class="text-2xl font-heading font-semibold text-white hover:text-brand-400 transition-colors">Catálogo</a>
+      <a href="#nosotros" class="text-2xl font-heading font-semibold text-white hover:text-brand-400 transition-colors">Nosotros</a>
+      <a href="#contacto" class="text-2xl font-heading font-semibold text-white hover:text-brand-400 transition-colors">Contacto</a>
+      <a href="#contacto"
+         class="mt-4 bg-[#1B079C] hover:opacity-90 text-white font-semibold px-8 py-3 rounded-xl transition-all">
+        Consultar ahora
+      </a>
+    </div>
+  </nav>
+
+
+  <!-- ═══════════════════════════════════════════
+       HERO SECTION
+       ═══════════════════════════════════════════ -->
+  <section id="inicio" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Background Image -->
+    <div class="absolute inset-0">
+      <img src="assets/fondo.jpeg.jpg"
+           alt="Automotores Marcos - Concesionaria"
+           class="w-full h-full object-cover blur-[1.5px] scale-105"
+           onerror="this.parentElement.style.background='linear-gradient(135deg, #0B1426 0%, #1E3A5F 50%, #0B1426 100%)'">
+    </div>
+
+    <!-- Cinematic Dark Overlay -->
+    <div class="hero-gradient absolute inset-0"></div>
+
+    <!-- Bottom Fade: smooth transition into dark catalog section -->
+    <div class="absolute bottom-0 left-0 right-0 h-60 bg-gradient-to-b from-transparent via-brand-900/70 to-brand-900 z-[1]"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 text-center px-4 sm:px-6 max-w-3xl mx-auto">
+
+      <h1 class="hero-title animate-on-scroll font-heading font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white leading-[1.1] mb-6 tracking-tight">
+        Tu próximo <span style="color: #1B079C;">vehículo</span><br>
+        te está esperando
+      </h1>
+
+      <p class="animate-on-scroll delay-1 text-base sm:text-lg text-white/65 max-w-lg mx-auto mb-10 font-light leading-relaxed">
+        Autos y motos seleccionados con garantía y financiación.
+      </p>
+
+      <div class="animate-on-scroll delay-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="#catalogo"
+           class="submit-btn text-white font-semibold px-8 py-4 rounded-xl text-base transition-all duration-300 flex items-center gap-2"
+           style="background-color: #1B079C;">
+          Ver catálogo
+        </a>
+        <a href="#contacto"
+           class="text-white/70 hover:text-white font-medium px-8 py-4 text-base transition-all duration-300">
+          Contactanos →
+        </a>
+      </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+      <a href="#catalogo" class="text-white/40 hover:text-white/70 transition-colors">
+        <i class="fa-solid fa-chevron-down text-xl"></i>
+      </a>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       CATALOG SECTION
+       ═══════════════════════════════════════════ -->
+  <section id="catalogo" class="py-20 sm:py-28 bg-brand-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Section Header -->
+      <div class="text-center mb-12 animate-on-scroll">
+        <h2 class="section-title font-heading font-bold text-3xl sm:text-4xl text-white mb-4">
+          Nuestro Catálogo
+        </h2>
+        <p class="text-brand-300/60 text-lg max-w-xl mx-auto">
+          Explorá nuestra selección de vehículos. Todos verificados y con garantía.
+        </p>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="animate-on-scroll delay-1 flex flex-col sm:flex-row items-center gap-4 mb-8">
+        <!-- Search Bar -->
+        <div class="relative flex-1 w-full sm:max-w-md">
+          <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-brand-400"></i>
+          <input id="search-input"
+                 type="text"
+                 placeholder="Buscar por marca o modelo..."
+                 class="search-input w-full pl-11 pr-4 py-3 bg-brand-800/60 border border-brand-700/50 rounded-xl text-sm text-white placeholder-brand-300/40 focus:outline-none focus:border-brand-500">
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="flex flex-wrap gap-2">
+          <button class="filter-btn active px-4 py-2.5 rounded-xl text-sm font-medium bg-brand-800/60 text-brand-200 border-brand-700/50" data-filter="todos">
+            Todos
+          </button>
+        </div>
+      </div>
+
+      <!-- Counter -->
+      <p id="vehicle-count" class="text-sm text-brand-300/50 mb-6">12 vehículos encontrados</p>
+
+      <!-- Vehicle Grid -->
+      <div id="vehicles-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <!-- Cards rendered by vehicles.js -->
+      </div>
+
+      <!-- No Results -->
+      <div id="no-results" class="hidden text-center py-16">
+        <i class="fa-solid fa-car-burst text-5xl text-brand-700 mb-4"></i>
+        <p class="text-lg text-brand-300/70 font-medium">No se encontraron vehículos</p>
+        <p class="text-sm text-brand-300/40 mt-1">Probá con otros términos de búsqueda</p>
+      </div>
+
+      <!-- Load More -->
+      <div class="text-center mt-10">
+        <button id="load-more-btn"
+                class="hidden bg-brand-800/60 hover:bg-brand-500 text-brand-200 hover:text-white border border-brand-700/50 hover:border-brand-500 font-semibold px-8 py-3 rounded-xl transition-all duration-300 hover:shadow-md">
+          <i class="fa-solid fa-plus mr-2"></i> Ver más vehículos
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       BENEFITS / TRUST SECTION
+       ═══════════════════════════════════════════ -->
+  <section id="nosotros" class="py-20 sm:py-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Section Header -->
+      <div class="text-center mb-16 animate-on-scroll">
+        <h2 class="section-title font-heading font-bold text-3xl sm:text-4xl text-brand-900 mb-4">
+          ¿Por qué elegirnos?
+        </h2>
+        <p class="text-slate-500 text-lg max-w-xl mx-auto">
+          Más de años de trayectoria nos respaldan. Tu confianza es nuestra prioridad.
+        </p>
+      </div>
+
+      <!-- Benefits Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
+        <!-- Benefit 1 -->
+        <div class="benefit-card bg-slate-50 rounded-2xl p-8 text-center animate-on-scroll delay-1">
+          <div class="benefit-icon w-16 h-16 bg-brand-100 text-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3 class="font-heading font-bold text-lg text-brand-900 mb-2">Garantía</h3>
+          <p class="text-slate-500 text-sm leading-relaxed">
+            Todos nuestros vehículos cuentan con garantía escrita para tu tranquilidad.
+          </p>
+        </div>
+
+        <!-- Benefit 2 -->
+        <div class="benefit-card bg-slate-50 rounded-2xl p-8 text-center animate-on-scroll delay-2">
+          <div class="benefit-icon w-16 h-16 bg-brand-100 text-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+          </div>
+          <h3 class="font-heading font-bold text-lg text-brand-900 mb-2">Financiación</h3>
+          <p class="text-slate-500 text-sm leading-relaxed">
+            Planes de financiación accesibles. Te ayudamos a conseguir tu vehículo ideal.
+          </p>
+        </div>
+
+        <!-- Benefit 3 -->
+        <div class="benefit-card bg-slate-50 rounded-2xl p-8 text-center animate-on-scroll delay-3">
+          <div class="benefit-icon w-16 h-16 bg-brand-100 text-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl">
+            <i class="fa-solid fa-car-side"></i>
+          </div>
+          <h3 class="font-heading font-bold text-lg text-brand-900 mb-2">0km y Usados</h3>
+          <p class="text-slate-500 text-sm leading-relaxed">
+            Amplia variedad de vehículos 0km y usados seleccionados, verificados uno por uno.
+          </p>
+        </div>
+
+        <!-- Benefit 4 -->
+        <div class="benefit-card bg-slate-50 rounded-2xl p-8 text-center animate-on-scroll delay-4">
+          <div class="benefit-icon w-16 h-16 bg-brand-100 text-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl">
+            <i class="fa-solid fa-headset"></i>
+          </div>
+          <h3 class="font-heading font-bold text-lg text-brand-900 mb-2">Atención Personalizada</h3>
+          <p class="text-slate-500 text-sm leading-relaxed">
+            Te acompañamos en todo el proceso. Asesoramiento profesional y cercano.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       REVIEWS SECTION
+       ═══════════════════════════════════════════ -->
+  <section id="reseñas" class="py-20 sm:py-28 bg-brand-950 overflow-hidden relative border-b border-brand-800/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      
+      <!-- Section Header -->
+      <div class="text-center mb-16 animate-on-scroll">
+        <h2 class="section-title font-heading font-bold text-3xl sm:text-4xl text-white mb-4">
+          Lo que dicen nuestros clientes
+        </h2>
+        <p class="text-brand-300/60 text-lg max-w-xl mx-auto">
+          La satisfacción de quienes ya confiaron en nosotros es nuestra mejor garantía.
+        </p>
+      </div>
+
+      <!-- Carousel Container -->
+      <div class="reviews-container animate-on-scroll delay-1">
+        <div class="reviews-track" id="reviews-track">
+          
+          <!-- Review 1 -->
+          <div class="review-slide">
+            <div class="review-card">
+              <div class="star-rating">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </div>
+              <p class="review-text">
+                "Excelente atención de principio a fin. El auto estaba impecable, tal cual las fotos. Muy transparentes con toda la documentación."
+              </p>
+              <div class="review-author">
+                <div class="author-info">
+                  <h4>Juan Manuel Rodriguez</h4>
+                  <p>Morteros, Córdoba</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review 2 -->
+          <div class="review-slide">
+            <div class="review-card">
+              <div class="star-rating">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </div>
+              <p class="review-text">
+                "Compré mi primera moto aquí y me asesoraron súper bien. La financiación fue muy rápida y clara. Muy recomendables!"
+              </p>
+              <div class="review-author">
+                <div class="author-info">
+                  <h4>Valentina Lopez</h4>
+                  <p>Brinkmann, Córdoba</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review 3 -->
+          <div class="review-slide">
+            <div class="review-card">
+              <div class="star-rating">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </div>
+              <p class="review-text">
+                "Hice un recambio de unidad y la tasación de mi usado fue muy justa. En pocos días ya estaba arriba de mi nuevo vehículo."
+              </p>
+              <div class="review-author">
+                <div class="author-info">
+                  <h4>Carlos Sanchez</h4>
+                  <p>San Francisco, Córdoba</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review 4 -->
+          <div class="review-slide">
+            <div class="review-card">
+              <div class="star-rating">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-stroke"></i>
+              </div>
+              <p class="review-text">
+                "Muy buena predisposición para sacar todas las dudas. El servicio post-venta también de primera. Volvería a elegir Automotores Marcos."
+              </p>
+              <div class="review-author">
+                <div class="author-info">
+                  <h4>Maria Belén Gomez</h4>
+                  <p>Rafaela, Santa Fe</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Carousel Dots -->
+        <div class="carousel-dots" id="carousel-dots">
+          <!-- Dots generated by JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       CONTACT SECTION
+       ═══════════════════════════════════════════ -->
+  <section id="contacto" class="py-20 sm:py-28 bg-brand-900 relative overflow-hidden">
+    <!-- Decorative -->
+    <div class="absolute top-0 right-0 w-96 h-96 bg-brand-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+    <div class="absolute bottom-0 left-0 w-80 h-80 bg-brand-400/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+
+        <!-- Left: Contact Info -->
+        <div class="animate-on-scroll">
+          <h2 class="font-heading font-bold text-3xl sm:text-4xl text-white mb-4">
+            Ponete en contacto
+          </h2>
+          <p class="text-brand-300/70 text-lg mb-10 leading-relaxed">
+            ¿Tenés alguna consulta? Completá el formulario y te respondemos a la brevedad.
+          </p>
+
+          <!-- Contact Details -->
+          <div class="space-y-6">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-brand-800 rounded-xl flex items-center justify-center text-brand-400 flex-shrink-0">
+                <i class="fa-solid fa-location-dot"></i>
+              </div>
+              <div>
+                <h4 class="text-white font-semibold mb-1">Dirección</h4>
+                <p class="text-brand-300/60 text-sm">Acceso Norte, Morteros, Córdoba, Argentina</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-brand-800 rounded-xl flex items-center justify-center text-brand-400 flex-shrink-0">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <div>
+                <h4 class="text-white font-semibold mb-1">Horarios</h4>
+                <p class="text-brand-300/60 text-sm">
+                  Lun a Sáb: 08:00 – 12:00<br>
+                  Lun a Vie: 16:00 – 20:00
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-brand-800 rounded-xl flex items-center justify-center text-brand-400 flex-shrink-0">
+                <i class="fa-brands fa-instagram"></i>
+              </div>
+              <div>
+                <h4 class="text-white font-semibold mb-1">Instagram</h4>
+                <a href="https://instagram.com/automotoresmarcos1" target="_blank"
+                   class="text-brand-400 text-sm hover:text-brand-300 transition-colors">
+                  @automotoresmarcos1
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Form -->
+        <div class="animate-on-scroll delay-2">
+          <form id="contact-form" class="bg-white rounded-2xl p-6 sm:p-8 shadow-2xl shadow-black/20" novalidate>
+            <h3 class="font-heading font-bold text-xl text-brand-900 mb-6">
+              Envianos tu consulta
+            </h3>
+
+            <!-- Vehicle Consultado -->
+            <div class="mb-5 relative">
+              <label for="vehiculo-consultado" class="block text-sm font-medium text-slate-700 mb-1.5">
+                Vehículo consultado
+              </label>
+              <input type="text"
+                     id="vehiculo-consultado"
+                     name="vehiculo"
+                     placeholder="Seleccioná un vehículo del catálogo"
+                     class="form-input w-full px-4 py-3 rounded-xl text-sm bg-slate-50"
+                     readonly>
+              <button type="button"
+                      id="clear-vehicle"
+                      class="hidden absolute right-3 top-9 text-slate-400 hover:text-red-500 transition-colors"
+                      title="Limpiar vehículo">
+                <i class="fa-solid fa-times-circle"></i>
+              </button>
+            </div>
+
+            <!-- Name + Surname -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+              <div>
+                <label for="nombre" class="block text-sm font-medium text-slate-700 mb-1.5">
+                  Nombre <span class="text-red-400">*</span>
+                </label>
+                <input type="text"
+                       id="nombre"
+                       name="nombre"
+                       placeholder="Tu nombre"
+                       class="form-input w-full px-4 py-3 rounded-xl text-sm"
+                       required>
+              </div>
+              <div>
+                <label for="apellido" class="block text-sm font-medium text-slate-700 mb-1.5">
+                  Apellido <span class="text-red-400">*</span>
+                </label>
+                <input type="text"
+                       id="apellido"
+                       name="apellido"
+                       placeholder="Tu apellido"
+                       class="form-input w-full px-4 py-3 rounded-xl text-sm"
+                       required>
+              </div>
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-5">
+              <label for="telefono" class="block text-sm font-medium text-slate-700 mb-1.5">
+                Teléfono <span class="text-red-400">*</span>
+              </label>
+              <input type="tel"
+                     id="telefono"
+                     name="telefono"
+                     placeholder="Ej: 3562 123456"
+                     class="form-input w-full px-4 py-3 rounded-xl text-sm"
+                     required>
+            </div>
+
+            <!-- Message -->
+            <div class="mb-6">
+              <label for="mensaje" class="block text-sm font-medium text-slate-700 mb-1.5">
+                Mensaje
+              </label>
+              <textarea id="mensaje"
+                        name="mensaje"
+                        rows="4"
+                        placeholder="Contanos tu consulta..."
+                        class="form-input w-full px-4 py-3 rounded-xl text-sm resize-none"></textarea>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit"
+                    id="submit-btn"
+                    class="submit-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 text-sm">
+              <i class="fa-solid fa-paper-plane mr-2"></i>
+              Enviar consulta
+            </button>
+
+            <p class="text-xs text-slate-400 text-center mt-4">
+              Al enviar aceptás que nos comuniquemos contigo para responder tu consulta.
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════ -->
+  <footer class="bg-brand-950 py-12 border-t border-brand-800/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+
+        <!-- Col 1: Brand -->
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <img src="assets/logo.png" alt="Automotores Marcos" class="h-8 w-auto invert brightness-200"
+                 onerror="this.style.display='none'">
+            <span class="font-heading font-bold text-lg text-white">
+              Automotores <span class="text-brand-400">Marcos</span>
+            </span>
+          </div>
+          <p class="text-brand-300/50 text-sm leading-relaxed">
+            Tu concesionaria de confianza en Morteros, Córdoba. Vehículos seleccionados con garantía y financiación.
+          </p>
+        </div>
+
+        <!-- Col 2: Links -->
+        <div>
+          <h4 class="font-heading font-semibold text-white mb-4">Navegación</h4>
+          <ul class="space-y-2">
+            <li><a href="#inicio" class="footer-link text-brand-300/50 text-sm hover:text-brand-400 transition-colors">Inicio</a></li>
+            <li><a href="#catalogo" class="footer-link text-brand-300/50 text-sm hover:text-brand-400 transition-colors">Catálogo</a></li>
+            <li><a href="#nosotros" class="footer-link text-brand-300/50 text-sm hover:text-brand-400 transition-colors">Nosotros</a></li>
+            <li><a href="#contacto" class="footer-link text-brand-300/50 text-sm hover:text-brand-400 transition-colors">Contacto</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Contact -->
+        <div>
+          <h4 class="font-heading font-semibold text-white mb-4">Contacto</h4>
+          <ul class="space-y-3">
+            <li class="flex items-center gap-2 text-brand-300/50 text-sm">
+              <i class="fa-solid fa-location-dot text-brand-500 w-4"></i>
+              Acceso Norte, Morteros, Córdoba
+            </li>
+            <li class="flex items-center gap-2 text-brand-300/50 text-sm">
+              <i class="fa-solid fa-clock text-brand-500 w-4"></i>
+              Lun-Sáb 08:00-12:00 | Lun-Vie 16:00-20:00
+            </li>
+            <li>
+              <a href="https://instagram.com/automotoresmarcos1" target="_blank"
+                 class="flex items-center gap-2 text-brand-300/50 text-sm hover:text-brand-400 transition-colors">
+                <i class="fa-brands fa-instagram text-brand-500 w-4"></i>
+                @automotoresmarcos1
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Separator -->
+      <div class="border-t border-brand-800/30 mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-brand-300/30 text-xs">
+          &copy; 2026 Automotores Marcos. Todos los derechos reservados.
+        </p>
+        <div class="flex items-center gap-4">
+          <a href="https://instagram.com/automotoresmarcos1" target="_blank"
+             class="w-9 h-9 bg-brand-800/50 hover:bg-brand-500 text-brand-300/50 hover:text-white rounded-lg flex items-center justify-center transition-all duration-300">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ═══════════════════════════════════════════
+       VEHICLE DETAIL MODAL
+       ═══════════════════════════════════════════ -->
+  <div id="vehicle-modal" class="modal-overlay fixed inset-0 z-[55] flex items-center justify-center p-4">
+    <div class="modal-content bg-white rounded-2xl overflow-hidden max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+      <!-- Close Button -->
+      <button onclick="closeVehicleModal()"
+              class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 backdrop-blur-sm hover:bg-white text-slate-600 hover:text-slate-900 rounded-full flex items-center justify-center transition-all shadow-lg">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <!-- Content rendered by vehicles.js -->
+      <div id="modal-vehicle-content"></div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       FLOATING WHATSAPP BUTTON
+       ═══════════════════════════════════════════ -->
+  <a href="https://wa.me/?text=Hola%2C%20quiero%20consultar%20por%20un%20veh%C3%ADculo"
+     target="_blank"
+     class="whatsapp-float fixed bottom-6 right-6 z-[45] w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-green-500/30 transition-all duration-300"
+     aria-label="Contactar por WhatsApp">
+    <i class="fa-brands fa-whatsapp text-2xl"></i>
+  </a>
+
+
+  <!-- ═══════════════════════════════════════════
+       BACK TO TOP BUTTON
+       ═══════════════════════════════════════════ -->
+  <button id="back-to-top"
+          class="back-to-top fixed bottom-6 left-6 z-[45] w-11 h-11 bg-brand-500 hover:bg-brand-400 text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300"
+          aria-label="Volver arriba">
+    <i class="fa-solid fa-chevron-up"></i>
+  </button>
+
+
+  <!-- ═══════════════════════════════════════════
+       SCRIPTS
+       ═══════════════════════════════════════════ -->
+  <script src="js/vehicles.js?v=1.1"></script>
+  <script src="js/form.js?v=1.1"></script>
+  <script src="js/app.js?v=1.1"></script>
+
+</body>
+</html>

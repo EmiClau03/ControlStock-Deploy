@@ -1,0 +1,13 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (nunca subir al repo)
+.env
+
+# Build del frontend (Railway lo genera en el servidor con npm run build)
+client/dist/
+
+# Base de datos y fotos locales (se almacenan en el Volume de Railway)
+server/database.sqlite
+server/database.sqlite-journal
+server/uploads/
