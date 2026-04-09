@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, '..', 'landin')));
 
 // Servir la aplicación React (Panel de Control) en /admin
 app.use('/admin', express.static(path.join(__dirname, '..', 'client', 'dist')));
-app.get('/admin/*', (req, res) => {
+app.get(/^\/admin/, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'client', 'dist', 'index.html'));
 });
 
