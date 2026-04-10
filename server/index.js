@@ -50,6 +50,9 @@ app.get('/api/vehicles', async (req, res) => {
         const vehicles = await db.all(`
             SELECT v.*, (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) as photoCount
             FROM vehicles v
+            LEFT JOIN sales s ON v.id = s.vehicle_id
+            WHERE v.status != 'Vendido' 
+               OR (v.status = 'Vendido' AND s.sale_date >= date('now', '-1 month'))
             ORDER BY v.created_at DESC
         `);
         res.json(vehicles);
@@ -300,9 +303,13 @@ app.get('/api/public/catalog', async (req, res) => {
             SELECT v.id, v.brand, v.model, v.year, v.color, v.mileage, v.price, v.fuel, v.license_plate, v.status, v.is_offer, v.offer_price,
                    (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) as photoCount
             FROM vehicles v
+            LEFT JOIN sales s ON v.id = s.vehicle_id
             WHERE v.status IN ('Disponible', 'Muy Visto')
+               OR (v.status = 'Vendido' AND s.sale_date >= date('now', '-1 month'))
             ORDER BY 
-                CASE WHEN v.status = 'Muy Visto' THEN 0 ELSE 1 END ASC,
+                CASE WHEN v.status = 'Vendido' THEN 2 
+                     WHEN v.status = 'Muy Visto' THEN 0 
+                     ELSE 1 END ASC,
                 is_offer DESC,
                 (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) DESC,
                 v.created_at DESC

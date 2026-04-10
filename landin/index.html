@@ -23,7 +23,9 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" as="style">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"></noscript>
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -73,7 +75,7 @@
 
         <!-- Logo -->
         <a href="#" class="flex items-center gap-3 group">
-          <img src="assets/logo.png" alt="Automotores Marcos" class="h-16 w-auto transition-all duration-300" style="mix-blend-mode: multiply;"
+          <img src="assets/logo.png" alt="Automotores Marcos" class="h-16 w-auto transition-all duration-300" style="mix-blend-mode: multiply;" fetchpriority="high" decoding="async"
                onerror="this.style.display='none'">
           <div class="flex flex-col leading-tight">
             <span class="logo-text font-heading font-bold text-lg text-white tracking-tight">
@@ -131,6 +133,7 @@
       <img src="assets/fondo.jpeg.jpg"
            alt="Automotores Marcos - Concesionaria"
            class="w-full h-full object-cover blur-[1.5px] scale-105"
+           fetchpriority="high" decoding="async"
            onerror="this.parentElement.style.background='linear-gradient(135deg, #0B1426 0%, #1E3A5F 50%, #0B1426 100%)'">
     </div>
 
@@ -688,9 +691,9 @@
   <!-- ═══════════════════════════════════════════
        SCRIPTS
        ═══════════════════════════════════════════ -->
-  <script src="js/vehicles.js?v=1.1"></script>
-  <script src="js/form.js?v=1.1"></script>
-  <script src="js/app.js?v=1.1"></script>
+  <script defer src="js/vehicles.js?v=1.1"></script>
+  <script defer src="js/form.js?v=1.1"></script>
+  <script defer src="js/app.js?v=1.1"></script>
 
 </body>
 </html>
