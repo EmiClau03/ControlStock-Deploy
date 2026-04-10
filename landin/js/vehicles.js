@@ -11,6 +11,8 @@ const REFRESH_INTERVAL = 30000; // Actualizar cada 30 segundos
 let VEHICLES = [];
 let currentFilter = 'todos';
 let searchQuery = '';
+let brandFilter = '';      // marca seleccionada (string vacío = todas)
+let yearFilter  = 'todos'; // rango de año seleccionado
 let visibleCount = 9;
 let isLoading = true;
 
@@ -63,12 +65,50 @@ async function fetchVehicles() {
     });
 
     isLoading = false;
+    populateBrandFilter();
     renderVehicles();
   } catch (error) {
     console.error('Error cargando catálogo:', error);
     isLoading = false;
     renderError();
   }
+}
+
+// ── Populate brand dropdown dynamically ──
+function populateBrandFilter() {
+  const select = document.getElementById('brand-filter');
+  if (!select) return;
+
+  const brands = [...new Set(VEHICLES.map(v => v.marca).filter(Boolean))].sort();
+
+  // Remove all options except the first ("Todas las marcas")
+  while (select.options.length > 1) select.remove(1);
+
+  brands.forEach(brand => {
+    const opt = document.createElement('option');
+    opt.value = brand;
+    opt.textContent = brand;
+    select.appendChild(opt);
+  });
+}
+
+// ── Match vehicle year against selected range ──
+function matchesYearRange(año, range) {
+  if (range === 'todos') return true;
+  const y = parseInt(año, 10);
+  if (isNaN(y)) return false;
+  if (range === 'hasta2000')  return y < 2000;
+  if (range === '2000-2005')  return y >= 2000 && y <= 2005;
+  if (range === '2006-2010')  return y >= 2006 && y <= 2010;
+  if (range === '2011-2015')  return y >= 2011 && y <= 2015;
+  if (range === '2016-2020')  return y >= 2016 && y <= 2020;
+  if (range === 'desde2020')  return y > 2020;
+  return true;
+}
+
+// ── Check if any filter is active ──
+function hasActiveFilters() {
+  return searchQuery !== '' || brandFilter !== '' || yearFilter !== 'todos';
 }
 
 // ── Generar descripción automática ──
@@ -117,8 +157,22 @@ function renderVehicles() {
       v.marca.toLowerCase().includes(searchQuery) ||
       v.modelo.toLowerCase().includes(searchQuery) ||
       `${v.marca} ${v.modelo}`.toLowerCase().includes(searchQuery);
-    return matchesFilter && matchesSearch;
+    const matchesBrand = brandFilter === '' || v.marca === brandFilter;
+    const matchesYear  = matchesYearRange(v.año, yearFilter);
+    return matchesFilter && matchesSearch && matchesBrand && matchesYear;
   });
+
+  // Show/hide reset button
+  const resetBtn = document.getElementById('reset-filters-btn');
+  if (resetBtn) {
+    if (hasActiveFilters()) {
+      resetBtn.classList.remove('hidden');
+      resetBtn.classList.add('flex');
+    } else {
+      resetBtn.classList.add('hidden');
+      resetBtn.classList.remove('flex');
+    }
+  }
 
   // Show/hide no results
   if (noResults) {
@@ -522,6 +576,50 @@ function handleSearch(e) {
   renderVehicles();
 }
 
+function handleBrandFilter(e) {
+  brandFilter = e.target.value;
+  visibleCount = 9;
+  renderVehicles();
+}
+
+function setYearFilter(range) {
+  yearFilter = range;
+  visibleCount = 9;
+
+  // Update active year pill
+  document.querySelectorAll('.year-btn').forEach(btn => {
+    const isActive = btn.dataset.year === range;
+    btn.classList.toggle('active-year', isActive);
+    btn.classList.toggle('text-brand-200', isActive);
+    btn.classList.toggle('text-brand-300/70', !isActive);
+  });
+
+  renderVehicles();
+}
+
+function resetAllFilters() {
+  searchQuery = '';
+  brandFilter = '';
+  yearFilter  = 'todos';
+  visibleCount = 9;
+
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) searchInput.value = '';
+
+  const brandSelect = document.getElementById('brand-filter');
+  if (brandSelect) brandSelect.value = '';
+
+  // Reset year pills
+  document.querySelectorAll('.year-btn').forEach(btn => {
+    const isAll = btn.dataset.year === 'todos';
+    btn.classList.toggle('active-year', isAll);
+    btn.classList.toggle('text-brand-200', isAll);
+    btn.classList.toggle('text-brand-300/70', !isAll);
+  });
+
+  renderVehicles();
+}
+
 function loadMore() {
   visibleCount += 6;
   renderVehicles();
@@ -549,10 +647,27 @@ function initCatalog() {
   // Auto-refresh cada 30 segundos para datos en tiempo real
   setInterval(fetchVehicles, REFRESH_INTERVAL);
 
-  // Bind filter buttons
+  // Bind filter buttons (type)
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => setFilter(btn.dataset.filter));
   });
+
+  // Bind year pills
+  document.querySelectorAll('.year-btn').forEach(btn => {
+    btn.addEventListener('click', () => setYearFilter(btn.dataset.year));
+  });
+
+  // Bind brand dropdown
+  const brandSelect = document.getElementById('brand-filter');
+  if (brandSelect) {
+    brandSelect.addEventListener('change', handleBrandFilter);
+  }
+
+  // Bind reset button
+  const resetBtn = document.getElementById('reset-filters-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', resetAllFilters);
+  }
 
   // Bind search
   const searchInput = document.getElementById('search-input');
