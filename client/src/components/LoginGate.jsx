@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Lock, Eye, EyeOff, ShieldCheck, AlertCircle } from 'lucide-react';
 
 // ─── CHANGE THIS TO YOUR DESIRED PASSWORD ───────────────────────────────────
-const ADMIN_PASSWORD = 'marcos2025';
+const ADMIN_PASSWORD = 'automotoresmarcos1';
 // ────────────────────────────────────────────────────────────────────────────
 
 const SESSION_KEY = 'am_admin_auth';
