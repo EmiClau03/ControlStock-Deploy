@@ -79,7 +79,18 @@ function populateBrandFilter() {
   const select = document.getElementById('brand-filter');
   if (!select) return;
 
-  const brands = [...new Set(VEHICLES.map(v => v.marca).filter(Boolean))].sort();
+  // Extraer marcas únicas y ordenarlas, evitando duplicados por espacios o minúsculas
+  const brandMap = new Map();
+  VEHICLES.forEach(v => {
+    if (v.marca) {
+      const normalized = v.marca.trim();
+      if (!brandMap.has(normalized.toLowerCase())) {
+        brandMap.set(normalized.toLowerCase(), normalized);
+      }
+    }
+  });
+
+  const brands = Array.from(brandMap.values()).sort();
 
   // Remove all options except the first ("Todas las marcas")
   while (select.options.length > 1) select.remove(1);
@@ -97,13 +108,16 @@ function matchesYearRange(año, range) {
   if (range === 'todos') return true;
   const y = parseInt(año, 10);
   if (isNaN(y)) return false;
-  if (range === 'hasta2000')  return y < 2000;
-  if (range === '2000-2005')  return y >= 2000 && y <= 2005;
-  if (range === '2006-2010')  return y >= 2006 && y <= 2010;
-  if (range === '2011-2015')  return y >= 2011 && y <= 2015;
-  if (range === '2016-2020')  return y >= 2016 && y <= 2020;
-  if (range === 'desde2020')  return y > 2020;
-  return true;
+  
+  switch (range) {
+    case 'hasta2000':  return y <= 2000;
+    case '2000-2005':  return y >= 2000 && y <= 2005;
+    case '2006-2010':  return y >= 2006 && y <= 2010;
+    case '2011-2015':  return y >= 2011 && y <= 2015;
+    case '2016-2020':  return y >= 2016 && y <= 2020;
+    case 'desde2020':  return y > 2020;
+    default: return true;
+  }
 }
 
 // ── Check if any filter is active ──
@@ -157,7 +171,8 @@ function renderVehicles() {
       v.marca.toLowerCase().includes(searchQuery) ||
       v.modelo.toLowerCase().includes(searchQuery) ||
       `${v.marca} ${v.modelo}`.toLowerCase().includes(searchQuery);
-    const matchesBrand = brandFilter === '' || v.marca === brandFilter;
+    const matchesBrand = brandFilter === '' || 
+      (v.marca && v.marca.trim().toLowerCase() === brandFilter.toLowerCase());
     const matchesYear  = matchesYearRange(v.año, yearFilter);
     return matchesFilter && matchesSearch && matchesBrand && matchesYear;
   });
@@ -591,7 +606,7 @@ function setYearFilter(range) {
     const isActive = btn.dataset.year === range;
     btn.classList.toggle('active-year', isActive);
     btn.classList.toggle('text-brand-200', isActive);
-    btn.classList.toggle('text-brand-300/70', !isActive);
+    btn.classList.toggle('text-brand-300/60', !isActive);
   });
 
   renderVehicles();

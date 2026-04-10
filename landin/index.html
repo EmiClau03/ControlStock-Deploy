@@ -194,60 +194,68 @@
       </div>
 
       <!-- Search & Filters -->
-      <div class="animate-on-scroll delay-1 flex flex-col gap-4 mb-8">
-
+      <div class="animate-on-scroll delay-1 flex flex-col gap-6 mb-10 bg-brand-800/20 p-6 rounded-2xl border border-brand-700/30">
+        
         <!-- Row 1: Search + Brand -->
-        <div class="flex flex-col sm:flex-row items-stretch gap-3">
+        <div class="flex flex-col lg:flex-row items-stretch gap-4">
           <!-- Search Bar -->
           <div class="relative flex-1">
             <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-brand-400"></i>
             <input id="search-input"
                    type="text"
-                   placeholder="Buscar por marca o modelo..."
-                   class="search-input w-full pl-11 pr-4 py-3 bg-brand-800/60 border border-brand-700/50 rounded-xl text-sm text-white placeholder-brand-300/40 focus:outline-none focus:border-brand-500">
+                   placeholder="¿Qué vehículo estás buscando?"
+                   class="search-input w-full pl-11 pr-4 py-3.5 bg-brand-900/60 border border-brand-700/50 rounded-xl text-sm text-white placeholder-brand-300/30 focus:outline-none focus:border-brand-500 transition-all">
           </div>
 
-          <!-- Brand Dropdown -->
-          <div class="relative">
-            <i class="fa-solid fa-car absolute left-4 top-1/2 -translate-y-1/2 text-brand-400 pointer-events-none"></i>
-            <select id="brand-filter"
-                    class="appearance-none w-full sm:w-52 pl-11 pr-8 py-3 bg-brand-800/60 border border-brand-700/50 rounded-xl text-sm text-brand-200 focus:outline-none focus:border-brand-500 cursor-pointer">
-              <option value="">Todas las marcas</option>
-            </select>
-            <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-brand-400 text-xs pointer-events-none"></i>
+          <!-- Brand Filter -->
+          <div class="flex flex-col sm:flex-row items-center gap-3">
+            <span class="text-brand-300/50 text-xs font-bold uppercase tracking-widest sm:block hidden whitespace-nowrap">Marca:</span>
+            <div class="relative w-full sm:w-64">
+              <i class="fa-solid fa-tags absolute left-4 top-1/2 -translate-y-1/2 text-brand-400 pointer-events-none"></i>
+              <select id="brand-filter"
+                      class="appearance-none w-full pl-11 pr-10 py-3.5 bg-brand-900/60 border border-brand-700/50 rounded-xl text-sm text-brand-200 focus:outline-none focus:border-brand-500 cursor-pointer transition-all">
+                <option value="">Todas las marcas</option>
+              </select>
+              <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-brand-400 text-xs pointer-events-none"></i>
+            </div>
           </div>
 
-          <!-- Reset Button (hidden by default) -->
+          <!-- Reset Button -->
           <button id="reset-filters-btn"
-                  class="hidden items-center gap-2 px-4 py-3 bg-brand-700/40 hover:bg-brand-600/60 border border-brand-600/50 text-brand-200 hover:text-white rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap">
-            <i class="fa-solid fa-xmark"></i> Limpiar filtros
+                  class="hidden items-center justify-center gap-2 px-6 py-3.5 bg-brand-700/30 hover:bg-red-500/20 border border-brand-600/50 hover:border-red-500/50 text-brand-200 hover:text-red-400 rounded-xl text-sm font-semibold transition-all duration-300">
+            <i class="fa-solid fa-trash-can"></i> <span class="sm:inline">Limpiar</span>
           </button>
         </div>
 
         <!-- Row 2: Year Range Pills -->
-        <div class="flex flex-wrap gap-2 items-center">
-          <span class="text-brand-300/50 text-xs font-semibold uppercase tracking-widest mr-1">Año:</span>
-          <button class="year-btn active-year px-4 py-2 rounded-xl text-sm font-medium bg-brand-800/60 text-brand-200 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-200" data-year="todos">
-            Todos
-          </button>
-          <button class="year-btn px-4 py-2 rounded-xl text-sm font-medium bg-brand-800/60 text-brand-300/70 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-200" data-year="hasta2000">
-            − 2000
-          </button>
-          <button class="year-btn px-4 py-2 rounded-xl text-sm font-medium bg-brand-800/60 text-brand-300/70 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-200" data-year="2000-2005">
-            2000 – 2005
-          </button>
-          <button class="year-btn px-4 py-2 rounded-xl text-sm font-medium bg-brand-800/60 text-brand-300/70 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-200" data-year="2006-2010">
-            2006 – 2010
-          </button>
-          <button class="year-btn px-4 py-2 rounded-xl text-sm font-medium bg-brand-800/60 text-brand-300/70 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-200" data-year="2011-2015">
-            2011 – 2015
-          </button>
-          <button class="year-btn px-4 py-2 rounded-xl text-sm font-medium bg-brand-800/60 text-brand-300/70 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-200" data-year="2016-2020">
-            2016 – 2020
-          </button>
-          <button class="year-btn px-4 py-2 rounded-xl text-sm font-medium bg-brand-800/60 text-brand-300/70 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-200" data-year="desde2020">
-            + 2020
-          </button>
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-calendar-days text-brand-500 text-xs"></i>
+            <span class="text-brand-300/50 text-xs font-bold uppercase tracking-widest">Filtrar por Año:</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button class="year-btn active-year px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-200 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="todos">
+              Cualquier año
+            </button>
+            <button class="year-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-300/60 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="hasta2000">
+              - 2000
+            </button>
+            <button class="year-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-300/60 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="2000-2005">
+              2000 – 2005
+            </button>
+            <button class="year-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-300/60 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="2006-2010">
+              2006 – 2010
+            </button>
+            <button class="year-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-300/60 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="2011-2015">
+              2011 – 2015
+            </button>
+            <button class="year-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-300/60 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="2016-2020">
+              2016 – 2020
+            </button>
+            <button class="year-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-300/60 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="desde2020">
+              + 2020
+            </button>
+          </div>
         </div>
       </div>
 
