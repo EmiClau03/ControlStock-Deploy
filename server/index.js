@@ -52,7 +52,7 @@ app.get('/api/vehicles', async (req, res) => {
             FROM vehicles v
             LEFT JOIN sales s ON v.id = s.vehicle_id
             WHERE v.status != 'Vendido' 
-               OR (v.status = 'Vendido' AND s.sale_date >= date('now', '-1 month'))
+               OR (v.status = 'Vendido' AND (s.sale_date >= date('now', '-1 month') OR s.sale_date IS NULL))
             ORDER BY v.created_at DESC
         `);
         res.json(vehicles);
@@ -305,7 +305,7 @@ app.get('/api/public/catalog', async (req, res) => {
             FROM vehicles v
             LEFT JOIN sales s ON v.id = s.vehicle_id
             WHERE v.status IN ('Disponible', 'Muy Visto')
-               OR (v.status = 'Vendido' AND s.sale_date >= date('now', '-1 month'))
+               OR (v.status = 'Vendido' AND (s.sale_date >= date('now', '-1 month') OR s.sale_date IS NULL))
             ORDER BY 
                 CASE WHEN v.status = 'Vendido' THEN 2 
                      WHEN v.status = 'Muy Visto' THEN 0 
