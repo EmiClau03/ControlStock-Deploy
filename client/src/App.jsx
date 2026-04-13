@@ -11,7 +11,8 @@ import {
   CheckCircle,
   Clock,
   Ban,
-  AlertCircle
+  AlertCircle,
+  LogOut
 } from 'lucide-react';
 import { getVehicles, deleteVehicle, API_BASE_URL } from './api';
 import VehicleForm from './components/VehicleForm';
@@ -83,6 +84,13 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    if (window.confirm('¿Deseas cerrar la sesión del administrador?')) {
+      sessionStorage.removeItem('am_admin_auth');
+      window.location.reload();
+    }
+  };
+
   const filteredVehicles = vehicles.filter(v => {
     const matchesSearch = 
       v.brand.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -142,6 +150,14 @@ function App() {
               >
                 <Plus size={20} />
                 <span>Nuevo Vehículo</span>
+              </button>
+              
+              <button 
+                onClick={handleLogout}
+                className="p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 border border-red-500/20"
+                title="Cerrar Sesión"
+              >
+                <LogOut size={20} />
               </button>
             </div>
             
