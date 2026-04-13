@@ -123,8 +123,9 @@ app.post('/api/vehicles/:id/photos', upload.array('photos'), async (req, res) =>
             const filename = `optimized-${Date.now()}-${file.originalname.split('.')[0]}.jpg`;
             const outputPath = path.join(uploadsDir, filename);
 
-            // Process image: Resize to max 1200px width/height, convert to JPEG with 80% quality
+            // Process image: Auto-rotate based on EXIF, Resize, convert to JPEG
             await sharp(file.buffer)
+                .rotate() // <--- ESTO CORRIGE LA ROTACIÓN
                 .resize(1200, 1200, {
                     fit: 'inside',
                     withoutEnlargement: true
@@ -410,6 +411,7 @@ app.get('/api/maintenance/optimize-all', async (req, res) => {
                 const outputPath = path.join(uploadsDir, newFilename);
 
                 await sharp(filePath)
+                    .rotate() // <--- TAMBIÉN AQUÍ PARA LAS VIEJAS
                     .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
                     .jpeg({ quality: 80 })
                     .toFile(outputPath);
