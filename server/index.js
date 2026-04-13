@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const morgan = require('morgan');
 const xlsx = require('xlsx');
+const sharp = require('sharp');
 const { initDb } = require('./db');
 
 const app = express();
@@ -31,16 +32,12 @@ app.get(/^\/admin/, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'client', 'dist', 'index.html'));
 });
 
-// Storage configuration
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadsDir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
+// Storage configuration - Use memory storage to process images before saving
+const storage = multer.memoryStorage();
+const upload = multer({ 
+    storage,
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
-const upload = multer({ storage });
 
 let db;
 
@@ -116,15 +113,30 @@ app.delete('/api/vehicles/:id', async (req, res) => {
 });
 
 // Photo upload
+// Photo upload with Optimization
 app.post('/api/vehicles/:id/photos', upload.array('photos'), async (req, res) => {
     try {
         const vehicleId = req.params.id;
-        const insertPromises = req.files.map(file => {
-            return db.run('INSERT INTO photos (vehicle_id, filename) VALUES (?, ?)', [vehicleId, file.filename]);
+        const uploadPromises = req.files.map(async (file) => {
+            const filename = `optimized-${Date.now()}-${file.originalname.split('.')[0]}.jpg`;
+            const outputPath = path.join(uploadsDir, filename);
+
+            // Process image: Resize to max 1200px width/height, convert to JPEG with 80% quality
+            await sharp(file.buffer)
+                .resize(1200, 1200, {
+                    fit: 'inside',
+                    withoutEnlargement: true
+                })
+                .jpeg({ quality: 80 })
+                .toFile(outputPath);
+
+            return db.run('INSERT INTO photos (vehicle_id, filename) VALUES (?, ?)', [vehicleId, filename]);
         });
-        await Promise.all(insertPromises);
-        res.json({ message: 'Photos uploaded' });
+
+        await Promise.all(uploadPromises);
+        res.json({ message: 'Photos uploaded and optimized' });
     } catch (error) {
+        console.error('Error processing photos:', error);
         res.status(500).json({ error: error.message });
     }
 });
@@ -148,7 +160,7 @@ app.post('/api/import-excel', upload.single('file'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-        const workbook = xlsx.readFile(req.file.path);
+        const workbook = xlsx.read(req.file.buffer);
         const sheetName = workbook.SheetNames[0];
         const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
 
@@ -242,9 +254,8 @@ app.post('/api/import-excel', upload.single('file'), async (req, res) => {
             }
         }
 
-        if (req.file && fs.existsSync(req.file.path)) {
-            fs.unlinkSync(req.file.path);
-        }
+        // No need to unlink as we use memoryStorage for excel too
+
 
         res.json({ message: 'Importación finalizada' });
     } catch (error) {
