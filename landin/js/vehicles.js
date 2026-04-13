@@ -11,6 +11,8 @@ const REFRESH_INTERVAL = 30000; // Actualizar cada 30 segundos
 let VEHICLES = [];
 let currentFilter = 'todos';
 let searchQuery = '';
+let brandFilter = '';      // marca seleccionada (string vacío = todas)
+let yearFilter  = 'todos'; // rango de año seleccionado
 let visibleCount = 9;
 let isLoading = true;
 
@@ -63,12 +65,64 @@ async function fetchVehicles() {
     });
 
     isLoading = false;
+    populateBrandFilter();
     renderVehicles();
   } catch (error) {
     console.error('Error cargando catálogo:', error);
     isLoading = false;
     renderError();
   }
+}
+
+// ── Populate brand dropdown dynamically ──
+function populateBrandFilter() {
+  const select = document.getElementById('brand-filter');
+  if (!select) return;
+
+  // Extraer marcas únicas y ordenarlas, evitando duplicados por espacios o minúsculas
+  const brandMap = new Map();
+  VEHICLES.forEach(v => {
+    if (v.marca) {
+      const normalized = v.marca.trim();
+      if (!brandMap.has(normalized.toLowerCase())) {
+        brandMap.set(normalized.toLowerCase(), normalized);
+      }
+    }
+  });
+
+  const brands = Array.from(brandMap.values()).sort();
+
+  // Remove all options except the first ("Todas las marcas")
+  while (select.options.length > 1) select.remove(1);
+
+  brands.forEach(brand => {
+    const opt = document.createElement('option');
+    opt.value = brand;
+    opt.textContent = brand;
+    select.appendChild(opt);
+  });
+}
+
+// ── Match vehicle year against selected range ──
+function matchesYearRange(año, range) {
+  if (range === 'todos') return true;
+  const y = parseInt(año, 10);
+  if (isNaN(y)) return false;
+  
+  switch (range) {
+    case 'hasta2000':  return y <= 2000;
+    case '2000-2005':  return y >= 2000 && y <= 2005;
+    case '2006-2010':  return y >= 2006 && y <= 2010;
+    case '2011-2015':  return y >= 2011 && y <= 2015;
+    case '2016-2020':  return y >= 2016 && y <= 2020;
+    case 'desde2020':  return y > 2020;
+    default: return true;
+  }
+}
+
+// ── Check if any filter is active ──
+function hasActiveFilters() {
+  return searchQuery !== '' || brandFilter !== '' || yearFilter !== 'todos';
 }
 
 // ── Generar descripción automática ──
@@ -117,8 +171,23 @@ function renderVehicles() {
       v.marca.toLowerCase().includes(searchQuery) ||
       v.modelo.toLowerCase().includes(searchQuery) ||
       `${v.marca} ${v.modelo}`.toLowerCase().includes(searchQuery);
-    return matchesFilter && matchesSearch;
+    const matchesBrand = brandFilter === '' || 
+      (v.marca && v.marca.trim().toLowerCase() === brandFilter.toLowerCase());
+    const matchesYear  = matchesYearRange(v.año, yearFilter);
+    return matchesFilter && matchesSearch && matchesBrand && matchesYear;
   });
+
+  // Show/hide reset button
+  const resetBtn = document.getElementById('reset-filters-btn');
+  if (resetBtn) {
+    if (hasActiveFilters()) {
+      resetBtn.classList.remove('hidden');
+      resetBtn.classList.add('flex');
+    } else {
+      resetBtn.classList.add('hidden');
+      resetBtn.classList.remove('flex');
+    }
+  }
 
   // Show/hide no results
   if (noResults) {
@@ -145,9 +214,10 @@ function renderVehicles() {
     const hasPhotos = vehicle.tienefotos;
     const hasMultiple = vehicle.fotos.length > 1;
     
-    // Card con efecto especial para los que tienen fotos o son "Muy Visto"
     let cardClass = '';
-    if (vehicle.estado === 'Muy Visto') {
+    if (vehicle.estado === 'Vendido') {
+      cardClass = 'vehicle-card vehicle-sold bg-white rounded-2xl overflow-hidden shadow-md ring-1 ring-slate-200 grayscale-[0.6] opacity-80';
+    } else if (vehicle.estado === 'Muy Visto') {
       cardClass = 'vehicle-card vehicle-featured vehicle-hot bg-white rounded-2xl overflow-hidden shadow-xl ring-2 ring-orange-500/30 animate-pulse-gentle';
     } else if (hasPhotos) {
       cardClass = 'vehicle-card vehicle-featured bg-white rounded-2xl overflow-hidden shadow-lg ring-1 ring-brand-500/20';
@@ -186,6 +256,12 @@ function renderVehicles() {
         <div class="absolute top-3 left-3">
           <span class="bg-brand-500/90 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full capitalize">
             ${vehicle.combustible}
+          </span>
+        </div>` : ''}
+        ${vehicle.estado === 'Vendido' ? `
+        <div class="absolute inset-0 bg-black/40 z-20 flex items-center justify-center">
+          <span class="bg-red-600/90 text-white text-xl font-black px-6 py-2 rounded-xl shadow-lg transform -rotate-12 border border-white/50 uppercase tracking-widest backdrop-blur-md">
+            VENDIDO
           </span>
         </div>` : ''}
         ${vehicle.estado === 'Muy Visto' ? `
@@ -231,15 +307,21 @@ function renderVehicles() {
             `}
           </div>
           <div class="flex items-center gap-2">
-            <a href="https://wa.me/5493562529773?text=${encodeURIComponent(`Hola, vi tu anuncio sobre el ${vehicle.marca} ${vehicle.modelo} ${vehicle.año}`)}" 
-               target="_blank" 
-               onclick="event.stopPropagation()"
-               class="w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-xl flex items-center justify-center transition-all duration-300 shadow-lg shadow-green-500/20">
-              <i class="fa-brands fa-whatsapp text-lg"></i>
-            </a>
-            <span class="vehicle-cta px-4 py-2 bg-slate-100 text-brand-900 rounded-xl text-sm font-semibold hover:bg-brand-500 hover:text-white transition-all duration-300">
-              Ver más
-            </span>
+            ${vehicle.estado === 'Vendido' ? `
+              <span class="px-4 py-2 bg-slate-200 text-slate-500 rounded-xl text-sm font-semibold">
+                Vendido
+              </span>
+            ` : `
+              <a href="https://wa.me/5493562529773?text=${encodeURIComponent(`Hola, vi tu anuncio sobre el ${vehicle.marca} ${vehicle.modelo} ${vehicle.año}`)}" 
+                 target="_blank" 
+                 onclick="event.stopPropagation()"
+                 class="w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-xl flex items-center justify-center transition-all duration-300 shadow-lg shadow-green-500/20">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+              </a>
+              <span class="vehicle-cta px-4 py-2 bg-slate-100 text-brand-900 rounded-xl text-sm font-semibold hover:bg-brand-500 hover:text-white transition-all duration-300">
+                Ver más
+              </span>
+            `}
           </div>
         </div>
       </div>
@@ -357,7 +439,12 @@ function openVehicleModal(vehicleId) {
           <p class="text-slate-500 mt-1">${vehicle.año ? `Año ${vehicle.año}` : ''}</p>
         </div>
         <div class="flex flex-col items-end">
-          ${vehicle.isOffer ? `
+          ${vehicle.estado === 'Vendido' ? `
+            <span class="text-3xl md:text-4xl font-heading font-bold text-slate-500 whitespace-nowrap">
+              Vendido
+            </span>
+            <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded mt-1 uppercase tracking-tight">NO DISPONIBLE</span>
+          ` : vehicle.isOffer ? `
             <span class="text-sm md:text-base text-slate-400 line-through decoration-red-500/50 decoration-2 font-medium mb-1">
               ${vehicle.precio}
             </span>
@@ -404,6 +491,12 @@ function openVehicleModal(vehicleId) {
         <p class="text-slate-600 leading-relaxed">${vehicle.descripcion}</p>
       </div>
 
+      ${vehicle.estado === 'Vendido' ? `
+      <div class="p-4 bg-slate-100 rounded-xl text-center">
+        <p class="text-slate-500 font-semibold mb-2">Este vehículo ya ha sido vendido.</p>
+        <button onclick="closeVehicleModal()" class="bg-slate-300 hover:bg-slate-400 text-slate-700 font-medium py-2 px-6 rounded-lg transition-colors">Volver al catálogo</button>
+      </div>
+      ` : `
       <div class="flex flex-col sm:flex-row gap-3">
         <button onclick="consultVehicle('${vehicle.marca}', '${vehicle.modelo}', '${vehicle.año}')"
                 class="flex-1 submit-btn bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3.5 px-6 rounded-xl text-center transition-all duration-300">
@@ -415,6 +508,7 @@ function openVehicleModal(vehicleId) {
           <i class="fa-brands fa-whatsapp text-lg"></i> WhatsApp
         </a>
       </div>
+      `}
     </div>
   `;
 
@@ -497,6 +591,50 @@ function handleSearch(e) {
   renderVehicles();
 }
 
+function handleBrandFilter(e) {
+  brandFilter = e.target.value;
+  visibleCount = 9;
+  renderVehicles();
+}
+
+function setYearFilter(range) {
+  yearFilter = range;
+  visibleCount = 9;
+
+  // Update active year pill
+  document.querySelectorAll('.year-btn').forEach(btn => {
+    const isActive = btn.dataset.year === range;
+    btn.classList.toggle('active-year', isActive);
+    btn.classList.toggle('text-brand-200', isActive);
+    btn.classList.toggle('text-brand-300/60', !isActive);
+  });
+
+  renderVehicles();
+}
+
+function resetAllFilters() {
+  searchQuery = '';
+  brandFilter = '';
+  yearFilter  = 'todos';
+  visibleCount = 9;
+
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) searchInput.value = '';
+
+  const brandSelect = document.getElementById('brand-filter');
+  if (brandSelect) brandSelect.value = '';
+
+  // Reset year pills
+  document.querySelectorAll('.year-btn').forEach(btn => {
+    const isAll = btn.dataset.year === 'todos';
+    btn.classList.toggle('active-year', isAll);
+    btn.classList.toggle('text-brand-200', isAll);
+    btn.classList.toggle('text-brand-300/70', !isAll);
+  });
+
+  renderVehicles();
+}
+
 function loadMore() {
   visibleCount += 6;
   renderVehicles();
@@ -524,10 +662,27 @@ function initCatalog() {
   // Auto-refresh cada 30 segundos para datos en tiempo real
   setInterval(fetchVehicles, REFRESH_INTERVAL);
 
-  // Bind filter buttons
+  // Bind filter buttons (type)
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => setFilter(btn.dataset.filter));
   });
+
+  // Bind year pills
+  document.querySelectorAll('.year-btn').forEach(btn => {
+    btn.addEventListener('click', () => setYearFilter(btn.dataset.year));
+  });
+
+  // Bind brand dropdown
+  const brandSelect = document.getElementById('brand-filter');
+  if (brandSelect) {
+    brandSelect.addEventListener('change', handleBrandFilter);
+  }
+
+  // Bind reset button
+  const resetBtn = document.getElementById('reset-filters-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', resetAllFilters);
+  }
 
   // Bind search
   const searchInput = document.getElementById('search-input');

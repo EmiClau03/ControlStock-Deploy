@@ -17,6 +17,7 @@ const StatisticsView = ({ vehicles }) => {
   const [loadingSales, setLoadingSales] = useState(true);
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [salesViewType, setSalesViewType] = useState('chart'); // 'chart' or 'map'
+  const [selectedMonth, setSelectedMonth] = useState(null); // null = loading, will be set after fetch
 
   useEffect(() => {
     fetchSales();
@@ -26,15 +27,50 @@ const StatisticsView = ({ vehicles }) => {
     try {
       const { data } = await getSalesStats();
       setSalesData(data);
+      // Auto-select current month or fallback to most recent month with sales
+      const now = new Date();
+      const currentKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const monthsWithSales = new Set();
+      data.forEach(s => {
+        if (s.sale_date) {
+          const d = new Date(s.sale_date);
+          monthsWithSales.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+        }
+      });
+      if (monthsWithSales.has(currentKey)) {
+        setSelectedMonth(currentKey);
+      } else if (monthsWithSales.size > 0) {
+        // Pick the most recent month with sales
+        const sorted = [...monthsWithSales].sort((a, b) => b.localeCompare(a));
+        setSelectedMonth(sorted[0]);
+      } else {
+        setSelectedMonth('All');
+      }
     } catch (error) {
       console.error('Error fetching sales stats:', error);
+      setSelectedMonth('All');
     } finally {
       setLoadingSales(false);
     }
   };
 
+  const availableMonths = useMemo(() => {
+    const map = {};
+    salesData.forEach(s => {
+      if (s.sale_date) {
+        const date = new Date(s.sale_date);
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const key = `${yyyy}-${mm}`;
+        const label = date.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+        map[key] = label.charAt(0).toUpperCase() + label.slice(1);
+      }
+    });
+    return Object.entries(map).sort((a, b) => b[0].localeCompare(a[0]));
+  }, [salesData]);
+
   const stats = useMemo(() => {
-    if (!vehicles.length) return null;
+    if (!vehicles.length && !salesData.length) return null;
 
     // 1. Inventory Stats
     const totalUnits = vehicles.length;
@@ -77,26 +113,48 @@ const StatisticsView = ({ vehicles }) => {
     });
 
     // 2. Sales Stats
-    const totalSalesUnits = salesData.length;
-    const totalRevenue = salesData.reduce((acc, s) => acc + s.final_price, 0);
+    let filteredSalesData = salesData;
+    if (selectedMonth && selectedMonth !== 'All') {
+      filteredSalesData = salesData.filter(s => {
+        if (!s.sale_date) return false;
+        const date = new Date(s.sale_date);
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        return `${yyyy}-${mm}` === selectedMonth;
+      });
+    }
+
+    const totalSalesUnits = filteredSalesData.length;
+    const totalRevenue = filteredSalesData.reduce((acc, s) => acc + s.final_price, 0);
 
     const monthlyMap = {};
-    salesData.forEach(s => {
+    filteredSalesData.forEach(s => {
+      if (!s.sale_date) return;
       const date = new Date(s.sale_date);
-      const monthLabel = date.toLocaleString('es-ES', { month: 'short' });
-      monthlyMap[monthLabel] = (monthlyMap[monthLabel] || 0) + s.final_price;
+      if (!selectedMonth || selectedMonth === 'All') {
+        const monthLabel = date.toLocaleString('es-ES', { month: 'short' });
+        monthlyMap[monthLabel] = (monthlyMap[monthLabel] || 0) + s.final_price;
+      } else {
+        const dayLabel = date.getDate().toString();
+        monthlyMap[dayLabel] = (monthlyMap[dayLabel] || 0) + s.final_price;
+      }
     });
+
+    // For daily trend, sort the keys. For monthly, we can rely on chronological order of 's' but sorting is safer.
     const revenueTrend = Object.entries(monthlyMap).map(([name, total]) => ({ name, total }));
+    if (selectedMonth && selectedMonth !== 'All') {
+      revenueTrend.sort((a, b) => parseInt(a.name) - parseInt(b.name));
+    }
 
     const payMap = {};
-    salesData.forEach(s => {
+    filteredSalesData.forEach(s => {
       payMap[s.payment_method] = (payMap[s.payment_method] || 0) + 1;
     });
     const paymentData = Object.entries(payMap).map(([name, value]) => ({ name, value }));
 
     // 3. Geographic Stats
     const provinceMap = {};
-    salesData.forEach(s => {
+    filteredSalesData.forEach(s => {
       const prov = s.buyer_province || 'Desconocido';
       provinceMap[prov] = (provinceMap[prov] || 0) + 1;
     });
@@ -107,7 +165,7 @@ const StatisticsView = ({ vehicles }) => {
     let localityData = [];
     if (selectedProvince) {
       const locMap = {};
-      salesData
+      filteredSalesData
         .filter(s => s.buyer_province === selectedProvince)
         .forEach(s => {
           const loc = s.buyer_locality || 'Desconocido';
@@ -123,7 +181,7 @@ const StatisticsView = ({ vehicles }) => {
       totalSalesUnits, totalRevenue, revenueTrend, paymentData,
       provinceData, localityData
     };
-  }, [vehicles, salesData, selectedProvince]);
+  }, [vehicles, salesData, selectedProvince, selectedMonth]);
 
   if (!stats) return null;
 
@@ -247,6 +305,39 @@ const StatisticsView = ({ vehicles }) => {
         </div>
       ) : (
         <div className="space-y-10 animate-fade-in">
+          <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow-md border border-slate-100">
+            <div className="flex items-center gap-3">
+              <div className="bg-emerald-50 text-emerald-600 p-2 rounded-lg">
+                <Clock size={20} />
+              </div>
+              <div>
+                <span className="font-bold text-slate-700 uppercase tracking-tight">Período de Análisis</span>
+                {selectedMonth && selectedMonth !== 'All' && (() => {
+                  const now = new Date();
+                  const currentKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                  return selectedMonth === currentKey ? (
+                    <span className="ml-2 text-[10px] font-black bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full uppercase tracking-widest">Mes actual</span>
+                  ) : (
+                    <span className="ml-2 text-[10px] font-black bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-widest">Mes anterior</span>
+                  );
+                })()}
+                {selectedMonth === 'All' && (
+                  <span className="ml-2 text-[10px] font-black bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full uppercase tracking-widest">Histórico</span>
+                )}
+              </div>
+            </div>
+            <select
+              className="input-field w-auto min-w-[220px] shadow-sm cursor-pointer border-slate-200 focus:border-emerald-500 rounded-xl"
+              value={selectedMonth || 'All'}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+            >
+              {availableMonths.map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
+              <option value="All">── Todos los meses (Histórico)</option>
+            </select>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <StatCard icon={<ShoppingCart className="text-emerald-400" />} title="Unidades Vendidas" value={stats.totalSalesUnits} subtitle="Operaciones cerradas" />
             <StatCard icon={<DollarSign className="text-blue-400" />} title="Facturación Total" value={`$${(stats.totalRevenue / 1000000).toFixed(1)}M`} subtitle="Ingresos brutos generados" />

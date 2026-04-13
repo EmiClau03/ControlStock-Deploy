@@ -47,6 +47,9 @@ app.get('/api/vehicles', async (req, res) => {
         const vehicles = await db.all(`
             SELECT v.*, (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) as photoCount
             FROM vehicles v
+            LEFT JOIN sales s ON v.id = s.vehicle_id
+            WHERE v.status != 'Vendido' 
+               OR (v.status = 'Vendido' AND (s.sale_date >= date('now', '-1 month') OR s.sale_date IS NULL))
             ORDER BY v.created_at DESC
         `);
         res.json(vehicles);
@@ -112,7 +115,6 @@ app.delete('/api/vehicles/:id', async (req, res) => {
     }
 });
 
-// Photo upload
 // Photo upload with Optimization
 app.post('/api/vehicles/:id/photos', upload.array('photos'), async (req, res) => {
     try {
@@ -256,7 +258,6 @@ app.post('/api/import-excel', upload.single('file'), async (req, res) => {
 
         // No need to unlink as we use memoryStorage for excel too
 
-
         res.json({ message: 'Importación finalizada' });
     } catch (error) {
         console.error('CRITICAL IMPORT ERROR:', error);
@@ -311,9 +312,13 @@ app.get('/api/public/catalog', async (req, res) => {
             SELECT v.id, v.brand, v.model, v.year, v.color, v.mileage, v.price, v.fuel, v.license_plate, v.status, v.is_offer, v.offer_price,
                    (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) as photoCount
             FROM vehicles v
+            LEFT JOIN sales s ON v.id = s.vehicle_id
             WHERE v.status IN ('Disponible', 'Muy Visto')
+               OR (v.status = 'Vendido' AND (s.sale_date >= date('now', '-1 month') OR s.sale_date IS NULL))
             ORDER BY 
-                CASE WHEN v.status = 'Muy Visto' THEN 0 ELSE 1 END ASC,
+                CASE WHEN v.status = 'Vendido' THEN 2 
+                     WHEN v.status = 'Muy Visto' THEN 0 
+                     ELSE 1 END ASC,
                 is_offer DESC,
                 (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) DESC,
                 v.created_at DESC
@@ -381,6 +386,39 @@ app.put('/api/leads/:id', async (req, res) => {
         const { estado } = req.body;
         await db.run('UPDATE leads SET estado = ? WHERE id = ?', [estado, id]);
         res.json({ message: 'Estado actualizado' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ═══════════════════════════════════════════
+//  MAINTENANCE API
+// ═══════════════════════════════════════════
+app.get('/api/maintenance/optimize-all', async (req, res) => {
+    try {
+        const photos = await db.all('SELECT * FROM photos');
+        let count = 0;
+        for (const photo of photos) {
+            const filePath = path.join(uploadsDir, photo.filename);
+            if (fs.existsSync(filePath) && !photo.filename.startsWith('optimized-')) {
+                const newFilename = `optimized-${Date.now()}-${photo.filename.split('.')[0]}.jpg`;
+                const outputPath = path.join(uploadsDir, newFilename);
+
+                await sharp(filePath)
+                    .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+                    .jpeg({ quality: 80 })
+                    .toFile(outputPath);
+
+                // Update database
+                await db.run('UPDATE photos SET filename = ? WHERE id = ?', [newFilename, photo.id]);
+                
+                // Optionally delete old file
+                // fs.unlinkSync(filePath);
+                
+                count++;
+            }
+        }
+        res.json({ message: `Optimización completada. ${count} fotos procesadas.` });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

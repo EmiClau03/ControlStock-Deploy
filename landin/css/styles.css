@@ -184,17 +184,48 @@ body {
 }
 
 /* ---------- Search & Filter ---------- */
-.filter-btn {
-  transition: all 0.3s ease;
-  border: 1px solid rgba(30, 58, 95, 0.5);
-}
-
 .filter-btn:hover,
 .filter-btn.active {
   background: #3B82F6 !important;
   color: #ffffff !important;
   border-color: #3B82F6 !important;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.year-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.year-btn.active-year {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+  border-color: #3B82F6 !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.year-btn:not(.active-year):hover {
+  background: rgba(59, 130, 246, 0.1) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  color: #60A5FA !important;
+}
+
+#brand-filter {
+  transition: all 0.3s ease;
+}
+
+#brand-filter:focus {
+  border-color: #3B82F6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+#reset-filters-btn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .search-input:focus {

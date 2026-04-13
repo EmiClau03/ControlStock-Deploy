@@ -23,7 +23,9 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" as="style">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"></noscript>
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -73,7 +75,7 @@
 
         <!-- Logo -->
         <a href="#" class="flex items-center gap-3 group">
-          <img src="assets/logo.png" alt="Automotores Marcos" class="h-16 w-auto transition-all duration-300" style="mix-blend-mode: multiply;"
+          <img src="assets/logo.png" alt="Automotores Marcos" class="h-16 w-auto transition-all duration-300" style="mix-blend-mode: multiply;" fetchpriority="high" decoding="async"
                onerror="this.style.display='none'">
           <div class="flex flex-col leading-tight">
             <span class="logo-text font-heading font-bold text-lg text-white tracking-tight">
@@ -131,6 +133,7 @@
       <img src="assets/fondo.jpeg.jpg"
            alt="Automotores Marcos - Concesionaria"
            class="w-full h-full object-cover blur-[1.5px] scale-105"
+           fetchpriority="high" decoding="async"
            onerror="this.parentElement.style.background='linear-gradient(135deg, #0B1426 0%, #1E3A5F 50%, #0B1426 100%)'">
     </div>
 
@@ -191,21 +194,68 @@
       </div>
 
       <!-- Search & Filters -->
-      <div class="animate-on-scroll delay-1 flex flex-col sm:flex-row items-center gap-4 mb-8">
-        <!-- Search Bar -->
-        <div class="relative flex-1 w-full sm:max-w-md">
-          <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-brand-400"></i>
-          <input id="search-input"
-                 type="text"
-                 placeholder="Buscar por marca o modelo..."
-                 class="search-input w-full pl-11 pr-4 py-3 bg-brand-800/60 border border-brand-700/50 rounded-xl text-sm text-white placeholder-brand-300/40 focus:outline-none focus:border-brand-500">
+      <div class="animate-on-scroll delay-1 flex flex-col gap-6 mb-10 bg-brand-800/20 p-6 rounded-2xl border border-brand-700/30">
+        
+        <!-- Row 1: Search + Brand -->
+        <div class="flex flex-col lg:flex-row items-stretch gap-4">
+          <!-- Search Bar -->
+          <div class="relative flex-1">
+            <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-brand-400"></i>
+            <input id="search-input"
+                   type="text"
+                   placeholder="¿Qué vehículo estás buscando?"
+                   class="search-input w-full pl-11 pr-4 py-3.5 bg-brand-900/60 border border-brand-700/50 rounded-xl text-sm text-white placeholder-brand-300/30 focus:outline-none focus:border-brand-500 transition-all">
+          </div>
+
+          <!-- Brand Filter -->
+          <div class="flex flex-col sm:flex-row items-center gap-3">
+            <span class="text-brand-300/50 text-xs font-bold uppercase tracking-widest sm:block hidden whitespace-nowrap">Marca:</span>
+            <div class="relative w-full sm:w-64">
+              <i class="fa-solid fa-tags absolute left-4 top-1/2 -translate-y-1/2 text-brand-400 pointer-events-none"></i>
+              <select id="brand-filter"
+                      class="appearance-none w-full pl-11 pr-10 py-3.5 bg-brand-900/60 border border-brand-700/50 rounded-xl text-sm text-brand-200 focus:outline-none focus:border-brand-500 cursor-pointer transition-all">
+                <option value="">Todas las marcas</option>
+              </select>
+              <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-brand-400 text-xs pointer-events-none"></i>
+            </div>
+          </div>
+
+          <!-- Reset Button -->
+          <button id="reset-filters-btn"
+                  class="hidden items-center justify-center gap-2 px-6 py-3.5 bg-brand-700/30 hover:bg-red-500/20 border border-brand-600/50 hover:border-red-500/50 text-brand-200 hover:text-red-400 rounded-xl text-sm font-semibold transition-all duration-300">
+            <i class="fa-solid fa-trash-can"></i> <span class="sm:inline">Limpiar</span>
+          </button>
         </div>
 
-        <!-- Filter Buttons -->
-        <div class="flex flex-wrap gap-2">
-          <button class="filter-btn active px-4 py-2.5 rounded-xl text-sm font-medium bg-brand-800/60 text-brand-200 border-brand-700/50" data-filter="todos">
-            Todos
-          </button>
+        <!-- Row 2: Year Range Pills -->
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-calendar-days text-brand-500 text-xs"></i>
+            <span class="text-brand-300/50 text-xs font-bold uppercase tracking-widest">Filtrar por Año:</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button class="year-btn active-year px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-200 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="todos">
+              Cualquier año
+            </button>
+            <button class="year-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-300/60 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="hasta2000">
+              - 2000
+            </button>
+            <button class="year-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-300/60 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="2000-2005">
+              2000 – 2005
+            </button>
+            <button class="year-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-300/60 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="2006-2010">
+              2006 – 2010
+            </button>
+            <button class="year-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-300/60 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="2011-2015">
+              2011 – 2015
+            </button>
+            <button class="year-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-300/60 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="2016-2020">
+              2016 – 2020
+            </button>
+            <button class="year-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-900/40 text-brand-300/60 border border-brand-700/50 hover:border-brand-500/60 transition-all duration-300" data-year="desde2020">
+              + 2020
+            </button>
+          </div>
         </div>
       </div>
 
@@ -667,7 +717,7 @@
   <!-- ═══════════════════════════════════════════
        FLOATING WHATSAPP BUTTON
        ═══════════════════════════════════════════ -->
-  <a href="https://wa.me/?text=Hola%2C%20quiero%20consultar%20por%20un%20veh%C3%ADculo"
+  <a href="https://wa.me/5493562529773?text=Hola%2C%20quiero%20consultar%20por%20un%20veh%C3%ADculo"
      target="_blank"
      class="whatsapp-float fixed bottom-6 right-6 z-[45] w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-green-500/30 transition-all duration-300"
      aria-label="Contactar por WhatsApp">
@@ -688,9 +738,9 @@
   <!-- ═══════════════════════════════════════════
        SCRIPTS
        ═══════════════════════════════════════════ -->
-  <script src="js/vehicles.js?v=1.1"></script>
-  <script src="js/form.js?v=1.1"></script>
-  <script src="js/app.js?v=1.1"></script>
+  <script defer src="js/vehicles.js?v=1.2"></script>
+  <script defer src="js/form.js?v=1.2"></script>
+  <script defer src="js/app.js?v=1.2"></script>
 
 </body>
 </html>
