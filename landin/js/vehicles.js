@@ -312,7 +312,7 @@ function renderVehicles() {
                 Vendido
               </span>
             ` : `
-              <a href="https://wa.me/5493562529773?text=${encodeURIComponent(`Hola, vi tu anuncio sobre el ${vehicle.marca} ${vehicle.modelo} ${vehicle.año}`)}" 
+              <a href="${getWhatsAppUrl(`Hola, vi tu anuncio sobre el ${vehicle.marca} ${vehicle.modelo} ${vehicle.año}`)}" 
                  target="_blank" 
                  onclick="event.stopPropagation()"
                  class="w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-xl flex items-center justify-center transition-all duration-300 shadow-lg shadow-green-500/20">
@@ -502,7 +502,7 @@ function openVehicleModal(vehicleId) {
                 class="flex-1 submit-btn bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3.5 px-6 rounded-xl text-center transition-all duration-300">
           <i class="fa-solid fa-envelope mr-2"></i> Consultar por este vehículo
         </button>
-        <a href="https://wa.me/3562529773?text=${encodeURIComponent(`Hola, vi tu anuncio sobre el ${vehicle.marca} ${vehicle.modelo} ${vehicle.año}`)}"
+        <a href="${getWhatsAppUrl(`Hola, vi tu anuncio sobre el ${vehicle.marca} ${vehicle.modelo} ${vehicle.año}`)}"
            target="_blank"
            class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3.5 px-6 rounded-xl text-center transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-green-500/20">
           <i class="fa-brands fa-whatsapp text-lg"></i> WhatsApp

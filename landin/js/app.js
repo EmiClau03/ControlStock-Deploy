@@ -1,7 +1,13 @@
-/* ============================================
-   Automotores Marcos — Main App Controller
    Initialization, navigation, and animations
    ============================================ */
+
+// Configuración de WhatsApp (Rotación de vendedores)
+const WA_NUMBERS = ['5493562529773', '5493562572881']; 
+
+function getWhatsAppUrl(mensaje) {
+  const num = WA_NUMBERS[Math.floor(Math.random() * WA_NUMBERS.length)];
+  return `https://wa.me/${num}?text=${encodeURIComponent(mensaje)}`;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
@@ -12,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCatalog();
   initForm();
   initReviews();
+  initWhatsAppRotation();
 });
 
 // ── Navbar Scroll Behavior ──
@@ -168,4 +175,16 @@ function initReviews() {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(updateAnimationSpeed, 250);
   });
+}
+
+// ── WhatsApp Floating Button Rotation ──
+function initWhatsAppRotation() {
+  const waBtn = document.querySelector('.whatsapp-float');
+  if (waBtn) {
+    waBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const url = getWhatsAppUrl('Hola, quiero consultar por un vehículo');
+      window.open(url, '_blank');
+    });
+  }
 }
