@@ -72,11 +72,21 @@ app.get('/api/vehicles/:id', async (req, res) => {
 
 app.post('/api/vehicles', async (req, res) => {
     const { brand, model, year, version, mileage, fuel, transmission, color, license_plate, price, description, status, is_offer, offer_price } = req.body;
+    
+    // Ajustar kilometraje si viene expresado en miles (ej: 13 -> 13000)
+    let finalMileage = mileage;
+    if (mileage !== null && mileage !== undefined && mileage !== '') {
+        const m = Number(mileage);
+        if (!isNaN(m) && m > 0 && m <= 1000) {
+            finalMileage = m * 1000;
+        }
+    }
+
     try {
         const result = await db.run(`
             INSERT INTO vehicles (brand, model, year, version, mileage, fuel, transmission, color, license_plate, price, description, status, is_offer, offer_price)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [brand, model, year, version, mileage, fuel, transmission, color, license_plate, price, description, status || 'Disponible', is_offer ? 1 : 0, offer_price]);
+        `, [brand, model, year, version, finalMileage, fuel, transmission, color, license_plate, price, description, status || 'Disponible', is_offer ? 1 : 0, offer_price]);
         
         res.status(201).json({ id: result.lastID });
     } catch (error) {
@@ -86,12 +96,22 @@ app.post('/api/vehicles', async (req, res) => {
 
 app.put('/api/vehicles/:id', async (req, res) => {
     const { brand, model, year, version, mileage, fuel, transmission, color, license_plate, price, description, status, is_offer, offer_price } = req.body;
+    
+    // Ajustar kilometraje si viene expresado en miles (ej: 13 -> 13000)
+    let finalMileage = mileage;
+    if (mileage !== null && mileage !== undefined && mileage !== '') {
+        const m = Number(mileage);
+        if (!isNaN(m) && m > 0 && m <= 1000) {
+            finalMileage = m * 1000;
+        }
+    }
+
     try {
         await db.run(`
             UPDATE vehicles 
             SET brand=?, model=?, year=?, version=?, mileage=?, fuel=?, transmission=?, color=?, license_plate=?, price=?, description=?, status=?, is_offer=?, offer_price=?
             WHERE id=?
-        `, [brand, model, year, version, mileage, fuel, transmission, color, license_plate, price, description, status, is_offer ? 1 : 0, offer_price, req.params.id]);
+        `, [brand, model, year, version, finalMileage, fuel, transmission, color, license_plate, price, description, status, is_offer ? 1 : 0, offer_price, req.params.id]);
         
         res.json({ message: 'Vehicle updated' });
     } catch (error) {
@@ -250,8 +270,13 @@ app.post('/api/import-excel', upload.single('file'), async (req, res) => {
                 };
 
                 const nYear = toNumber(year);
-                const nMileage = toNumber(mileage);
+                let nMileage = toNumber(mileage);
                 const nPrice = toNumber(price);
+
+                // Ajustar kilometraje si viene expresado en miles (ej: 13 -> 13000)
+                if (nMileage !== null && nMileage > 0 && nMileage <= 1000) {
+                    nMileage = nMileage * 1000;
+                }
 
                 await db.run(`
                     INSERT INTO vehicles (brand, model, year, color, license_plate, mileage, price, fuel, status)
