@@ -1,3 +1,5 @@
+/* ============================================
+   Automotores Marcos — Main App Controller
    Initialization, navigation, and animations
    ============================================ */
 
