@@ -271,10 +271,8 @@ function renderVehicles() {
           </span>
         </div>` : ''}
         ${vehicle.isOffer ? `
-        <div class="absolute bottom-3 right-3 z-10">
-          <span class="bg-red-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 uppercase tracking-wider border border-red-500 animate-pulse-gentle">
-            <i class="fa-solid fa-tag"></i> OFERTA
-          </span>
+        <div class="offer-badge">
+          <i class="fa-solid fa-tag"></i> OFERTA
         </div>` : ''}
         ${arrowsHTML}
       </div>
@@ -297,7 +295,7 @@ function renderVehicles() {
               <span class="text-xs text-slate-400 line-through decoration-red-500/50 decoration-2 font-medium">
                 ${vehicle.precio}
               </span>
-              <span class="text-xl font-heading font-bold text-red-600">
+              <span class="text-xl font-heading font-bold offer-price-highlight">
                 ${vehicle.precioOferta}
               </span>
             ` : `
@@ -448,10 +446,10 @@ function openVehicleModal(vehicleId) {
             <span class="text-sm md:text-base text-slate-400 line-through decoration-red-500/50 decoration-2 font-medium mb-1">
               ${vehicle.precio}
             </span>
-            <span class="text-3xl md:text-4xl font-heading font-bold text-red-600 whitespace-nowrap">
+            <span class="text-3xl md:text-4xl font-heading font-bold offer-price-highlight whitespace-nowrap">
               ${vehicle.precioOferta}
             </span>
-            <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded mt-1 uppercase tracking-tight">OFERTA ESPECIAL</span>
+            <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded mt-1 uppercase tracking-tight shadow-sm border border-red-200">¡OFERTA IMPERDIBLE!</span>
           ` : `
             <span class="text-2xl md:text-3xl font-heading font-bold text-brand-500 whitespace-nowrap">
               ${vehicle.precio}
