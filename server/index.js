@@ -212,7 +212,7 @@ app.post('/api/import-excel', upload.single('file'), async (req, res) => {
                     let s = String(v).trim();
                     if (!s) return null;
 
-                    // Si tiene puntos y comas, el último suele ser el decimal
+                    // Detectar si el punto/coma es de miles o decimales
                     const lastDot = s.lastIndexOf('.');
                     const lastComma = s.lastIndexOf(',');
 
@@ -221,7 +221,13 @@ app.post('/api/import-excel', upload.single('file'), async (req, res) => {
                         s = s.replace(/\./g, '').replace(',', '.');
                     } else if (lastDot > lastComma) {
                         // Formato: 1,250.50 -> Mil es coma, decimal es punto
-                        s = s.replace(/,/g, '');
+                        // EXCEPCIÓN: Si solo hay un punto y tiene 3 decimales, en Argentina suele ser MILES (13.000)
+                        const parts = s.split('.');
+                        if (parts.length === 2 && parts[1].length === 3 && lastComma === -1) {
+                            s = parts[0] + parts[1];
+                        } else {
+                            s = s.replace(/,/g, '');
+                        }
                     } else {
                         // Solo tiene comas o solo puntos (o nada)
                         s = s.replace(/,/g, '.');
@@ -232,7 +238,6 @@ app.post('/api/import-excel', upload.single('file'), async (req, res) => {
                         } else if (parts.length === 2) {
                             // Un solo separador: ¿Decimal o Mil? (1.200 vs 1.20)
                             // Si tiene 3 caracteres después, asumimos que es miles (ej: 1.250)
-                            // Excepto si el número es muy pequeño, pero para autos los KM/Precios suelen ser miles
                             if (parts[1].length === 3) {
                                 s = parts[0] + parts[1];
                             }
