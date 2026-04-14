@@ -50,7 +50,7 @@ async function fetchVehicles() {
         kilometraje: km,
         precio: precio,
         precioOferta: precioOferta,
-        isOffer: v.is_offer === 1,
+        isOffer: v.is_offer == 1 || v.is_offer === true || v.is_offer === '1',
         color: v.color || '',
         combustible: v.fuel || '',
         patente: v.license_plate || '',
@@ -341,9 +341,12 @@ function renderOffers() {
   const section = document.getElementById('ofertas-section');
   if (!container || !section) return;
 
+  console.log("Vehículos totales:", VEHICLES.length);
   const offers = VEHICLES.filter(v => v.isOffer);
+  console.log("Ofertas encontradas:", offers.length);
 
   if (offers.length === 0) {
+    console.log("No hay ofertas para mostrar, ocultando sección.");
     section.classList.add('hidden');
     return;
   }
