@@ -67,6 +67,7 @@ async function fetchVehicles() {
     isLoading = false;
     populateBrandFilter();
     renderVehicles();
+    renderOffers();
   } catch (error) {
     console.error('Error cargando catálogo:', error);
     isLoading = false;
@@ -332,6 +333,49 @@ function renderVehicles() {
       observeElement(card);
     });
   }, 50);
+}
+
+// ── Render Offers Carousel ──
+function renderOffers() {
+  const container = document.getElementById('ofertas-track');
+  const section = document.getElementById('ofertas-section');
+  if (!container || !section) return;
+
+  const offers = VEHICLES.filter(v => v.isOffer);
+
+  if (offers.length === 0) {
+    section.classList.add('hidden');
+    return;
+  }
+
+  section.classList.remove('hidden');
+
+  container.innerHTML = offers.map((vehicle) => {
+    const imgSrc = vehicle.imagen || getPlaceholderSVG(vehicle.marca, vehicle.modelo);
+    
+    return `
+    <div class="flex-none w-72 sm:w-80 snap-start">
+      <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-100 group cursor-pointer" onclick="openVehicleModal(${vehicle.id})">
+        <div class="relative aspect-video overflow-hidden">
+          <img src="${imgSrc}" alt="${vehicle.marca}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute top-3 right-3">
+             <span class="bg-red-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 uppercase tracking-wider">
+              <i class="fa-solid fa-tag"></i> OFERTA
+            </span>
+          </div>
+        </div>
+        <div class="p-4">
+          <h3 class="font-heading font-bold text-brand-900 truncate">${vehicle.marca} ${vehicle.modelo}</h3>
+          <p class="text-xs text-slate-500 mb-3">${vehicle.año} • ${vehicle.kilometraje}</p>
+          <div class="flex flex-col">
+            <span class="text-xs text-slate-400 line-through font-medium">${vehicle.precio}</span>
+            <span class="text-lg font-heading font-bold text-red-600">${vehicle.precioOferta}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    `;
+  }).join('');
 }
 
 // ── Render Error ──

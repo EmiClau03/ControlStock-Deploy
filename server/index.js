@@ -350,7 +350,6 @@ app.get('/api/public/catalog', async (req, res) => {
                 CASE WHEN v.status = 'Vendido' THEN 2 
                      WHEN v.status = 'Muy Visto' THEN 0 
                      ELSE 1 END ASC,
-                is_offer DESC,
                 (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) DESC,
                 v.created_at DESC
         `);
