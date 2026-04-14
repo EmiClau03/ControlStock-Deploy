@@ -335,69 +335,55 @@ function renderVehicles() {
   }, 50);
 }
 
-// ── Render Offers Carousel (Premium Ticker) ──
+// ── Render Offers Carousel ──
 function renderOffers() {
-  const track = document.getElementById('ofertas-track');
+  const container = document.getElementById('ofertas-track');
   const section = document.getElementById('ofertas-section');
-  if (!track || !section) return;
+  if (!container || !section) return;
 
+  console.log("Vehículos totales:", VEHICLES.length);
   const offers = VEHICLES.filter(v => v.isOffer);
+  console.log("Ofertas encontradas:", offers.length);
 
   if (offers.length === 0) {
+    console.log("No hay ofertas para mostrar, ocultando sección.");
     section.classList.add('hidden');
     return;
   }
 
   section.classList.remove('hidden');
 
-  // Generate cards
-  const cardsHTML = offers.map((vehicle) => {
+  container.innerHTML = offers.map((vehicle) => {
     const imgSrc = vehicle.imagen || getPlaceholderSVG(vehicle.marca, vehicle.modelo);
     
     return `
-    <div class="offer-card-minimal group cursor-pointer" onclick="openVehicleModal(${vehicle.id})">
-      <div class="image-wrap">
-        <div class="badge-minimal">Oferta</div>
-        <img src="${imgSrc}" alt="${vehicle.marca}" loading="lazy" onerror="this.src='${getPlaceholderSVG(vehicle.marca, vehicle.modelo)}'">
-      </div>
-      <div class="content">
-        <h3 class="brand-model">${vehicle.marca} ${vehicle.modelo}</h3>
-        <div class="specs">
-          <span><i class="fa-solid fa-calendar-day mr-1"></i>${vehicle.año}</span>
-          <span class="opacity-20">|</span>
-          <span><i class="fa-solid fa-road mr-1"></i>${vehicle.kilometraje}</span>
-        </div>
-        <div class="price-group">
-          <div class="flex flex-col">
-            <span class="old-price">${vehicle.precio}</span>
-            <span class="new-price">${vehicle.precioOferta}</span>
+    <div class="flex-none w-[85vw] sm:w-96 snap-start">
+      <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-100 group cursor-pointer" onclick="openVehicleModal(${vehicle.id})">
+        <div class="relative aspect-[4/3] overflow-hidden">
+          <img src="${imgSrc}" alt="${vehicle.marca}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute top-3 right-3">
+             <span class="bg-red-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 uppercase tracking-wider">
+              <i class="fa-solid fa-tag"></i> OFERTA
+            </span>
           </div>
-          <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-brand-500 group-hover:text-white transition-all">
-            <i class="fa-solid fa-chevron-right text-xs"></i>
+        </div>
+        <div class="p-5">
+          <h3 class="font-heading font-bold text-lg text-brand-900 truncate">${vehicle.marca} ${vehicle.modelo}</h3>
+          <p class="text-xs text-slate-500 mb-4">${vehicle.año} • ${vehicle.kilometraje}</p>
+          <div class="flex items-end justify-between">
+            <div class="flex flex-col">
+              <span class="text-xs text-slate-400 line-through font-medium">${vehicle.precio}</span>
+              <span class="text-xl font-heading font-bold text-red-600">${vehicle.precioOferta}</span>
+            </div>
+            <span class="text-brand-500 font-semibold text-sm flex items-center gap-1">
+              Ver oferta <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </span>
           </div>
         </div>
       </div>
     </div>
     `;
   }).join('');
-
-  // Set original cards
-  track.innerHTML = cardsHTML;
-
-  // Clone cards once to ensure continuous loop (Total 2 sets)
-  // The -50% animation jump will then match perfectly
-  track.insertAdjacentHTML('beforeend', cardsHTML);
-
-  // Calculate animation speed
-  const updateTickerSpeed = () => {
-    const isMobile = window.innerWidth < 768;
-    const speedPerCard = isMobile ? 8 : 6; // seconds per card
-    const duration = offers.length * speedPerCard;
-    track.style.animationDuration = `${duration}s`;
-  };
-
-  updateTickerSpeed();
-  window.addEventListener('resize', updateTickerSpeed);
 }
 
 // ── Render Error ──
