@@ -177,33 +177,26 @@
   </section>
   
   <!-- ═══════════════════════════════════════════
-       OFFERS SECTION
+       OFFERS SECTION (Premium Ticker)
        ═══════════════════════════════════════════ -->
-  <section id="ofertas-section" class="py-16 bg-slate-50 hidden border-b border-brand-800/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="mb-8 flex items-center justify-between">
-        <h2 class="section-title font-heading font-bold text-3xl text-brand-900 flex items-center">
-          <i class="fa-solid fa-tag text-red-500 mr-3 animate-pulse"></i> Ofertas Especiales
+  <section id="ofertas-section" class="py-24 bg-white hidden overflow-hidden relative border-b border-slate-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+      <div class="text-center animate-on-scroll">
+        <h2 class="section-title font-heading font-bold text-3xl sm:text-4xl text-brand-900 mb-4">
+          Ofertas Imperdibles
         </h2>
-        <div class="flex gap-2">
-          <button onclick="document.getElementById('ofertas-track').scrollBy({left: -400, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white shadow hover:bg-brand-500 hover:text-white flex items-center justify-center transition-colors text-brand-900">
-            <i class="fa-solid fa-chevron-left"></i>
-          </button>
-          <button onclick="document.getElementById('ofertas-track').scrollBy({left: 400, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white shadow hover:bg-brand-500 hover:text-white flex items-center justify-center transition-colors text-brand-900">
-            <i class="fa-solid fa-chevron-right"></i>
-          </button>
-        </div>
+        <p class="text-slate-500 text-lg max-w-xl mx-auto">
+          Oportunidades únicas con precios especiales por tiempo limitado.
+        </p>
       </div>
-      <div class="relative">
-        <div id="ofertas-track" class="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 scroll-smooth" style="scrollbar-width: none; -ms-overflow-style: none;">
-          <!-- Offers rendered here -->
-        </div>
+    </div>
+    
+    <div class="offers-ticker-container animate-on-scroll delay-1">
+      <div id="ofertas-track" class="offers-ticker-track">
+        <!-- Offers rendered and cloned by vehicles.js -->
       </div>
     </div>
   </section>
-  <style>
-    #ofertas-track::-webkit-scrollbar { display: none; }
-  </style>
 
   <!-- ═══════════════════════════════════════════
        CATALOG SECTION
@@ -410,7 +403,7 @@
                 <i class="fa-solid fa-star"></i>
               </div>
               <p class="review-text">
-                "Excelente atención de principio a fin. El auto estaba impecable, tal cual las fotos. Muy transparentes con toda la documentación."
+                \"Excelente atención de principio a fin. El auto estaba impecable, tal cual las fotos. Muy transparentes con toda la documentación.\"
               </p>
               <div class="review-author">
                 <div class="author-info">
@@ -432,7 +425,7 @@
                 <i class="fa-solid fa-star"></i>
               </div>
               <p class="review-text">
-                "Compré mi primera moto aquí y me asesoraron súper bien. La financiación fue muy rápida y clara. Muy recomendables!"
+                \"Compré mi primera moto aquí y me asesoraron súper bien. La financiación fue muy rápida y clara. Muy recomendables!\"
               </p>
               <div class="review-author">
                 <div class="author-info">
@@ -454,7 +447,7 @@
                 <i class="fa-solid fa-star"></i>
               </div>
               <p class="review-text">
-                "Hice un recambio de unidad y la tasación de mi usado fue muy justa. En pocos días ya estaba arriba de mi nuevo vehículo."
+                \"Hice un recambio de unidad y la tasación de mi usado fue muy justa. En pocos días ya estaba arriba de mi nuevo vehículo.\"
               </p>
               <div class="review-author">
                 <div class="author-info">
@@ -476,7 +469,7 @@
                 <i class="fa-solid fa-star-half-stroke"></i>
               </div>
               <p class="review-text">
-                "Muy buena predisposición para sacar todas las dudas. El servicio post-venta también de primera. Volvería a elegir Automotores Marcos."
+                \"Muy buena predisposición para sacar todas las dudas. El servicio post-venta también de primera. Volvería a elegir Automotores Marcos.\"
               </p>
               <div class="review-author">
                 <div class="author-info">
