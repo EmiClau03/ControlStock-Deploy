@@ -353,7 +353,6 @@ app.get('/api/public/catalog', async (req, res) => {
                      WHEN v.status = 'Nuevo Ingreso' OR v.created_at >= date('now', '-14 days') THEN 1
                      WHEN v.status = 'Reservado' THEN 3
                      ELSE 2 END ASC,
-                is_offer DESC,
                 (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) DESC,
                 v.created_at DESC
         `);

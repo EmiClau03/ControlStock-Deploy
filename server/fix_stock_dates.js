@@ -11,7 +11,7 @@ async function fixDates() {
     });
 
     console.log('Actualizando fechas del stock actual...');
-    await db.exec("UPDATE vehicles SET created_at = datetime('now', '-15 days')");
+    await db.exec("UPDATE vehicles SET created_at = datetime('now', '-30 days')");
     console.log('¡Listo! El stock actual ya no se marcará como nuevo automáticamente.');
     
     await db.close();
