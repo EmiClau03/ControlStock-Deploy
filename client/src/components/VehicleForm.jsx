@@ -170,6 +170,7 @@ const VehicleForm = ({ vehicle, onClose, onSave }) => {
               className="input-field cursor-pointer font-bold"
             >
               <option value="Disponible">🟢 Disponible</option>
+              <option value="Nuevo Ingreso">🆕 Nuevo Ingreso</option>
               <option value="Muy Visto">🔥 Muy Visto</option>
               <option value="Reservado">🟡 Reservado</option>
               <option value="Vendido">🔴 Vendido</option>

@@ -661,6 +661,56 @@ body {
   z-index: 1;
 }
 
+.vehicle-new {
+  position: relative;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.vehicle-new:hover {
+  box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.vehicle-new::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3B82F6, #60A5FA);
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+  z-index: 10;
+}
+
+.vehicle-reserved {
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.vehicle-reserved::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #F59E0B, #FBBF24);
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+  z-index: 10;
+}
+
+.animate-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .review-slide {
   flex: 0 0 400px;
   padding: 0 1.25rem;

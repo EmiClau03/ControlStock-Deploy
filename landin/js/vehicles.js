@@ -55,6 +55,7 @@ async function fetchVehicles() {
         combustible: v.fuel || '',
         patente: v.license_plate || '',
         estado: v.status || '',
+        isNewArrival: v.is_new_arrival === 1,
         tipo: 'todos', // Sin clasificación de tipo por ahora
         imagen: imagenPrincipal,
         fotos: fotos,
@@ -218,8 +219,12 @@ function renderVehicles() {
     let cardClass = '';
     if (vehicle.estado === 'Vendido') {
       cardClass = 'vehicle-card vehicle-sold bg-white rounded-2xl overflow-hidden shadow-md ring-1 ring-slate-200 grayscale-[0.6] opacity-80';
+    } else if (vehicle.estado === 'Reservado') {
+      cardClass = 'vehicle-card vehicle-reserved bg-white rounded-2xl overflow-hidden shadow-lg ring-2 ring-yellow-500/20';
     } else if (vehicle.estado === 'Muy Visto') {
       cardClass = 'vehicle-card vehicle-featured vehicle-hot bg-white rounded-2xl overflow-hidden shadow-xl ring-2 ring-orange-500/30 animate-pulse-gentle';
+    } else if (vehicle.isNewArrival) {
+      cardClass = 'vehicle-card vehicle-new bg-white rounded-2xl overflow-hidden shadow-xl ring-2 ring-blue-500/30';
     } else if (hasPhotos) {
       cardClass = 'vehicle-card vehicle-featured bg-white rounded-2xl overflow-hidden shadow-lg ring-1 ring-brand-500/20';
     } else {
@@ -265,10 +270,22 @@ function renderVehicles() {
             VENDIDO
           </span>
         </div>` : ''}
+        ${vehicle.estado === 'Reservado' ? `
+        <div class="absolute inset-0 bg-black/20 z-20 flex items-center justify-center">
+          <span class="bg-yellow-500/90 text-white text-xl font-black px-6 py-2 rounded-xl shadow-lg transform rotate-3 border border-white/50 uppercase tracking-widest backdrop-blur-md">
+            RESERVADO
+          </span>
+        </div>` : ''}
         ${vehicle.estado === 'Muy Visto' ? `
         <div class="absolute bottom-3 left-3 z-10 animate-bounce-slow">
           <span class="bg-orange-500 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 uppercase tracking-wider border border-orange-400">
             <i class="fa-solid fa-fire"></i> MUY VISTO
+          </span>
+        </div>` : ''}
+        ${vehicle.isNewArrival && vehicle.estado !== 'Vendido' && vehicle.estado !== 'Muy Visto' ? `
+        <div class="absolute bottom-3 left-3 z-10">
+          <span class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-lg shadow-blue-500/30 flex items-center gap-1.5 uppercase tracking-wider border border-blue-400/50">
+            <i class="fa-solid fa-star animate-spin-slow"></i> NUEVO INGRESO
           </span>
         </div>` : ''}
         ${vehicle.isOffer ? `
@@ -309,6 +326,10 @@ function renderVehicles() {
             ${vehicle.estado === 'Vendido' ? `
               <span class="px-4 py-2 bg-slate-200 text-slate-500 rounded-xl text-sm font-semibold">
                 Vendido
+              </span>
+            ` : vehicle.estado === 'Reservado' ? `
+              <span class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-xl text-sm font-semibold">
+                Reservado
               </span>
             ` : `
               <a href="${getWhatsAppUrl(`Hola, vi tu anuncio sobre el ${vehicle.marca} ${vehicle.modelo} ${vehicle.año}`)}" 

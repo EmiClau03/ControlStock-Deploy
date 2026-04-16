@@ -341,15 +341,19 @@ app.get('/api/public/catalog', async (req, res) => {
         // Solo vehículos disponibles, priorizando los que tienen fotos
         const vehicles = await db.all(`
             SELECT v.id, v.brand, v.model, v.year, v.color, v.mileage, v.price, v.fuel, v.license_plate, v.status, v.is_offer, v.offer_price,
+                   (CASE WHEN v.status = 'Nuevo Ingreso' OR v.created_at >= date('now', '-14 days') THEN 1 ELSE 0 END) as is_new_arrival,
                    (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) as photoCount
             FROM vehicles v
             LEFT JOIN sales s ON v.id = s.vehicle_id
-            WHERE v.status IN ('Disponible', 'Muy Visto')
+            WHERE v.status IN ('Disponible', 'Muy Visto', 'Nuevo Ingreso', 'Reservado')
                OR (v.status = 'Vendido' AND (s.sale_date >= date('now', '-1 month') OR s.sale_date IS NULL))
             ORDER BY 
-                CASE WHEN v.status = 'Vendido' THEN 2 
+                CASE WHEN v.status = 'Vendido' THEN 4
                      WHEN v.status = 'Muy Visto' THEN 0 
-                     ELSE 1 END ASC,
+                     WHEN v.status = 'Nuevo Ingreso' OR v.created_at >= date('now', '-14 days') THEN 1
+                     WHEN v.status = 'Reservado' THEN 3
+                     ELSE 2 END ASC,
+                is_offer DESC,
                 (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) DESC,
                 v.created_at DESC
         `);
