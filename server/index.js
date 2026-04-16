@@ -341,7 +341,8 @@ app.get('/api/public/catalog', async (req, res) => {
         // Solo vehículos disponibles, priorizando los que tienen fotos
         const vehicles = await db.all(`
             SELECT v.id, v.brand, v.model, v.year, v.color, v.mileage, v.price, v.fuel, v.license_plate, v.status, v.is_offer, v.offer_price,
-                   (CASE WHEN v.status = 'Nuevo Ingreso' OR v.created_at >= date('now', '-14 days') THEN 1 ELSE 0 END) as is_new_arrival,
+                   (CASE WHEN v.status = 'Nuevo Ingreso' 
+                         OR (v.created_at >= date('now', '-14 days') AND v.created_at > '2026-04-16 14:45:00') THEN 1 ELSE 0 END) as is_new_arrival,
                    (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) as photoCount
             FROM vehicles v
             LEFT JOIN sales s ON v.id = s.vehicle_id
@@ -350,7 +351,7 @@ app.get('/api/public/catalog', async (req, res) => {
             ORDER BY 
                 CASE WHEN v.status = 'Vendido' THEN 4
                      WHEN v.status = 'Muy Visto' THEN 0 
-                     WHEN v.status = 'Nuevo Ingreso' OR v.created_at >= date('now', '-14 days') THEN 1
+                     WHEN v.status = 'Nuevo Ingreso' OR (v.created_at >= date('now', '-14 days') AND v.created_at > '2026-04-16 14:45:00') THEN 1
                      WHEN v.status = 'Reservado' THEN 3
                      ELSE 2 END ASC,
                 (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) DESC,
