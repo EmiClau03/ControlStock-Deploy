@@ -20,8 +20,56 @@ document.addEventListener('DOMContentLoaded', () => {
   initCatalog();
   initForm();
   initReviews();
+  initZeroKmTickers();
   initWhatsAppRotation();
 });
+
+// ── 0km Brand Tickers ──
+function initZeroKmTickers() {
+  const autos = [
+    '1280px-Fiat_logo.svg.png', '3-renault-car-logo-png-brand-image.png', 
+    'Chevrolet-Logo-PNG-Clipart.png', 'Ford-Motor-Company-Logo.png', 
+    'HYUNDAI.png', 'Kia-logo.png', 'RAM-Logo-Transparent-Image.png', 
+    'Subaru_logo_(transparent).svg.png', 'Volkswagen_-_Logo.svg.png', 
+    'baic-logo-png_seeklogo-391483.png', 'citron.png', 'logo-Peugeot.png', 
+    'suzuki-red-logo.png', 'toyota-logo.png'
+  ];
+
+  const motos = [
+    'Bajaj_Finserv_Logo.png', 'CFMOTO_Logo.svg.png', 
+    'Hero_MotoCorp-Logo.wine.png', 'Kymco-Logo.png', 'Zanella.png', 
+    'gilera-logo-png-transparent.png', 'honda-11-logo-png-transparent.png', 
+    'keller-EDkFbMjd.png'
+  ];
+
+  const renderTicker = (trackId, logos, basePath) => {
+    const track = document.getElementById(trackId);
+    if (!track) return;
+
+    // Create a set of logo items
+    const items = logos.map(logo => {
+      const div = document.createElement('div');
+      div.className = 'logo-item';
+      div.innerHTML = `<img src="${basePath}${logo}" alt="Marca" loading="lazy">`;
+      return div;
+    });
+
+    // Append items twice to create a seamless loop
+    // I'll append them 3 times to be safe since I use -33.33% in CSS
+    for (let i = 0; i < 3; i++) {
+      items.forEach(item => {
+        track.appendChild(item.cloneNode(true));
+      });
+    }
+
+    // Adjust speed based on number of items
+    const duration = logos.length * 5; // 5s per logo
+    track.style.animationDuration = `${duration}s`;
+  };
+
+  renderTicker('autos-track', autos, 'assets/autos_logos/');
+  renderTicker('motos-track', motos, 'assets/motos_logos/');
+}
 
 // ── Navbar Scroll Behavior ──
 function initNavbar() {
