@@ -594,6 +594,13 @@ body {
   object-fit: contain;
 }
 
+@media (max-width: 768px) {
+  .logo-item {
+    filter: grayscale(0%);
+    opacity: 1;
+  }
+}
+
 /* ---------- Review Ticker ---------- */
 .reviews-container {
   overflow: hidden;
