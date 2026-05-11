@@ -1100,10 +1100,11 @@ body {
   
   .hotsale-fire-text,
   .hotsale-sale-text {
-    display: inline-block;
+    display: block;
+    text-align: center;
   }
   
   .hotsale-sale-text {
-    margin-left: 0.2em;
+    margin-left: 0;
   }
 }

@@ -407,43 +407,11 @@ function renderOffers() {
       <div class="flex flex-col">
         <span class="text-xl font-heading font-bold hotsale-price">${vehicle.precio}</span>
       </div>
-    // Mobile compact price
-    const mobilePriceHTML = vehicle.isOffer && vehicle.precioOferta ? `
-      <span class="text-[10px] text-white/30 line-through mr-1">${vehicle.precio}</span>
-      <span class="text-sm font-bold hotsale-price">${vehicle.precioOferta}</span>
-    ` : `
-      <span class="text-sm font-bold hotsale-price">${vehicle.precio}</span>
     `;
     
     return `
-    <div class="hotsale-item w-full sm:flex-none sm:w-96 sm:snap-start">
-      <!-- MOBILE: Compact horizontal card -->
-      <div class="hotsale-card flex sm:hidden cursor-pointer" onclick="openVehicleModal(${vehicle.id})" style="min-height:0">
-        <div class="relative w-28 flex-shrink-0 overflow-hidden rounded-l-[1rem]">
-          <img src="${imgSrc}" alt="${vehicle.marca} ${vehicle.modelo}" class="w-full h-full object-cover hotsale-card-img" style="min-height:100px">
-          <div class="absolute top-1.5 left-1.5">
-            <span class="hotsale-badge" style="font-size:7px;padding:3px 6px;gap:3px">
-              <i class="fa-solid fa-fire"></i> HOT
-            </span>
-          </div>
-          ${discountHTML ? `<div class="absolute bottom-1.5 left-1.5"><span class="hotsale-discount" style="font-size:9px;padding:2px 5px">${discountHTML.replace(/<[^>]*>/g,'').trim()}</span></div>` : ''}
-        </div>
-        <div class="flex-1 p-3 flex flex-col justify-center min-w-0">
-          <h3 class="font-heading font-bold text-sm text-white truncate">${vehicle.marca} ${vehicle.modelo}</h3>
-          <p class="text-[10px] text-white/35 mb-1.5 flex items-center gap-2">
-            <span>${vehicle.año || ''}</span>
-            <span>•</span>
-            <span>${vehicle.kilometraje}</span>
-          </p>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center flex-wrap">${mobilePriceHTML}</div>
-            <i class="fa-solid fa-chevron-right text-orange-400 text-[10px]"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- DESKTOP: Full vertical card -->
-      <div class="hotsale-card hidden sm:block group cursor-pointer" onclick="openVehicleModal(${vehicle.id})">
+    <div class="flex-none w-[85vw] sm:w-96 snap-start">
+      <div class="hotsale-card group cursor-pointer" onclick="openVehicleModal(${vehicle.id})">
         <div class="relative aspect-[4/3] overflow-hidden">
           <img src="${imgSrc}" alt="${vehicle.marca} ${vehicle.modelo}" class="w-full h-full object-cover hotsale-card-img">
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
