@@ -61,7 +61,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=1.1">
+  <link rel="stylesheet" href="css/styles.css?v=1.2">
 </head>
 
 <body class="font-body bg-white text-slate-800">
@@ -89,7 +89,7 @@
         <div class="hidden lg:flex items-center gap-8">
           <a href="#inicio" class="nav-link text-sm font-medium text-white/90 hover:text-white" data-section="inicio">Inicio</a>
           <a href="#seccion-0km" class="nav-link text-sm font-medium text-white/90 hover:text-white" data-section="seccion-0km">0KM</a>
-          <a href="#ofertas-section" class="nav-link text-sm font-medium text-white/90 hover:text-white" data-section="ofertas-section">Ofertas</a>
+          <a href="#ofertas-section" class="nav-link text-sm font-medium text-white/90 hover:text-white" data-section="ofertas-section">🔥 Hot Sale</a>
           <a href="#catalogo" class="nav-link text-sm font-medium text-white/90 hover:text-white" data-section="catalogo">Catálogo</a>
           <a href="#nosotros" class="nav-link text-sm font-medium text-white/90 hover:text-white" data-section="nosotros">Nosotros</a>
           <a href="#contacto" class="nav-link text-sm font-medium text-white/90 hover:text-white" data-section="contacto">Contacto</a>
@@ -116,7 +116,7 @@
     <div id="mobile-menu" class="mobile-menu fixed inset-0 bg-brand-900/98 backdrop-blur-lg z-40 flex flex-col items-center justify-center gap-8 lg:hidden">
       <a href="#inicio" class="text-2xl font-heading font-semibold text-white hover:text-brand-400 transition-colors">Inicio</a>
       <a href="#seccion-0km" class="text-2xl font-heading font-semibold text-white hover:text-brand-400 transition-colors">0KM</a>
-      <a href="#ofertas-section" class="text-2xl font-heading font-semibold text-white hover:text-brand-400 transition-colors">Ofertas</a>
+      <a href="#ofertas-section" class="text-2xl font-heading font-semibold text-white hover:text-brand-400 transition-colors">🔥 Hot Sale</a>
       <a href="#catalogo" class="text-2xl font-heading font-semibold text-white hover:text-brand-400 transition-colors">Catálogo</a>
       <a href="#nosotros" class="text-2xl font-heading font-semibold text-white hover:text-brand-400 transition-colors">Nosotros</a>
       <a href="#contacto" class="text-2xl font-heading font-semibold text-white hover:text-brand-400 transition-colors">Contacto</a>
@@ -223,26 +223,74 @@
   </section>
   
   <!-- ═══════════════════════════════════════════
-       OFFERS SECTION
+       🔥 HOT SALE SECTION
        ═══════════════════════════════════════════ -->
-  <section id="ofertas-section" class="py-16 bg-white hidden border-b border-slate-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="mb-8 flex items-center justify-between">
-        <h2 class="section-title font-heading font-bold text-3xl text-brand-900 flex items-center">
-          <i class="fa-solid fa-tag text-red-500 mr-3 animate-pulse"></i> Ofertas Especiales
+  <section id="ofertas-section" class="hotsale-section hidden relative overflow-hidden">
+    <!-- Fire Particle Canvas -->
+    <canvas id="fire-canvas" class="absolute inset-0 z-0 pointer-events-none"></canvas>
+    
+    <!-- Animated flame borders -->
+    <div class="hotsale-flame-top"></div>
+    <div class="hotsale-flame-bottom"></div>
+    
+    <!-- Dark overlay for readability -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 z-[1]"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-20">
+      <!-- Hot Sale Header -->
+      <div class="text-center mb-14 animate-on-scroll">
+        <div class="inline-flex items-center gap-2 bg-red-600/20 border border-red-500/30 backdrop-blur-sm rounded-full px-5 py-2 mb-6">
+          <span class="hotsale-live-dot"></span>
+          <span class="text-red-300 text-xs font-black uppercase tracking-widest">Evento exclusivo</span>
+        </div>
+        
+        <h2 class="hotsale-title font-heading font-black text-5xl sm:text-6xl md:text-7xl text-white mb-4 leading-none">
+          <span class="hotsale-fire-text">🔥 HOT</span>
+          <span class="hotsale-sale-text">SALE</span>
         </h2>
+        
+        <p class="text-orange-200/80 text-lg sm:text-xl font-medium mb-2">
+          <i class="fa-solid fa-calendar-days mr-2"></i>
+          <span class="font-bold text-white">11 al 13 de Mayo</span> — ¡Solo por tiempo limitado!
+        </p>
+        <p class="text-orange-300/60 text-sm max-w-md mx-auto">
+          Precios irrepetibles en vehículos seleccionados. ¡No te los pierdas!
+        </p>
+
+        <!-- Countdown urgency pills -->
+        <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
+          <div class="hotsale-pill">
+            <i class="fa-solid fa-fire-flame-curved text-orange-400"></i>
+            <span>Descuentos exclusivos</span>
+          </div>
+          <div class="hotsale-pill">
+            <i class="fa-solid fa-bolt text-yellow-400"></i>
+            <span>Stock limitado</span>
+          </div>
+          <div class="hotsale-pill">
+            <i class="fa-solid fa-truck-fast text-red-400"></i>
+            <span>Entrega inmediata</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carousel controls -->
+      <div class="flex items-center justify-between mb-6">
+        <span class="text-white/50 text-sm font-semibold uppercase tracking-widest" id="hotsale-count-label"></span>
         <div class="flex gap-2">
-          <button onclick="document.getElementById('ofertas-track').scrollBy({left: -400, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white shadow hover:bg-brand-500 hover:text-white flex items-center justify-center transition-colors text-brand-900">
+          <button onclick="document.getElementById('ofertas-track').scrollBy({left: -400, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-orange-500 hover:border-orange-500 text-white flex items-center justify-center transition-all duration-300">
             <i class="fa-solid fa-chevron-left"></i>
           </button>
-          <button onclick="document.getElementById('ofertas-track').scrollBy({left: 400, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white shadow hover:bg-brand-500 hover:text-white flex items-center justify-center transition-colors text-brand-900">
+          <button onclick="document.getElementById('ofertas-track').scrollBy({left: 400, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-orange-500 hover:border-orange-500 text-white flex items-center justify-center transition-all duration-300">
             <i class="fa-solid fa-chevron-right"></i>
           </button>
         </div>
       </div>
+      
+      <!-- Hot Sale vehicles carousel -->
       <div class="relative">
         <div id="ofertas-track" class="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 scroll-smooth" style="scrollbar-width: none; -ms-overflow-style: none;">
-          <!-- Offers rendered here -->
+          <!-- Hot Sale vehicles rendered here by vehicles.js -->
         </div>
       </div>
     </div>
@@ -812,7 +860,7 @@
   <!-- ═══════════════════════════════════════════
        SCRIPTS
        ═══════════════════════════════════════════ -->
-  <script src="js/vehicles.js?v=1.2"></script>
+  <script src="js/vehicles.js?v=1.3"></script>
   <script src="js/form.js?v=1.2"></script>
   <script src="js/app.js?v=1.2"></script>
 

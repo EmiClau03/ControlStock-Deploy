@@ -17,7 +17,8 @@ const VehicleForm = ({ vehicle, onClose, onSave }) => {
     description: '',
     status: 'Disponible',
     is_offer: false,
-    offer_price: ''
+    offer_price: '',
+    is_hotsale: false
   });
 
   useEffect(() => {
@@ -147,6 +148,23 @@ const VehicleForm = ({ vehicle, onClose, onSave }) => {
                 <span className="text-xs font-bold text-slate-100 uppercase tracking-tight">En Oferta</span>
               </label>
             </div>
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="flex items-center gap-3 cursor-pointer group bg-gradient-to-r from-orange-500/10 to-red-500/10 hover:from-orange-500/20 hover:to-red-500/20 p-4 rounded-2xl border border-orange-500/20 hover:border-orange-500/40 transition-all">
+              <input 
+                type="checkbox" 
+                name="is_hotsale" 
+                checked={formData.is_hotsale} 
+                onChange={(e) => setFormData(p => ({ ...p, is_hotsale: e.target.checked }))}
+                className="w-5 h-5 rounded border-white/20 text-orange-500 focus:ring-orange-500 bg-transparent"
+              />
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🔥</span>
+                <span className="text-sm font-bold text-orange-300 uppercase tracking-tight">Incluir en HOT SALE</span>
+              </div>
+              <span className="text-[10px] text-slate-400 ml-auto">Se mostrará en la sección Hot Sale de la landing</span>
+            </label>
           </div>
 
           <div className="space-y-1.5">

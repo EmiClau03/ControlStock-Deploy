@@ -71,7 +71,7 @@ app.get('/api/vehicles/:id', async (req, res) => {
 });
 
 app.post('/api/vehicles', async (req, res) => {
-    const { brand, model, year, version, mileage, fuel, transmission, color, license_plate, price, description, status, is_offer, offer_price } = req.body;
+    const { brand, model, year, version, mileage, fuel, transmission, color, license_plate, price, description, status, is_offer, offer_price, is_hotsale } = req.body;
     
     // Ajustar kilometraje si viene expresado en miles (ej: 13 -> 13000)
     let finalMileage = mileage;
@@ -84,9 +84,9 @@ app.post('/api/vehicles', async (req, res) => {
 
     try {
         const result = await db.run(`
-            INSERT INTO vehicles (brand, model, year, version, mileage, fuel, transmission, color, license_plate, price, description, status, is_offer, offer_price)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [brand, model, year, version, finalMileage, fuel, transmission, color, license_plate, price, description, status || 'Disponible', is_offer ? 1 : 0, offer_price]);
+            INSERT INTO vehicles (brand, model, year, version, mileage, fuel, transmission, color, license_plate, price, description, status, is_offer, offer_price, is_hotsale)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [brand, model, year, version, finalMileage, fuel, transmission, color, license_plate, price, description, status || 'Disponible', is_offer ? 1 : 0, offer_price, is_hotsale ? 1 : 0]);
         
         res.status(201).json({ id: result.lastID });
     } catch (error) {
@@ -95,7 +95,7 @@ app.post('/api/vehicles', async (req, res) => {
 });
 
 app.put('/api/vehicles/:id', async (req, res) => {
-    const { brand, model, year, version, mileage, fuel, transmission, color, license_plate, price, description, status, is_offer, offer_price } = req.body;
+    const { brand, model, year, version, mileage, fuel, transmission, color, license_plate, price, description, status, is_offer, offer_price, is_hotsale } = req.body;
     
     // Ajustar kilometraje si viene expresado en miles (ej: 13 -> 13000)
     let finalMileage = mileage;
@@ -109,9 +109,9 @@ app.put('/api/vehicles/:id', async (req, res) => {
     try {
         await db.run(`
             UPDATE vehicles 
-            SET brand=?, model=?, year=?, version=?, mileage=?, fuel=?, transmission=?, color=?, license_plate=?, price=?, description=?, status=?, is_offer=?, offer_price=?
+            SET brand=?, model=?, year=?, version=?, mileage=?, fuel=?, transmission=?, color=?, license_plate=?, price=?, description=?, status=?, is_offer=?, offer_price=?, is_hotsale=?
             WHERE id=?
-        `, [brand, model, year, version, finalMileage, fuel, transmission, color, license_plate, price, description, status, is_offer ? 1 : 0, offer_price, req.params.id]);
+        `, [brand, model, year, version, finalMileage, fuel, transmission, color, license_plate, price, description, status, is_offer ? 1 : 0, offer_price, is_hotsale ? 1 : 0, req.params.id]);
         
         res.json({ message: 'Vehicle updated' });
     } catch (error) {
@@ -340,7 +340,7 @@ app.get('/api/public/catalog', async (req, res) => {
     try {
         // Solo vehículos disponibles, priorizando los que tienen fotos
         const vehicles = await db.all(`
-            SELECT v.id, v.brand, v.model, v.year, v.color, v.mileage, v.price, v.fuel, v.license_plate, v.status, v.is_offer, v.offer_price,
+            SELECT v.id, v.brand, v.model, v.year, v.color, v.mileage, v.price, v.fuel, v.license_plate, v.status, v.is_offer, v.offer_price, v.is_hotsale,
                    (CASE WHEN v.status = 'Nuevo Ingreso' 
                          OR (v.created_at >= date('now', '-14 days') AND v.created_at > '2026-04-16 14:45:00') THEN 1 ELSE 0 END) as is_new_arrival,
                    (SELECT COUNT(*) FROM photos p WHERE p.vehicle_id = v.id) as photoCount

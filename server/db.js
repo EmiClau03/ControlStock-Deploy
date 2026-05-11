@@ -66,6 +66,7 @@ async function initDb() {
     try { await db.exec("ALTER TABLE sales ADD COLUMN buyer_locality TEXT;"); } catch(e) {}
     try { await db.exec("ALTER TABLE vehicles ADD COLUMN is_offer INTEGER DEFAULT 0;"); } catch(e) {}
     try { await db.exec("ALTER TABLE vehicles ADD COLUMN offer_price REAL;"); } catch(e) {}
+    try { await db.exec("ALTER TABLE vehicles ADD COLUMN is_hotsale INTEGER DEFAULT 0;"); } catch(e) {}
 
     return db;
 }

@@ -51,6 +51,7 @@ async function fetchVehicles() {
         precio: precio,
         precioOferta: precioOferta,
         isOffer: v.is_offer == 1 || v.is_offer === true || v.is_offer === '1',
+        isHotsale: v.is_hotsale == 1 || v.is_hotsale === true || v.is_hotsale === '1',
         color: v.color || '',
         combustible: v.fuel || '',
         patente: v.license_plate || '',
@@ -356,48 +357,86 @@ function renderVehicles() {
   }, 50);
 }
 
-// ── Render Offers Carousel ──
+// ── Render Hot Sale Carousel ──
 function renderOffers() {
   const container = document.getElementById('ofertas-track');
   const section = document.getElementById('ofertas-section');
   if (!container || !section) return;
 
-  console.log("Vehículos totales:", VEHICLES.length);
-  const offers = VEHICLES.filter(v => v.isOffer);
-  console.log("Ofertas encontradas:", offers.length);
+  // Filter vehicles marked for Hot Sale
+  const hotsaleVehicles = VEHICLES.filter(v => v.isHotsale);
+  console.log("🔥 Hot Sale vehículos:", hotsaleVehicles.length);
 
-  if (offers.length === 0) {
-    console.log("No hay ofertas para mostrar, ocultando sección.");
+  if (hotsaleVehicles.length === 0) {
     section.classList.add('hidden');
     return;
   }
 
   section.classList.remove('hidden');
 
-  container.innerHTML = offers.map((vehicle) => {
+  // Update count label
+  const countLabel = document.getElementById('hotsale-count-label');
+  if (countLabel) {
+    countLabel.textContent = `${hotsaleVehicles.length} vehículo${hotsaleVehicles.length !== 1 ? 's' : ''} en Hot Sale`;
+  }
+
+  // Init fire particles after section is visible
+  setTimeout(() => initFireParticles(), 100);
+
+  container.innerHTML = hotsaleVehicles.map((vehicle) => {
     const imgSrc = vehicle.imagen || getPlaceholderSVG(vehicle.marca, vehicle.modelo);
+    
+    // Calculate discount percentage if offer price exists
+    let discountHTML = '';
+    if (vehicle.isOffer && vehicle.precioOferta) {
+      const originalPrice = parseFloat(vehicle.precio.replace(/[^0-9]/g, ''));
+      const offerPrice = parseFloat(vehicle.precioOferta.replace(/[^0-9]/g, ''));
+      if (originalPrice > 0 && offerPrice > 0 && offerPrice < originalPrice) {
+        const discount = Math.round((1 - offerPrice / originalPrice) * 100);
+        discountHTML = `<span class="hotsale-discount">-${discount}%</span>`;
+      }
+    }
+
+    // Price display
+    const priceHTML = vehicle.isOffer && vehicle.precioOferta ? `
+      <div class="flex flex-col">
+        <span class="hotsale-old-price text-xs font-medium">${vehicle.precio}</span>
+        <span class="text-xl font-heading font-bold hotsale-price">${vehicle.precioOferta}</span>
+      </div>
+    ` : `
+      <div class="flex flex-col">
+        <span class="text-xl font-heading font-bold hotsale-price">${vehicle.precio}</span>
+      </div>
+    `;
     
     return `
     <div class="flex-none w-[85vw] sm:w-96 snap-start">
-      <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-100 group cursor-pointer" onclick="openVehicleModal(${vehicle.id})">
+      <div class="hotsale-card group cursor-pointer" onclick="openVehicleModal(${vehicle.id})">
         <div class="relative aspect-[4/3] overflow-hidden">
-          <img src="${imgSrc}" alt="${vehicle.marca}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-          <div class="absolute top-3 right-3">
-             <span class="bg-red-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 uppercase tracking-wider">
-              <i class="fa-solid fa-tag"></i> OFERTA
+          <img src="${imgSrc}" alt="${vehicle.marca} ${vehicle.modelo}" class="w-full h-full object-cover hotsale-card-img">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+          <div class="absolute top-3 left-3">
+            <span class="hotsale-badge">
+              <i class="fa-solid fa-fire"></i> HOT SALE
+            </span>
+          </div>
+          ${discountHTML ? `<div class="absolute top-3 right-3">${discountHTML}</div>` : ''}
+          <div class="absolute bottom-3 right-3">
+            <span class="bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+              ${vehicle.año || '—'}
             </span>
           </div>
         </div>
         <div class="p-5">
-          <h3 class="font-heading font-bold text-lg text-brand-900 truncate">${vehicle.marca} ${vehicle.modelo}</h3>
-          <p class="text-xs text-slate-500 mb-4">${vehicle.año} • ${vehicle.kilometraje}</p>
+          <h3 class="font-heading font-bold text-lg text-white truncate mb-1">${vehicle.marca} ${vehicle.modelo}</h3>
+          <p class="text-xs text-white/40 mb-4 flex items-center gap-3">
+            <span class="flex items-center gap-1"><i class="fa-solid fa-road text-[10px]"></i> ${vehicle.kilometraje}</span>
+            ${vehicle.combustible ? `<span class="flex items-center gap-1"><i class="fa-solid fa-gas-pump text-[10px]"></i> ${vehicle.combustible}</span>` : ''}
+          </p>
           <div class="flex items-end justify-between">
-            <div class="flex flex-col">
-              <span class="text-xs text-slate-400 line-through font-medium">${vehicle.precio}</span>
-              <span class="text-xl font-heading font-bold text-red-600">${vehicle.precioOferta}</span>
-            </div>
-            <span class="text-brand-500 font-semibold text-sm flex items-center gap-1">
-              Ver oferta <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            ${priceHTML}
+            <span class="hotsale-cta flex items-center gap-1.5">
+              Ver oferta <i class="fa-solid fa-arrow-right text-[10px]"></i>
             </span>
           </div>
         </div>
@@ -405,6 +444,98 @@ function renderOffers() {
     </div>
     `;
   }).join('');
+}
+
+// ── Fire Particle Animation ──
+function initFireParticles() {
+  const canvas = document.getElementById('fire-canvas');
+  if (!canvas) return;
+  
+  const section = document.getElementById('ofertas-section');
+  if (!section || section.classList.contains('hidden')) return;
+
+  const ctx = canvas.getContext('2d');
+  canvas.width = section.offsetWidth;
+  canvas.height = section.offsetHeight;
+
+  const particles = [];
+  const PARTICLE_COUNT = 60;
+
+  class FireParticle {
+    constructor() {
+      this.reset();
+    }
+
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = canvas.height + 10;
+      this.size = Math.random() * 4 + 1;
+      this.speedY = Math.random() * 2 + 0.5;
+      this.speedX = (Math.random() - 0.5) * 1;
+      this.life = 1;
+      this.decay = Math.random() * 0.015 + 0.005;
+      this.hue = Math.random() * 40 + 10; // 10-50 (red to orange)
+    }
+
+    update() {
+      this.y -= this.speedY;
+      this.x += this.speedX + Math.sin(this.y * 0.02) * 0.3;
+      this.life -= this.decay;
+      this.size *= 0.998;
+
+      if (this.life <= 0 || this.y < 0) {
+        this.reset();
+      }
+    }
+
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = this.life * 0.6;
+      ctx.fillStyle = `hsl(${this.hue}, 100%, ${50 + (1 - this.life) * 20}%)`;
+      ctx.shadowColor = `hsl(${this.hue}, 100%, 50%)`;
+      ctx.shadowBlur = 15;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // Create particles
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const p = new FireParticle();
+    p.y = Math.random() * canvas.height; // Spread initial positions
+    particles.push(p);
+  }
+
+  let animationId;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.update();
+      p.draw();
+    });
+    animationId = requestAnimationFrame(animate);
+  }
+
+  // Only animate when section is visible
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animate();
+      } else {
+        cancelAnimationFrame(animationId);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  observer.observe(section);
+
+  // Handle resize
+  window.addEventListener('resize', () => {
+    canvas.width = section.offsetWidth;
+    canvas.height = section.offsetHeight;
+  });
 }
 
 // ── Render Error ──
@@ -729,6 +860,9 @@ function observeElement(el) {
 function initCatalog() {
   // Cargar vehículos desde el servidor
   fetchVehicles();
+
+  // Initialize fire particles when Hot Sale section becomes visible
+  setTimeout(() => initFireParticles(), 500);
 
   // Auto-refresh cada 30 segundos para datos en tiempo real
   setInterval(fetchVehicles, REFRESH_INTERVAL);
