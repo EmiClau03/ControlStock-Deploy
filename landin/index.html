@@ -236,29 +236,29 @@
     <!-- Dark overlay for readability -->
     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 z-[1]"></div>
     
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-20">
-      <!-- Hot Sale Header -->
-      <div class="text-center mb-14 animate-on-scroll">
-        <div class="inline-flex items-center gap-2 bg-red-600/20 border border-red-500/30 backdrop-blur-sm rounded-full px-5 py-2 mb-6">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10 pt-3 pb-5 sm:py-12 lg:py-20">
+      <!-- Hot Sale Header — compact on mobile -->
+      <div class="text-center mb-3 sm:mb-14 animate-on-scroll">
+        <div class="inline-flex items-center gap-2 bg-red-600/20 border border-red-500/30 backdrop-blur-sm rounded-full px-4 py-1.5 sm:px-5 sm:py-2 mb-3 sm:mb-6">
           <span class="hotsale-live-dot"></span>
-          <span class="text-red-300 text-xs font-black uppercase tracking-widest">Evento exclusivo</span>
+          <span class="text-red-300 text-[10px] sm:text-xs font-black uppercase tracking-widest">Evento exclusivo</span>
         </div>
         
-        <h2 class="hotsale-title font-heading font-black text-5xl sm:text-6xl md:text-7xl text-white mb-4 leading-none">
+        <h2 class="hotsale-title font-heading font-black text-3xl sm:text-6xl md:text-7xl text-white mb-2 sm:mb-4 leading-none">
           <span class="hotsale-fire-text">🔥 HOT</span>
           <span class="hotsale-sale-text">SALE</span>
         </h2>
         
-        <p class="text-orange-200/80 text-lg sm:text-xl font-medium mb-2">
-          <i class="fa-solid fa-calendar-days mr-2"></i>
-          <span class="font-bold text-white">11 al 13 de Mayo</span> — ¡Solo por tiempo limitado!
+        <p class="text-orange-200/80 text-sm sm:text-xl font-medium mb-1 sm:mb-2">
+          <i class="fa-solid fa-calendar-days mr-1 sm:mr-2"></i>
+          <span class="font-bold text-white">11 al 13 de Mayo</span> <span class="hidden sm:inline">— ¡Solo por tiempo limitado!</span>
         </p>
-        <p class="text-orange-300/60 text-sm max-w-md mx-auto">
+        <p class="text-orange-300/60 text-xs sm:text-sm max-w-md mx-auto hidden sm:block">
           Precios irrepetibles en vehículos seleccionados. ¡No te los pierdas!
         </p>
 
-        <!-- Countdown urgency pills -->
-        <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
+        <!-- Countdown urgency pills — hidden on mobile -->
+        <div class="hidden sm:flex flex-wrap items-center justify-center gap-3 mt-8">
           <div class="hotsale-pill">
             <i class="fa-solid fa-fire-flame-curved text-orange-400"></i>
             <span>Descuentos exclusivos</span>
@@ -274,8 +274,8 @@
         </div>
       </div>
 
-      <!-- Carousel controls -->
-      <div class="flex items-center justify-between mb-6">
+      <!-- Carousel controls — hidden on mobile -->
+      <div class="hidden sm:flex items-center justify-between mb-6">
         <span class="text-white/50 text-sm font-semibold uppercase tracking-widest" id="hotsale-count-label"></span>
         <div class="flex gap-2">
           <button onclick="document.getElementById('ofertas-track').scrollBy({left: -400, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-orange-500 hover:border-orange-500 text-white flex items-center justify-center transition-all duration-300">
@@ -287,9 +287,9 @@
         </div>
       </div>
       
-      <!-- Hot Sale vehicles carousel -->
+      <!-- Hot Sale vehicles — vertical on mobile, horizontal carousel on desktop -->
       <div class="relative">
-        <div id="ofertas-track" class="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 scroll-smooth" style="scrollbar-width: none; -ms-overflow-style: none;">
+        <div id="ofertas-track" class="hotsale-track flex flex-col sm:flex-row gap-3 sm:gap-6 sm:overflow-x-auto sm:snap-x sm:snap-mandatory pb-2 sm:pb-4 sm:scroll-smooth" style="scrollbar-width: none; -ms-overflow-style: none;">
           <!-- Hot Sale vehicles rendered here by vehicles.js -->
         </div>
       </div>
