@@ -365,7 +365,7 @@ function renderOffers() {
 
   // Filter vehicles marked for Hot Sale
   const hotsaleVehicles = VEHICLES.filter(v => v.isHotsale);
-  console.log("🔥 Hot Sale vehículos:", hotsaleVehicles.length);
+  console.log("🔥 Vehículos en Oferta por Tiempo Limitado:", hotsaleVehicles.length);
 
   if (hotsaleVehicles.length === 0) {
     section.classList.add('hidden');
@@ -377,7 +377,7 @@ function renderOffers() {
   // Update count label
   const countLabel = document.getElementById('hotsale-count-label');
   if (countLabel) {
-    countLabel.textContent = `${hotsaleVehicles.length} vehículo${hotsaleVehicles.length !== 1 ? 's' : ''} en Hot Sale`;
+    countLabel.textContent = `${hotsaleVehicles.length} vehículo${hotsaleVehicles.length !== 1 ? 's' : ''} en Ofertas por Tiempo Limitado`;
   }
 
   // Init fire particles after section is visible
@@ -417,7 +417,7 @@ function renderOffers() {
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
           <div class="absolute top-3 left-3">
             <span class="hotsale-badge">
-              <i class="fa-solid fa-fire"></i> HOT SALE
+              <i class="fa-solid fa-fire"></i> TIEMPO LIMITADO
             </span>
           </div>
           ${discountHTML ? `<div class="absolute top-3 right-3">${discountHTML}</div>` : ''}

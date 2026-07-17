@@ -161,9 +161,9 @@ const VehicleForm = ({ vehicle, onClose, onSave }) => {
               />
               <div className="flex items-center gap-2">
                 <span className="text-lg">🔥</span>
-                <span className="text-sm font-bold text-orange-300 uppercase tracking-tight">Incluir en HOT SALE</span>
+                <span className="text-sm font-bold text-orange-300 uppercase tracking-tight">Incluir en OFERTAS POR TIEMPO LIMITADO</span>
               </div>
-              <span className="text-[10px] text-slate-400 ml-auto">Se mostrará en la sección Hot Sale de la landing</span>
+              <span className="text-[10px] text-slate-400 ml-auto">Se mostrará en la sección de Ofertas por Tiempo Limitado de la landing</span>
             </label>
           </div>
 
