@@ -831,11 +831,11 @@ body {
 /* Main Section Background */
 .hotsale-section {
   background: linear-gradient(180deg, 
-    #000a14 0%, 
-    #051a2d 15%, 
-    #0a2d4a 30%, 
-    #08182d 60%, 
-    #000a14 100%
+    #050510 0%, 
+    #0a1628 15%, 
+    #0f1f3d 30%, 
+    #12152a 60%, 
+    #050510 100%
   );
   position: relative;
 }
@@ -847,8 +847,9 @@ body {
   inset: 0;
   background: 
     radial-gradient(ellipse 80% 50% at 50% 100%, rgba(59, 130, 246, 0.15) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(37, 99, 235, 0.1) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(37, 99, 235, 0.1) 0%, transparent 60%);
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(255, 100, 0, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(37, 99, 235, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(255, 80, 0, 0.05) 0%, transparent 50%);
   z-index: 0;
   animation: hotsale-glow 4s ease-in-out infinite alternate;
 }
@@ -866,12 +867,12 @@ body {
   right: 0;
   height: 6px;
   background: linear-gradient(90deg, 
-    #2563eb, #3b82f6, #60a5fa, #3b82f6, #2563eb, #3b82f6, #60a5fa, #2563eb
+    #2563eb, #3b82f6, #f97316, #ff6b00, #3b82f6, #2563eb, #60a5fa, #f97316
   );
   background-size: 200% 100%;
   animation: flame-border-flow 3s linear infinite;
   z-index: 20;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 40px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4), 0 0 40px rgba(249, 115, 22, 0.3);
 }
 
 .hotsale-flame-bottom {
@@ -881,12 +882,12 @@ body {
   right: 0;
   height: 6px;
   background: linear-gradient(90deg, 
-    #2563eb, #3b82f6, #60a5fa, #3b82f6, #2563eb, #3b82f6, #60a5fa, #2563eb
+    #f97316, #2563eb, #3b82f6, #60a5fa, #ff6b00, #3b82f6, #2563eb, #f97316
   );
   background-size: 200% 100%;
   animation: flame-border-flow 3s linear infinite reverse;
   z-index: 20;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 40px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.4), 0 0 40px rgba(59, 130, 246, 0.3);
 }
 
 @keyframes flame-border-flow {
@@ -896,14 +897,14 @@ body {
 
 /* Title effects */
 .hotsale-title {
-  text-shadow: 0 0 40px rgba(59, 130, 246, 0.5), 0 0 80px rgba(37, 99, 235, 0.3);
+  text-shadow: 0 0 40px rgba(59, 130, 246, 0.4), 0 0 80px rgba(249, 115, 22, 0.2);
 }
 
 /* Highlighted word "OFERTAS" */
 .hotsale-highlight-word {
   position: relative;
   -webkit-text-fill-color: white;
-  text-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 40px rgba(96, 165, 250, 0.5);
+  text-shadow: 0 0 20px rgba(255, 150, 50, 0.8), 0 0 40px rgba(249, 115, 22, 0.5);
   padding: 0 0.15em;
 }
 
@@ -914,7 +915,7 @@ body {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, transparent, #3b82f6, #60a5fa, #3b82f6, transparent);
+  background: linear-gradient(90deg, transparent, #f97316, #60a5fa, #f97316, transparent);
   border-radius: 2px;
   animation: highlight-glow 2s ease-in-out infinite alternate;
 }
@@ -928,7 +929,7 @@ body {
 .hotsale-divider {
   width: 80px;
   height: 3px;
-  background: linear-gradient(90deg, transparent, #3b82f6, #60a5fa, #3b82f6, transparent);
+  background: linear-gradient(90deg, transparent, #3b82f6, #f97316, #3b82f6, transparent);
   border-radius: 2px;
   position: relative;
   box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
@@ -942,9 +943,9 @@ body {
   transform: translate(-50%, -50%);
   width: 8px;
   height: 8px;
-  background: #60a5fa;
+  background: #f97316;
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(96, 165, 250, 0.8), 0 0 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.8), 0 0 20px rgba(59, 130, 246, 0.4);
   animation: divider-dot-pulse 2s ease-in-out infinite;
 }
 
@@ -954,29 +955,29 @@ body {
 }
 
 .hotsale-fire-text {
-  background: linear-gradient(180deg, #93c5fd, #3b82f6, #1d4ed8);
+  background: linear-gradient(180deg, #fbbf24, #f97316, #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: fire-text-flicker 2s ease-in-out infinite alternate;
-  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+  filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.5));
 }
 
 .hotsale-sale-text {
-  background: linear-gradient(180deg, #ffffff, #bfdbfe, #93c5fd);
+  background: linear-gradient(180deg, #ffffff, #93c5fd, #60a5fa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-left: 0.3em;
-  filter: drop-shadow(0 0 8px rgba(147, 197, 253, 0.4));
+  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.4));
 }
 
 @keyframes fire-text-flicker {
-  0% { filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5)) brightness(1); }
-  25% { filter: drop-shadow(0 0 15px rgba(37, 99, 235, 0.7)) brightness(1.1); }
-  50% { filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.4)) brightness(0.95); }
-  75% { filter: drop-shadow(0 0 18px rgba(29, 78, 216, 0.6)) brightness(1.05); }
-  100% { filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.5)) brightness(1); }
+  0% { filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.5)) brightness(1); }
+  25% { filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.7)) brightness(1.1); }
+  50% { filter: drop-shadow(0 0 8px rgba(255, 150, 50, 0.4)) brightness(0.95); }
+  75% { filter: drop-shadow(0 0 18px rgba(37, 99, 235, 0.6)) brightness(1.05); }
+  100% { filter: drop-shadow(0 0 12px rgba(249, 115, 22, 0.5)) brightness(1); }
 }
 
 /* Live dot indicator */
@@ -1011,16 +1012,16 @@ body {
 }
 
 .hotsale-pill:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(249, 115, 22, 0.08);
   border-color: rgba(59, 130, 246, 0.3);
-  color: #93c5fd;
+  color: #fbbf24;
   transform: translateY(-2px);
 }
 
 /* Hot Sale Vehicle Cards */
 .hotsale-card {
-  background: linear-gradient(180deg, rgba(10, 15, 30, 0.9) 0%, rgba(5, 10, 20, 0.95) 100%);
-  border: 1px solid rgba(59, 130, 246, 0.15);
+  background: linear-gradient(180deg, rgba(15, 12, 25, 0.9) 0%, rgba(8, 8, 18, 0.95) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.12);
   border-radius: 1rem;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1034,17 +1035,17 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #1d4ed8, #3b82f6, #60a5fa, #3b82f6, #1d4ed8);
+  background: linear-gradient(90deg, #f97316, #3b82f6, #60a5fa, #3b82f6, #f97316);
   background-size: 200% 100%;
   animation: flame-border-flow 2s linear infinite;
 }
 
 .hotsale-card:hover {
   transform: translateY(-8px) scale(1.02);
-  border-color: rgba(59, 130, 246, 0.4);
+  border-color: rgba(249, 115, 22, 0.3);
   box-shadow: 
-    0 20px 40px rgba(37, 99, 235, 0.15),
-    0 0 30px rgba(59, 130, 246, 0.1),
+    0 20px 40px rgba(37, 99, 235, 0.12),
+    0 0 30px rgba(249, 115, 22, 0.08),
     inset 0 0 30px rgba(59, 130, 246, 0.03);
 }
 
@@ -1058,7 +1059,7 @@ body {
 
 /* Hot Sale Badge on cards */
 .hotsale-badge {
-  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+  background: linear-gradient(135deg, #ea580c, #f97316);
   color: white;
   font-size: 10px;
   font-weight: 900;
@@ -1069,25 +1070,25 @@ body {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 4px 15px rgba(234, 88, 12, 0.5);
   animation: badge-glow 2s ease-in-out infinite alternate;
 }
 
 @keyframes badge-glow {
-  0% { box-shadow: 0 4px 15px rgba(37, 99, 235, 0.5); }
-  100% { box-shadow: 0 4px 25px rgba(37, 99, 235, 0.8), 0 0 10px rgba(59, 130, 246, 0.3); }
+  0% { box-shadow: 0 4px 15px rgba(234, 88, 12, 0.5); }
+  100% { box-shadow: 0 4px 25px rgba(234, 88, 12, 0.8), 0 0 10px rgba(59, 130, 246, 0.3); }
 }
 
 /* Discount percentage badge */
 .hotsale-discount {
-  background: linear-gradient(135deg, #1e40af, #2563eb);
+  background: linear-gradient(135deg, #c2410c, #ea580c);
   color: white;
   font-size: 13px;
   font-weight: 900;
   padding: 0.25rem 0.75rem;
   border-radius: 0.5rem;
   letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.4);
+  box-shadow: 0 2px 8px rgba(194, 65, 12, 0.4);
   animation: discount-pulse 1.5s ease-in-out infinite;
 }
 
@@ -1098,20 +1099,20 @@ body {
 
 /* Hot Sale price styling */
 .hotsale-price {
-  color: #60a5fa;
-  text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+  color: #fbbf24;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
 }
 
 .hotsale-old-price {
   color: rgba(255, 255, 255, 0.35);
   text-decoration: line-through;
-  text-decoration-color: rgba(96, 165, 250, 0.6);
+  text-decoration-color: rgba(249, 115, 22, 0.6);
   text-decoration-thickness: 2px;
 }
 
 /* Hot Sale CTA button */
 .hotsale-cta {
-  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+  background: linear-gradient(135deg, #2563eb, #f97316);
   color: white;
   border: none;
   padding: 0.5rem 1.25rem;
@@ -1143,7 +1144,7 @@ body {
 
 .hotsale-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 8px 25px rgba(249, 115, 22, 0.4), 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
 /* Responsive adjustments */
