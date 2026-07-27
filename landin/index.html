@@ -239,36 +239,39 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-20">
       <!-- Hot Sale Header -->
       <div class="text-center mb-14 animate-on-scroll">
-        <div class="inline-flex items-center gap-2 bg-red-600/20 border border-red-500/30 backdrop-blur-sm rounded-full px-5 py-2 mb-6">
+        <div class="inline-flex items-center gap-2 bg-blue-600/20 border border-blue-500/30 backdrop-blur-sm rounded-full px-5 py-2 mb-6">
           <span class="hotsale-live-dot"></span>
-          <span class="text-red-300 text-xs font-black uppercase tracking-widest">Evento exclusivo</span>
+          <span class="text-blue-300 text-xs font-black uppercase tracking-widest">Evento exclusivo</span>
         </div>
         
         <h2 class="hotsale-title font-heading font-black text-3xl sm:text-5xl md:text-6xl text-white mb-4 leading-none">
-          <span class="hotsale-fire-text">🔥 OFERTAS POR</span>
+          <span class="hotsale-fire-text">⚡ <span class="hotsale-highlight-word">OFERTAS</span> POR</span>
           <span class="hotsale-sale-text">TIEMPO LIMITADO</span>
         </h2>
+
+        <!-- Decorative blue divider -->
+        <div class="hotsale-divider mx-auto mb-5"></div>
         
-        <p class="text-orange-200/80 text-lg sm:text-xl font-medium mb-2">
-          <i class="fa-solid fa-clock mr-2"></i>
-          ¡Solo por tiempo limitado!
+        <p class="text-blue-200/80 text-lg sm:text-xl font-medium mb-2">
+          <i class="fa-solid fa-clock mr-2 text-blue-400"></i>
+          ¡Solo por <span class="text-blue-300 font-bold">tiempo limitado</span>!
         </p>
-        <p class="text-orange-300/60 text-sm max-w-md mx-auto">
-          Precios irrepetibles en vehículos seleccionados. ¡No te los pierdas!
+        <p class="text-blue-300/60 text-sm max-w-md mx-auto">
+          <span class="text-blue-400/80">Precios irrepetibles</span> en vehículos seleccionados. ¡No te los pierdas!
         </p>
 
         <!-- Countdown urgency pills -->
         <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
           <div class="hotsale-pill">
-            <i class="fa-solid fa-fire-flame-curved text-orange-400"></i>
+            <i class="fa-solid fa-tag text-blue-400"></i>
             <span>Descuentos exclusivos</span>
           </div>
           <div class="hotsale-pill">
-            <i class="fa-solid fa-bolt text-yellow-400"></i>
+            <i class="fa-solid fa-bolt text-cyan-400"></i>
             <span>Stock limitado</span>
           </div>
           <div class="hotsale-pill">
-            <i class="fa-solid fa-truck-fast text-red-400"></i>
+            <i class="fa-solid fa-truck-fast text-blue-400"></i>
             <span>Entrega inmediata</span>
           </div>
         </div>
@@ -278,10 +281,10 @@
       <div class="flex items-center justify-between mb-6">
         <span class="text-white/50 text-sm font-semibold uppercase tracking-widest" id="hotsale-count-label"></span>
         <div class="flex gap-2">
-          <button onclick="document.getElementById('ofertas-track').scrollBy({left: -400, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-orange-500 hover:border-orange-500 text-white flex items-center justify-center transition-all duration-300">
+          <button onclick="document.getElementById('ofertas-track').scrollBy({left: -400, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-blue-500 hover:border-blue-500 text-white flex items-center justify-center transition-all duration-300">
             <i class="fa-solid fa-chevron-left"></i>
           </button>
-          <button onclick="document.getElementById('ofertas-track').scrollBy({left: 400, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-orange-500 hover:border-orange-500 text-white flex items-center justify-center transition-all duration-300">
+          <button onclick="document.getElementById('ofertas-track').scrollBy({left: 400, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-blue-500 hover:border-blue-500 text-white flex items-center justify-center transition-all duration-300">
             <i class="fa-solid fa-chevron-right"></i>
           </button>
         </div>
