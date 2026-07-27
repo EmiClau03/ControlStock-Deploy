@@ -924,14 +924,42 @@ body {
   100% { opacity: 1; box-shadow: 0 0 16px rgba(59, 130, 246, 0.8); }
 }
 
-/* Decorative blue divider */
+/* Highlighted word "OFERTAS" with fire color */
+.hotsale-highlight-word-fire {
+  position: relative;
+  background: linear-gradient(180deg, #ffb700 0%, #ff5500 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(255, 100, 0, 0.5));
+  padding: 0 0.1em;
+}
+
+.hotsale-highlight-word-fire::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #ff5500, #ffaa00, #ff5500, transparent);
+  border-radius: 2px;
+  animation: highlight-fire-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes highlight-fire-glow {
+  0% { opacity: 0.6; box-shadow: 0 0 8px rgba(255, 85, 0, 0.4); }
+  100% { opacity: 1; box-shadow: 0 0 16px rgba(255, 170, 0, 0.8); }
+}
+
+/* Decorative blue/fire divider */
 .hotsale-divider {
   width: 80px;
   height: 3px;
-  background: linear-gradient(90deg, transparent, #3b82f6, #60a5fa, #3b82f6, transparent);
+  background: linear-gradient(90deg, transparent, #3b82f6, #ff5500, #3b82f6, transparent);
   border-radius: 2px;
   position: relative;
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
 }
 
 .hotsale-divider::before {
@@ -942,9 +970,9 @@ body {
   transform: translate(-50%, -50%);
   width: 8px;
   height: 8px;
-  background: #60a5fa;
+  background: #ff5500;
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(96, 165, 250, 0.8), 0 0 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 10px rgba(255, 85, 0, 0.8), 0 0 20px rgba(59, 130, 246, 0.4);
   animation: divider-dot-pulse 2s ease-in-out infinite;
 }
 
@@ -979,19 +1007,19 @@ body {
   100% { filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.5)) brightness(1); }
 }
 
-/* Live dot indicator */
+/* Live dot indicator (fire orange glow) */
 .hotsale-live-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #ff5500;
   animation: live-pulse 1.5s ease-in-out infinite;
-  box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
+  box-shadow: 0 0 6px rgba(255, 85, 0, 0.8);
 }
 
 @keyframes live-pulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(59, 130, 246, 0.8); }
-  50% { opacity: 0.4; box-shadow: 0 0 2px rgba(59, 130, 246, 0.3); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(255, 85, 0, 0.8); }
+  50% { opacity: 0.4; box-shadow: 0 0 2px rgba(255, 85, 0, 0.3); }
 }
 
 /* Info pills */

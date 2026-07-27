@@ -474,7 +474,12 @@ function initFireParticles() {
       this.speedX = (Math.random() - 0.5) * 1;
       this.life = 1;
       this.decay = Math.random() * 0.015 + 0.005;
-      this.hue = Math.random() * 40 + 200; // 200-240 (blue to cyan)
+      // 80% blue/cyan particles, 20% orange/red fire ember particles
+      if (Math.random() < 0.2) {
+        this.hue = Math.random() * 30 + 15; // 15-45 (orange-red)
+      } else {
+        this.hue = Math.random() * 40 + 200; // 200-240 (blue-cyan)
+      }
     }
 
     update() {
