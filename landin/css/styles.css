@@ -831,11 +831,11 @@ body {
 /* Main Section Background */
 .hotsale-section {
   background: linear-gradient(180deg, 
-    #000a14 0%, 
-    #051a2d 15%, 
-    #0a2d4a 30%, 
-    #08182d 60%, 
-    #000a14 100%
+    #050000 0%, 
+    #150505 15%, 
+    #250a0a 30%, 
+    #150505 60%, 
+    #050000 100%
   );
   position: relative;
 }
@@ -846,9 +846,9 @@ body {
   position: absolute;
   inset: 0;
   background: 
-    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(59, 130, 246, 0.15) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(37, 99, 235, 0.1) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(37, 99, 235, 0.1) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(255, 69, 0, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(255, 100, 0, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255, 100, 0, 0.1) 0%, transparent 60%);
   z-index: 0;
   animation: hotsale-glow 4s ease-in-out infinite alternate;
 }
@@ -866,12 +866,12 @@ body {
   right: 0;
   height: 6px;
   background: linear-gradient(90deg, 
-    #2563eb, #3b82f6, #60a5fa, #3b82f6, #2563eb, #3b82f6, #60a5fa, #2563eb
+    #ff4500, #ff8c00, #ffaa00, #ff8c00, #ff4500, #ff8c00, #ffaa00, #ff4500
   );
   background-size: 200% 100%;
   animation: flame-border-flow 3s linear infinite;
   z-index: 20;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 40px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 0 20px rgba(255, 69, 0, 0.5), 0 0 40px rgba(255, 140, 0, 0.2);
 }
 
 .hotsale-flame-bottom {
@@ -881,12 +881,12 @@ body {
   right: 0;
   height: 6px;
   background: linear-gradient(90deg, 
-    #2563eb, #3b82f6, #60a5fa, #3b82f6, #2563eb, #3b82f6, #60a5fa, #2563eb
+    #ff4500, #ff8c00, #ffaa00, #ff8c00, #ff4500, #ff8c00, #ffaa00, #ff4500
   );
   background-size: 200% 100%;
   animation: flame-border-flow 3s linear infinite reverse;
   z-index: 20;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 40px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 0 20px rgba(255, 69, 0, 0.5), 0 0 40px rgba(255, 140, 0, 0.2);
 }
 
 @keyframes flame-border-flow {
@@ -896,18 +896,21 @@ body {
 
 /* Title effects */
 .hotsale-title {
-  text-shadow: 0 0 40px rgba(59, 130, 246, 0.5), 0 0 80px rgba(37, 99, 235, 0.3);
+  text-shadow: 0 0 40px rgba(255, 69, 0, 0.5), 0 0 80px rgba(255, 140, 0, 0.2);
 }
 
-/* Highlighted word "OFERTAS" */
-.hotsale-highlight-word {
+/* Highlighted word "OFERTAS" with refined blue glow */
+.hotsale-highlight-word-blue {
   position: relative;
-  -webkit-text-fill-color: white;
-  text-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 40px rgba(96, 165, 250, 0.5);
+  background: linear-gradient(180deg, #93c5fd 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.7));
   padding: 0 0.15em;
 }
 
-.hotsale-highlight-word::after {
+.hotsale-highlight-word-blue::after {
   content: '';
   position: absolute;
   bottom: -2px;
@@ -916,11 +919,11 @@ body {
   height: 4px;
   background: linear-gradient(90deg, transparent, #3b82f6, #60a5fa, #3b82f6, transparent);
   border-radius: 2px;
-  animation: highlight-glow 2s ease-in-out infinite alternate;
+  animation: highlight-blue-glow 2s ease-in-out infinite alternate;
 }
 
-@keyframes highlight-glow {
-  0% { opacity: 0.6; box-shadow: 0 0 8px rgba(59, 130, 246, 0.4); }
+@keyframes highlight-blue-glow {
+  0% { opacity: 0.6; box-shadow: 0 0 8px rgba(37, 99, 235, 0.4); }
   100% { opacity: 1; box-shadow: 0 0 16px rgba(59, 130, 246, 0.8); }
 }
 
@@ -982,44 +985,44 @@ body {
 }
 
 .hotsale-fire-text {
-  background: linear-gradient(180deg, #93c5fd, #3b82f6, #1d4ed8);
+  background: linear-gradient(180deg, #ffdd00, #ff6600, #ff3300);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: fire-text-flicker 2s ease-in-out infinite alternate;
-  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+  filter: drop-shadow(0 0 10px rgba(255, 100, 0, 0.5));
 }
 
 .hotsale-sale-text {
-  background: linear-gradient(180deg, #ffffff, #bfdbfe, #93c5fd);
+  background: linear-gradient(180deg, #ffffff, #ffd4a8, #ffaa66);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-left: 0.3em;
-  filter: drop-shadow(0 0 8px rgba(147, 197, 253, 0.4));
+  filter: drop-shadow(0 0 8px rgba(255, 200, 100, 0.4));
 }
 
 @keyframes fire-text-flicker {
-  0% { filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5)) brightness(1); }
-  25% { filter: drop-shadow(0 0 15px rgba(37, 99, 235, 0.7)) brightness(1.1); }
-  50% { filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.4)) brightness(0.95); }
-  75% { filter: drop-shadow(0 0 18px rgba(29, 78, 216, 0.6)) brightness(1.05); }
-  100% { filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.5)) brightness(1); }
+  0% { filter: drop-shadow(0 0 10px rgba(255, 100, 0, 0.5)) brightness(1); }
+  25% { filter: drop-shadow(0 0 15px rgba(255, 80, 0, 0.7)) brightness(1.1); }
+  50% { filter: drop-shadow(0 0 8px rgba(255, 120, 0, 0.4)) brightness(0.95); }
+  75% { filter: drop-shadow(0 0 18px rgba(255, 60, 0, 0.6)) brightness(1.05); }
+  100% { filter: drop-shadow(0 0 12px rgba(255, 100, 0, 0.5)) brightness(1); }
 }
 
-/* Live dot indicator (fire orange glow) */
+/* Live dot indicator (refined blue glow) */
 .hotsale-live-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #ff5500;
-  animation: live-pulse 1.5s ease-in-out infinite;
-  box-shadow: 0 0 6px rgba(255, 85, 0, 0.8);
+  background: #3b82f6;
+  animation: live-pulse-blue 1.5s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.8);
 }
 
-@keyframes live-pulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(255, 85, 0, 0.8); }
-  50% { opacity: 0.4; box-shadow: 0 0 2px rgba(255, 85, 0, 0.3); }
+@keyframes live-pulse-blue {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(37, 99, 235, 0.8); }
+  50% { opacity: 0.4; box-shadow: 0 0 2px rgba(37, 99, 235, 0.3); }
 }
 
 /* Info pills */
@@ -1047,8 +1050,8 @@ body {
 
 /* Hot Sale Vehicle Cards */
 .hotsale-card {
-  background: linear-gradient(180deg, rgba(10, 15, 30, 0.9) 0%, rgba(5, 10, 20, 0.95) 100%);
-  border: 1px solid rgba(59, 130, 246, 0.15);
+  background: linear-gradient(180deg, rgba(20, 5, 5, 0.95) 0%, rgba(10, 0, 0, 0.98) 100%);
+  border: 1px solid rgba(255, 100, 0, 0.15);
   border-radius: 1rem;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1062,7 +1065,7 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #1d4ed8, #3b82f6, #60a5fa, #3b82f6, #1d4ed8);
+  background: linear-gradient(90deg, #ff4500, #ff8c00, #ffaa00, #ff8c00, #ff4500);
   background-size: 200% 100%;
   animation: flame-border-flow 2s linear infinite;
 }
@@ -1072,8 +1075,8 @@ body {
   border-color: rgba(59, 130, 246, 0.4);
   box-shadow: 
     0 20px 40px rgba(37, 99, 235, 0.15),
-    0 0 30px rgba(59, 130, 246, 0.1),
-    inset 0 0 30px rgba(59, 130, 246, 0.03);
+    0 0 30px rgba(255, 100, 0, 0.1),
+    inset 0 0 30px rgba(255, 100, 0, 0.03);
 }
 
 .hotsale-card:hover .hotsale-card-img {
@@ -1086,7 +1089,7 @@ body {
 
 /* Hot Sale Badge on cards */
 .hotsale-badge {
-  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+  background: linear-gradient(135deg, #ff4500, #ff6b00);
   color: white;
   font-size: 10px;
   font-weight: 900;
@@ -1097,25 +1100,25 @@ body {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 4px 15px rgba(255, 69, 0, 0.5);
   animation: badge-glow 2s ease-in-out infinite alternate;
 }
 
 @keyframes badge-glow {
-  0% { box-shadow: 0 4px 15px rgba(37, 99, 235, 0.5); }
-  100% { box-shadow: 0 4px 25px rgba(37, 99, 235, 0.8), 0 0 10px rgba(59, 130, 246, 0.3); }
+  0% { box-shadow: 0 4px 15px rgba(255, 69, 0, 0.5); }
+  100% { box-shadow: 0 4px 25px rgba(255, 69, 0, 0.8), 0 0 10px rgba(255, 100, 0, 0.3); }
 }
 
 /* Discount percentage badge */
 .hotsale-discount {
-  background: linear-gradient(135deg, #1e40af, #2563eb);
+  background: linear-gradient(135deg, #dc2626, #ef4444);
   color: white;
   font-size: 13px;
   font-weight: 900;
   padding: 0.25rem 0.75rem;
   border-radius: 0.5rem;
   letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.4);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
   animation: discount-pulse 1.5s ease-in-out infinite;
 }
 
@@ -1126,14 +1129,14 @@ body {
 
 /* Hot Sale price styling */
 .hotsale-price {
-  color: #60a5fa;
-  text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+  color: #ff6b35;
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
 }
 
 .hotsale-old-price {
   color: rgba(255, 255, 255, 0.35);
   text-decoration: line-through;
-  text-decoration-color: rgba(96, 165, 250, 0.6);
+  text-decoration-color: rgba(239, 68, 68, 0.6);
   text-decoration-thickness: 2px;
 }
 
