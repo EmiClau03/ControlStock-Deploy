@@ -6,10 +6,22 @@ import {
 import { 
   TrendingUp, Activity, Package, DollarSign, 
   PieChart as PieIcon, BarChart3, Clock, ShoppingCart, LayoutDashboard,
-  MapPin, ChevronLeft, Map as MapIcon, BarChart2
+  MapPin, ChevronLeft, Map as MapIcon, BarChart2, CalendarDays, UserRound
 } from 'lucide-react';
 import { getSalesStats } from '../api';
 import ArgentinaMap from './ArgentinaMap';
+
+const parseSaleDate = (value) => {
+  if (!value) return null;
+
+  const dateParts = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (dateParts) {
+    return new Date(Number(dateParts[1]), Number(dateParts[2]) - 1, Number(dateParts[3]));
+  }
+
+  const parsedDate = new Date(value);
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+};
 
 const StatisticsView = ({ vehicles }) => {
   const [activeTab, setActiveTab] = useState('inventory'); // 'inventory' or 'sales'
@@ -32,8 +44,8 @@ const StatisticsView = ({ vehicles }) => {
       const currentKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
       const monthsWithSales = new Set();
       data.forEach(s => {
-        if (s.sale_date) {
-          const d = new Date(s.sale_date);
+        const d = parseSaleDate(s.sale_date);
+        if (d) {
           monthsWithSales.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
         }
       });
@@ -57,8 +69,8 @@ const StatisticsView = ({ vehicles }) => {
   const availableMonths = useMemo(() => {
     const map = {};
     salesData.forEach(s => {
-      if (s.sale_date) {
-        const date = new Date(s.sale_date);
+      const date = parseSaleDate(s.sale_date);
+      if (date) {
         const yyyy = date.getFullYear();
         const mm = String(date.getMonth() + 1).padStart(2, '0');
         const key = `${yyyy}-${mm}`;
@@ -116,8 +128,8 @@ const StatisticsView = ({ vehicles }) => {
     let filteredSalesData = salesData;
     if (selectedMonth && selectedMonth !== 'All') {
       filteredSalesData = salesData.filter(s => {
-        if (!s.sale_date) return false;
-        const date = new Date(s.sale_date);
+        const date = parseSaleDate(s.sale_date);
+        if (!date) return false;
         const yyyy = date.getFullYear();
         const mm = String(date.getMonth() + 1).padStart(2, '0');
         return `${yyyy}-${mm}` === selectedMonth;
@@ -125,18 +137,24 @@ const StatisticsView = ({ vehicles }) => {
     }
 
     const totalSalesUnits = filteredSalesData.length;
-    const totalRevenue = filteredSalesData.reduce((acc, s) => acc + s.final_price, 0);
+    const totalRevenue = filteredSalesData.reduce((acc, s) => acc + Number(s.final_price || 0), 0);
+
+    const salesHistory = [...filteredSalesData].sort((a, b) => {
+      const dateA = parseSaleDate(a.sale_date)?.getTime() || 0;
+      const dateB = parseSaleDate(b.sale_date)?.getTime() || 0;
+      return dateB - dateA || Number(b.id || 0) - Number(a.id || 0);
+    });
 
     const monthlyMap = {};
     filteredSalesData.forEach(s => {
-      if (!s.sale_date) return;
-      const date = new Date(s.sale_date);
+      const date = parseSaleDate(s.sale_date);
+      if (!date) return;
       if (!selectedMonth || selectedMonth === 'All') {
         const monthLabel = date.toLocaleString('es-ES', { month: 'short' });
-        monthlyMap[monthLabel] = (monthlyMap[monthLabel] || 0) + s.final_price;
+        monthlyMap[monthLabel] = (monthlyMap[monthLabel] || 0) + Number(s.final_price || 0);
       } else {
         const dayLabel = date.getDate().toString();
-        monthlyMap[dayLabel] = (monthlyMap[dayLabel] || 0) + s.final_price;
+        monthlyMap[dayLabel] = (monthlyMap[dayLabel] || 0) + Number(s.final_price || 0);
       }
     });
 
@@ -178,7 +196,7 @@ const StatisticsView = ({ vehicles }) => {
 
     return { 
       totalUnits, inventoryValue, available, brandData, yearData, statusData, priceRanges,
-      totalSalesUnits, totalRevenue, revenueTrend, paymentData,
+      totalSalesUnits, totalRevenue, revenueTrend, paymentData, salesHistory,
       provinceData, localityData
     };
   }, [vehicles, salesData, selectedProvince, selectedMonth]);
@@ -302,6 +320,7 @@ const StatisticsView = ({ vehicles }) => {
               </ResponsiveContainer>
             </ChartCard>
           </div>
+
         </div>
       ) : (
         <div className="space-y-10 animate-fade-in">
@@ -457,11 +476,88 @@ const StatisticsView = ({ vehicles }) => {
               </ResponsiveContainer>
             </ChartCard>
           </div>
+
+          <SalesHistory sales={stats.salesHistory} loading={loadingSales} />
         </div>
       )}
     </div>
   );
 };
+
+const SalesHistory = ({ sales, loading }) => (
+  <div className="table-container bg-white shadow-xl overflow-hidden">
+    <div className="p-6 md:p-8 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+          <CalendarDays size={20} />
+        </div>
+        <div>
+          <h3 className="font-black text-slate-900 uppercase tracking-tight">Historial de ventas</h3>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+            Operaciones ordenadas de la más reciente a la más antigua
+          </p>
+        </div>
+      </div>
+      <span className="self-start sm:self-auto text-[10px] font-black bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full uppercase tracking-widest">
+        {sales.length} {sales.length === 1 ? 'venta' : 'ventas'}
+      </span>
+    </div>
+
+    {loading ? (
+      <div className="p-10 text-center text-sm font-bold text-slate-400">Cargando ventas...</div>
+    ) : sales.length === 0 ? (
+      <div className="p-10 text-center">
+        <ShoppingCart size={32} className="mx-auto mb-3 text-slate-300" />
+        <p className="text-sm font-bold text-slate-500">No hay ventas registradas en este período.</p>
+      </div>
+    ) : (
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[900px] text-left">
+          <thead className="bg-slate-50 border-b border-slate-100">
+            <tr className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <th className="px-6 py-4">Fecha</th>
+              <th className="px-6 py-4">Vehículo</th>
+              <th className="px-6 py-4">Vendedor</th>
+              <th className="px-6 py-4">Comprador</th>
+              <th className="px-6 py-4">Ubicación</th>
+              <th className="px-6 py-4">Pago</th>
+              <th className="px-6 py-4 text-right">Precio final</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {sales.map((sale) => {
+              const saleDate = parseSaleDate(sale.sale_date);
+              const location = [sale.buyer_locality, sale.buyer_province].filter(Boolean).join(', ');
+
+              return (
+                <tr key={sale.id} className="hover:bg-slate-50/80 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-black text-slate-700">
+                    {saleDate ? saleDate.toLocaleDateString('es-AR') : 'Sin fecha'}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="font-black text-slate-900">{sale.brand} {sale.model}</div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{sale.year || 'Año no informado'}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black ${sale.seller_name ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-400'}`}>
+                      <UserRound size={12} /> {sale.seller_name || 'Sin asignar'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm font-bold text-slate-600">{sale.buyer_name || 'Sin informar'}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-slate-500">{location || 'Sin informar'}</td>
+                  <td className="px-6 py-4 text-sm font-bold text-slate-600">{sale.payment_method || 'Sin informar'}</td>
+                  <td className="px-6 py-4 text-right whitespace-nowrap text-sm font-black text-emerald-600">
+                    ${Number(sale.final_price || 0).toLocaleString('es-AR')}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+);
 
 const StatCard = ({ icon, title, value, subtitle }) => (
   <div className="table-container p-6 bg-white shadow-xl hover:scale-[1.02] transition-all duration-300">
