@@ -339,6 +339,183 @@ app.get('/api/sales/stats', async (req, res) => {
     }
 });
 
+// Financing Endpoints
+app.get('/api/financing/vehicles', async (req, res) => {
+    try {
+        const vehicles = await db.all(`
+            SELECT id, brand, model, year, license_plate, status, price
+            FROM vehicles
+            ORDER BY brand, model, year DESC
+        `);
+        res.json(vehicles);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/financing', async (req, res) => {
+    try {
+        const plans = await db.all(`
+            SELECT fp.*, v.brand, v.model, v.year, v.license_plate
+            FROM financing_plans fp
+            LEFT JOIN vehicles v ON fp.vehicle_id = v.id
+            ORDER BY CASE WHEN fp.status = 'Activo' THEN 0 ELSE 1 END, fp.created_at DESC
+        `);
+        const installments = await db.all(`
+            SELECT * FROM financing_installments
+            ORDER BY financing_id, installment_number
+        `);
+        const installmentsByPlan = installments.reduce((acc, installment) => {
+            if (!acc[installment.financing_id]) acc[installment.financing_id] = [];
+            acc[installment.financing_id].push(installment);
+            return acc;
+        }, {});
+
+        res.json(plans.map(plan => ({
+            ...plan,
+            installments: installmentsByPlan[plan.id] || []
+        })));
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/api/financing', async (req, res) => {
+    const {
+        vehicle_id, customer_name, customer_dni, customer_phone, customer_address,
+        financed_amount, installment_count, installment_amount, first_due_month, notes
+    } = req.body;
+    const amount = Number(financed_amount);
+    const count = Number(installment_count);
+    const quotaAmount = Number(installment_amount);
+
+    if (!vehicle_id || !customer_name?.trim() || !customer_dni?.trim() || !customer_phone?.trim()) {
+        return res.status(400).json({ error: 'Completá vehículo, nombre, DNI y teléfono del cliente' });
+    }
+    if (!Number.isFinite(amount) || amount <= 0 || !Number.isInteger(count) || count < 1 || count > 120 || !Number.isFinite(quotaAmount) || quotaAmount <= 0) {
+        return res.status(400).json({ error: 'Revisá el monto financiado, la cantidad y el importe de las cuotas' });
+    }
+    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(first_due_month || '')) {
+        return res.status(400).json({ error: 'Seleccioná un mes válido para la primera cuota' });
+    }
+
+    let transactionStarted = false;
+    try {
+        const vehicle = await db.get('SELECT id FROM vehicles WHERE id = ?', vehicle_id);
+        if (!vehicle) return res.status(404).json({ error: 'El vehículo seleccionado no existe' });
+
+        const existingPlan = await db.get(
+            "SELECT id FROM financing_plans WHERE vehicle_id = ? AND status = 'Activo'",
+            vehicle_id
+        );
+        if (existingPlan) return res.status(409).json({ error: 'Este vehículo ya tiene una financiación activa' });
+
+        await db.run('BEGIN TRANSACTION');
+        transactionStarted = true;
+        const result = await db.run(`
+            INSERT INTO financing_plans (
+                vehicle_id, customer_name, customer_dni, customer_phone, customer_address,
+                financed_amount, installment_count, installment_amount, first_due_month, notes
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+            vehicle_id, customer_name.trim(), customer_dni.trim(), customer_phone.trim(), customer_address?.trim() || null,
+            amount, count, quotaAmount, first_due_month, notes?.trim() || null
+        ]);
+
+        const [firstYear, firstMonth] = first_due_month.split('-').map(Number);
+        for (let index = 0; index < count; index++) {
+            const dueDate = new Date(Date.UTC(firstYear, firstMonth - 1 + index, 10));
+            const dueDateString = dueDate.toISOString().slice(0, 10);
+            await db.run(`
+                INSERT INTO financing_installments (financing_id, installment_number, due_date, amount)
+                VALUES (?, ?, ?, ?)
+            `, [result.lastID, index + 1, dueDateString, quotaAmount]);
+        }
+
+        await db.run('COMMIT');
+        transactionStarted = false;
+        res.status(201).json({ id: result.lastID, message: 'Financiación creada con éxito' });
+    } catch (error) {
+        if (transactionStarted) await db.run('ROLLBACK');
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/api/financing/:planId/installments/:installmentId/payment', async (req, res) => {
+    const paidAt = req.body.paid_at || new Date().toISOString().slice(0, 10);
+    const paymentNotes = req.body.payment_notes?.trim() || null;
+
+    try {
+        const installment = await db.get(`
+            SELECT * FROM financing_installments
+            WHERE id = ? AND financing_id = ?
+        `, [req.params.installmentId, req.params.planId]);
+        if (!installment) return res.status(404).json({ error: 'La cuota no existe' });
+        if (installment.status === 'Pagada') return res.status(409).json({ error: 'La cuota ya está registrada como pagada' });
+
+        const paidAmount = Number(req.body.paid_amount || installment.amount);
+        if (!Number.isFinite(paidAmount) || paidAmount <= 0) {
+            return res.status(400).json({ error: 'Ingresá un importe pagado válido' });
+        }
+
+        await db.run('BEGIN TRANSACTION');
+        await db.run(`
+            UPDATE financing_installments
+            SET status = 'Pagada', paid_at = ?, paid_amount = ?, payment_notes = ?
+            WHERE id = ?
+        `, [paidAt, paidAmount, paymentNotes, installment.id]);
+
+        const pending = await db.get(`
+            SELECT COUNT(*) AS count FROM financing_installments
+            WHERE financing_id = ? AND status != 'Pagada'
+        `, req.params.planId);
+        if (pending.count === 0) {
+            await db.run("UPDATE financing_plans SET status = 'Completado' WHERE id = ?", req.params.planId);
+        }
+        await db.run('COMMIT');
+        res.json({ message: 'Pago registrado con éxito' });
+    } catch (error) {
+        try { await db.run('ROLLBACK'); } catch (_) {}
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/financing/:planId/installments/:installmentId/payment', async (req, res) => {
+    try {
+        const result = await db.run(`
+            UPDATE financing_installments
+            SET status = 'Pendiente', paid_at = NULL, paid_amount = NULL, payment_notes = NULL
+            WHERE id = ? AND financing_id = ?
+        `, [req.params.installmentId, req.params.planId]);
+        if (!result.changes) return res.status(404).json({ error: 'La cuota no existe' });
+        await db.run("UPDATE financing_plans SET status = 'Activo' WHERE id = ?", req.params.planId);
+        res.json({ message: 'Pago anulado con éxito' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/financing/:id', async (req, res) => {
+    let transactionStarted = false;
+    try {
+        await db.run('BEGIN TRANSACTION');
+        transactionStarted = true;
+        await db.run('DELETE FROM financing_installments WHERE financing_id = ?', req.params.id);
+        const result = await db.run('DELETE FROM financing_plans WHERE id = ?', req.params.id);
+        if (!result.changes) {
+            await db.run('ROLLBACK');
+            transactionStarted = false;
+            return res.status(404).json({ error: 'La financiación no existe' });
+        }
+        await db.run('COMMIT');
+        transactionStarted = false;
+        res.json({ message: 'Financiación eliminada con éxito' });
+    } catch (error) {
+        if (transactionStarted) await db.run('ROLLBACK');
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // ═══════════════════════════════════════════
 //  PUBLIC CATALOG API (para la Landing Page)
 // ═══════════════════════════════════════════

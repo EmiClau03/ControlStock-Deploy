@@ -12,15 +12,17 @@ import {
   Clock,
   Ban,
   AlertCircle,
-  LogOut
+  LogOut,
+  CreditCard
 } from 'lucide-react';
-import { getVehicles, deleteVehicle, API_BASE_URL } from './api';
+import { getVehicles, deleteVehicle, getFinancingPlans, API_BASE_URL } from './api';
 import VehicleForm from './components/VehicleForm';
 import PhotoManager from './components/PhotoManager';
 import ExcelImport from './components/ExcelImport';
 import StatisticsView from './components/StatisticsView';
 import SaleForm from './components/SaleForm';
 import LeadsView from './components/LeadsView';
+import FinancingView from './components/FinancingView';
 import api from './api';
 
 function App() {
@@ -38,16 +40,21 @@ function App() {
   
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isSaleFormOpen, setIsSaleFormOpen] = useState(false);
-  const [activeView, setActiveView] = useState('table'); // 'table', 'statistics', or 'leads'
+  const [activeView, setActiveView] = useState('table'); // 'table', 'statistics', 'leads', or 'financing'
   const [newLeadsCount, setNewLeadsCount] = useState(0);
+  const [financingAlertCount, setFinancingAlertCount] = useState(0);
 
   useEffect(() => {
     fetchVehicles();
     fetchLeadsCount();
+    fetchFinancingAlertCount();
     document.title = "Automotores Marcos | Stock";
 
     // Refresh leads count every minute
-    const interval = setInterval(fetchLeadsCount, 60000);
+    const interval = setInterval(() => {
+      fetchLeadsCount();
+      fetchFinancingAlertCount();
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -73,12 +80,26 @@ function App() {
     }
   };
 
+  const fetchFinancingAlertCount = async () => {
+    try {
+      const { data } = await getFinancingPlans();
+      const today = new Date();
+      const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      const count = data.reduce((total, plan) => total + plan.installments.filter((installment) => (
+        installment.status !== 'Pagada' && installment.due_date <= todayKey
+      )).length, 0);
+      setFinancingAlertCount(count);
+    } catch (error) {
+      console.error('Error fetching financing alerts:', error);
+    }
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm('¿Seguro que quieres eliminar este vehículo?')) {
       try {
         await deleteVehicle(id);
         fetchVehicles();
-      } catch (error) {
+      } catch {
         alert('Error al eliminar el vehículo');
       }
     }
@@ -188,6 +209,17 @@ function App() {
                 className={`px-4 py-2 rounded-xl text-xs font-black transition-all tracking-widest uppercase ${activeView === 'statistics' ? 'bg-blue-600 text-white shadow-xl shadow-blue-900/40' : 'text-slate-500 hover:text-slate-300'}`}
               >
                 Estadísticas
+              </button>
+              <button
+                onClick={() => setActiveView('financing')}
+                className={`px-4 py-2 rounded-xl text-xs font-black transition-all tracking-widest uppercase relative inline-flex items-center gap-1.5 ${activeView === 'financing' ? 'bg-blue-600 text-white shadow-xl shadow-blue-900/40' : 'text-slate-500 hover:text-slate-300'}`}
+              >
+                <CreditCard size={14} /> Cuotas
+                {financingAlertCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-red-500 text-[10px] text-white animate-pulse shadow-lg">
+                    {financingAlertCount}
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -345,6 +377,8 @@ function App() {
           </>
         ) : activeView === 'leads' ? (
           <LeadsView />
+        ) : activeView === 'financing' ? (
+          <FinancingView onAlertCountChange={setFinancingAlertCount} />
         ) : (
           <StatisticsView vehicles={vehicles} />
         )}
