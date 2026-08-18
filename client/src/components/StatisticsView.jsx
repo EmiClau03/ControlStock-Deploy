@@ -6,7 +6,8 @@ import {
 import { 
   TrendingUp, Activity, Package, DollarSign, 
   PieChart as PieIcon, BarChart3, Clock, ShoppingCart, LayoutDashboard,
-  MapPin, ChevronLeft, Map as MapIcon, BarChart2, CalendarDays, UserRound
+  MapPin, ChevronLeft, Map as MapIcon, BarChart2, CalendarDays, UserRound,
+  FileDown, BriefcaseBusiness, Trophy
 } from 'lucide-react';
 import { getSalesStats } from '../api';
 import ArgentinaMap from './ArgentinaMap';
@@ -23,6 +24,13 @@ const parseSaleDate = (value) => {
   return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
 };
 
+const getMonthKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+const getPreviousMonthKey = (monthKey) => {
+  const [year, month] = monthKey.split('-').map(Number);
+  return getMonthKey(new Date(year, month - 2, 1));
+};
+
 const StatisticsView = ({ vehicles }) => {
   const [activeTab, setActiveTab] = useState('inventory'); // 'inventory' or 'sales'
   const [salesData, setSalesData] = useState([]);
@@ -30,9 +38,27 @@ const StatisticsView = ({ vehicles }) => {
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [salesViewType, setSalesViewType] = useState('chart'); // 'chart' or 'map'
   const [selectedMonth, setSelectedMonth] = useState(null); // null = loading, will be set after fetch
+  const [currentMonthKey, setCurrentMonthKey] = useState(() => getMonthKey(new Date()));
+  const [generatingReport, setGeneratingReport] = useState(false);
 
   useEffect(() => {
     fetchSales();
+  }, []);
+
+  useEffect(() => {
+    const checkMonthChange = () => {
+      const detectedMonth = getMonthKey(new Date());
+      setCurrentMonthKey((previousMonth) => {
+        if (previousMonth !== detectedMonth) {
+          setSelectedMonth(previousMonth);
+          return detectedMonth;
+        }
+        return previousMonth;
+      });
+    };
+
+    const interval = setInterval(checkMonthChange, 60 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchSales = async () => {
@@ -41,7 +67,7 @@ const StatisticsView = ({ vehicles }) => {
       setSalesData(data);
       // Auto-select current month or fallback to most recent month with sales
       const now = new Date();
-      const currentKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const currentKey = getMonthKey(now);
       const monthsWithSales = new Set();
       data.forEach(s => {
         const d = parseSaleDate(s.sale_date);
@@ -138,6 +164,18 @@ const StatisticsView = ({ vehicles }) => {
 
     const totalSalesUnits = filteredSalesData.length;
     const totalRevenue = filteredSalesData.reduce((acc, s) => acc + Number(s.final_price || 0), 0);
+    const averageTicket = totalSalesUnits ? totalRevenue / totalSalesUnits : 0;
+
+    const sellerMap = {};
+    filteredSalesData.forEach((sale) => {
+      const seller = sale.seller_name || 'Sin asignar';
+      if (!sellerMap[seller]) sellerMap[seller] = { name: seller, sales: 0, revenue: 0 };
+      sellerMap[seller].sales += 1;
+      sellerMap[seller].revenue += Number(sale.final_price || 0);
+    });
+    const sellerPerformance = Object.values(sellerMap)
+      .sort((a, b) => b.sales - a.sales || b.revenue - a.revenue);
+    const topSeller = sellerPerformance.find((seller) => seller.name !== 'Sin asignar') || sellerPerformance[0] || null;
 
     const salesHistory = [...filteredSalesData].sort((a, b) => {
       const dateA = parseSaleDate(a.sale_date)?.getTime() || 0;
@@ -196,7 +234,8 @@ const StatisticsView = ({ vehicles }) => {
 
     return { 
       totalUnits, inventoryValue, available, brandData, yearData, statusData, priceRanges,
-      totalSalesUnits, totalRevenue, revenueTrend, paymentData, salesHistory,
+      totalSalesUnits, totalRevenue, averageTicket, sellerPerformance, topSeller,
+      revenueTrend, paymentData, salesHistory,
       provinceData, localityData
     };
   }, [vehicles, salesData, selectedProvince, selectedMonth]);
@@ -227,6 +266,35 @@ const StatisticsView = ({ vehicles }) => {
   const handleBarClick = (data) => {
     if (!selectedProvince && data && data.activePayload) {
       setSelectedProvince(data.activePayload[0].payload.name);
+    }
+  };
+
+  const selectedMonthLabel = availableMonths.find(([key]) => key === selectedMonth)?.[1] || selectedMonth;
+  const isClosedMonth = Boolean(selectedMonth && selectedMonth !== 'All' && selectedMonth < currentMonthKey);
+
+  const handleDownloadMonthlyReport = async () => {
+    if (!selectedMonth || selectedMonth === 'All' || !stats.salesHistory.length) return;
+
+    try {
+      setGeneratingReport(true);
+      const previousMonthKey = getPreviousMonthKey(selectedMonth);
+      const previousSales = salesData.filter((sale) => {
+        const date = parseSaleDate(sale.sale_date);
+        return date && getMonthKey(date) === previousMonthKey;
+      });
+      const { downloadMonthlySalesReport } = await import('../utils/monthlySalesReport');
+      downloadMonthlySalesReport({
+        monthKey: selectedMonth,
+        monthLabel: selectedMonthLabel,
+        sales: stats.salesHistory,
+        previousSales,
+        isClosedMonth,
+      });
+    } catch (error) {
+      console.error('Error generating monthly report:', error);
+      alert(error.message || 'No se pudo generar el informe mensual.');
+    } finally {
+      setGeneratingReport(false);
     }
   };
 
@@ -357,9 +425,54 @@ const StatisticsView = ({ vehicles }) => {
             </select>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="table-container bg-gradient-to-br from-slate-900 to-blue-950 p-6 md:p-8 shadow-2xl border border-blue-500/20">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-2xl bg-blue-500/20 text-blue-300 border border-blue-400/20">
+                  <BriefcaseBusiness size={26} />
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <h3 className="text-lg font-black text-white uppercase tracking-tight">Informe mensual ejecutivo</h3>
+                    {selectedMonth && selectedMonth !== 'All' && (
+                      <span className={`text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest ${isClosedMonth ? 'bg-emerald-400/15 text-emerald-300' : 'bg-amber-400/15 text-amber-300'}`}>
+                        {isClosedMonth ? 'Mes cerrado' : 'Mes en curso'}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-slate-300 max-w-2xl">
+                    Resumen empresarial simple con facturación, ticket promedio, comparación mensual, vendedores, medios de pago, regiones y detalle de cada operación.
+                  </p>
+                  <p className="text-[10px] text-blue-300/70 font-bold uppercase tracking-widest mt-3">
+                    Al cambiar de mes, el período anterior queda cerrado automáticamente y listo para descargar.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleDownloadMonthlyReport}
+                disabled={generatingReport || loadingSales || selectedMonth === 'All' || !stats.salesHistory.length}
+                className="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-white text-blue-950 font-black text-xs uppercase tracking-widest hover:bg-blue-50 shadow-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                <FileDown size={18} />
+                {generatingReport ? 'Generando PDF...' : 'Descargar informe PDF'}
+              </button>
+            </div>
+            {selectedMonth === 'All' && (
+              <p className="mt-4 text-xs font-bold text-amber-300">Elegí un mes específico para generar su informe.</p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
             <StatCard icon={<ShoppingCart className="text-emerald-400" />} title="Unidades Vendidas" value={stats.totalSalesUnits} subtitle="Operaciones cerradas" />
             <StatCard icon={<DollarSign className="text-blue-400" />} title="Facturación Total" value={`$${(stats.totalRevenue / 1000000).toFixed(1)}M`} subtitle="Ingresos brutos generados" />
+            <StatCard icon={<TrendingUp className="text-violet-400" />} title="Ticket Promedio" value={`$${(stats.averageTicket / 1000000).toFixed(1)}M`} subtitle="Valor promedio por venta" />
+            <StatCard
+              icon={<Trophy className="text-amber-400" />}
+              title="Vendedor Destacado"
+              value={stats.topSeller?.name || 'Sin datos'}
+              subtitle={stats.topSeller ? `${stats.topSeller.sales} ventas cerradas` : 'Sin ventas asignadas'}
+            />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
