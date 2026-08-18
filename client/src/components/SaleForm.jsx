@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { X, DollarSign, User, Calendar, CreditCard, FileText, CheckCircle2 } from 'lucide-react';
+import { X, DollarSign, User, UserCheck, Calendar, CreditCard, FileText, CheckCircle2 } from 'lucide-react';
 import { recordSale } from '../api';
 
 const SaleForm = ({ vehicle, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     vehicle_id: vehicle.id,
     final_price: vehicle.price || '',
+    seller_name: '',
     buyer_name: '',
     buyer_province: 'Córdoba',
     buyer_locality: '',
@@ -82,6 +83,24 @@ const SaleForm = ({ vehicle, onClose, onSave }) => {
                 value={formData.sale_date}
                 onChange={(e) => setFormData({ ...formData, sale_date: e.target.value })}
               />
+            </div>
+
+            {/* Responsible Seller */}
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                <UserCheck size={12} className="text-blue-400" /> Vendedor responsable
+              </label>
+              <select
+                required
+                className="input-field !bg-slate-950/50 !border-white/10 cursor-pointer"
+                value={formData.seller_name}
+                onChange={(e) => setFormData({ ...formData, seller_name: e.target.value })}
+              >
+                <option value="" disabled>Seleccionar vendedor</option>
+                <option value="Tomi">Tomi</option>
+                <option value="Ruben">Ruben</option>
+                <option value="Santi">Santi</option>
+              </select>
             </div>
 
             {/* Buyer Name */}

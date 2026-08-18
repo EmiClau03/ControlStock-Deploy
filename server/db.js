@@ -40,6 +40,7 @@ async function initDb() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             vehicle_id INTEGER UNIQUE,
             final_price REAL NOT NULL,
+            seller_name TEXT,
             buyer_name TEXT,
             buyer_province TEXT,
             buyer_locality TEXT,
@@ -64,6 +65,7 @@ async function initDb() {
     // Migraciones rápidas para nuevas columnas
     try { await db.exec("ALTER TABLE sales ADD COLUMN buyer_province TEXT;"); } catch(e) {}
     try { await db.exec("ALTER TABLE sales ADD COLUMN buyer_locality TEXT;"); } catch(e) {}
+    try { await db.exec("ALTER TABLE sales ADD COLUMN seller_name TEXT;"); } catch(e) {}
     try { await db.exec("ALTER TABLE vehicles ADD COLUMN is_offer INTEGER DEFAULT 0;"); } catch(e) {}
     try { await db.exec("ALTER TABLE vehicles ADD COLUMN offer_price REAL;"); } catch(e) {}
     try { await db.exec("ALTER TABLE vehicles ADD COLUMN is_hotsale INTEGER DEFAULT 0;"); } catch(e) {}

@@ -298,15 +298,21 @@ app.post('/api/import-excel', upload.single('file'), async (req, res) => {
 
 // Sales Endpoints
 app.post('/api/sales', async (req, res) => {
-    const { vehicle_id, final_price, buyer_name, buyer_province, buyer_locality, sale_date, payment_method, notes } = req.body;
+    const { vehicle_id, final_price, seller_name, buyer_name, buyer_province, buyer_locality, sale_date, payment_method, notes } = req.body;
+    const validSellers = ['Tomi', 'Ruben', 'Santi'];
+
+    if (!validSellers.includes(seller_name)) {
+        return res.status(400).json({ error: 'Seleccioná un vendedor válido: Tomi, Ruben o Santi' });
+    }
+
     try {
         await db.run('BEGIN TRANSACTION');
         
         // Record the sale
         await db.run(`
-            INSERT INTO sales (vehicle_id, final_price, buyer_name, buyer_province, buyer_locality, sale_date, payment_method, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        `, [vehicle_id, final_price, buyer_name, buyer_province, buyer_locality, sale_date, payment_method, notes]);
+            INSERT INTO sales (vehicle_id, final_price, seller_name, buyer_name, buyer_province, buyer_locality, sale_date, payment_method, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [vehicle_id, final_price, seller_name, buyer_name, buyer_province, buyer_locality, sale_date, payment_method, notes]);
 
         // Update vehicle status
         await db.run('UPDATE vehicles SET status = ? WHERE id = ?', ['Vendido', vehicle_id]);
