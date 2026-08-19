@@ -29,7 +29,9 @@ const getInstallmentState = (installment, paymentDayFrom = 1, today = localDateK
   if (installment.status === 'Pagada') return 'paid';
   if (today > installment.due_date) return 'overdue';
   if (today === installment.due_date) return 'due';
-  const paymentWindowStart = `${installment.due_date.slice(0, 8)}${String(paymentDayFrom).padStart(2, '0')}`;
+  const actualDueDay = Number(installment.due_date.slice(8, 10));
+  const actualStartDay = Math.min(Number(paymentDayFrom) || 1, actualDueDay);
+  const paymentWindowStart = `${installment.due_date.slice(0, 8)}${String(actualStartDay).padStart(2, '0')}`;
   if (today >= paymentWindowStart && today < installment.due_date) return 'payment-window';
   return 'upcoming';
 };
@@ -129,8 +131,8 @@ const FinancingView = ({ onAlertCountChange }) => {
       alert('Seleccioná un vehículo de la lista de resultados.');
       return;
     }
-    if (dayFrom < 1 || dayTo > 28 || dayFrom > dayTo) {
-      alert('El período de pago debe estar entre los días 1 y 28, y el día inicial no puede superar al final.');
+    if (dayFrom < 1 || dayTo > 31 || dayFrom > dayTo) {
+      alert('El período de pago debe estar entre los días 1 y 31, y el día inicial no puede superar al final.');
       return;
     }
     try {
@@ -325,8 +327,8 @@ const FinancingView = ({ onAlertCountChange }) => {
                   </div>
                 </Field>
                 <Field label="Cuándo empieza a pagar"><input required type="month" className="input-field" value={formData.first_due_month} onChange={(event) => setFormData({ ...formData, first_due_month: event.target.value })} /></Field>
-                <Field label="Paga desde el día"><input required type="number" min="1" max="28" className="input-field" value={formData.payment_day_from} onChange={(event) => setFormData({ ...formData, payment_day_from: event.target.value })} /></Field>
-                <Field label="Paga hasta el día"><input required type="number" min="1" max="28" className="input-field" value={formData.payment_day_to} onChange={(event) => setFormData({ ...formData, payment_day_to: event.target.value })} /></Field>
+                <Field label="Paga desde el día"><input required type="number" min="1" max="31" className="input-field" value={formData.payment_day_from} onChange={(event) => setFormData({ ...formData, payment_day_from: event.target.value })} /></Field>
+                <Field label="Paga hasta el día"><input required type="number" min="1" max="31" className="input-field" value={formData.payment_day_to} onChange={(event) => setFormData({ ...formData, payment_day_to: event.target.value })} /></Field>
                 <Field label="Observaciones" className="md:col-span-2"><textarea rows="3" className="input-field resize-none" value={formData.notes} onChange={(event) => setFormData({ ...formData, notes: event.target.value })} /></Field>
               </div>
               <div className="rounded-xl bg-blue-50 border border-blue-100 p-4 flex flex-wrap justify-between gap-3 text-sm">

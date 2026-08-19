@@ -402,8 +402,8 @@ app.post('/api/financing', async (req, res) => {
         return res.status(400).json({ error: 'Seleccioná un mes válido para la primera cuota' });
     }
 
-    if (!Number.isInteger(dayFrom) || !Number.isInteger(dayTo) || dayFrom < 1 || dayTo > 28 || dayFrom > dayTo) {
-        return res.status(400).json({ error: 'Elegí un período de pago válido entre los días 1 y 28' });
+    if (!Number.isInteger(dayFrom) || !Number.isInteger(dayTo) || dayFrom < 1 || dayTo > 31 || dayFrom > dayTo) {
+        return res.status(400).json({ error: 'Elegí un período de pago válido entre los días 1 y 31' });
     }
 
     let transactionStarted = false;
@@ -432,7 +432,9 @@ app.post('/api/financing', async (req, res) => {
 
         const [firstYear, firstMonth] = first_due_month.split('-').map(Number);
         for (let index = 0; index < count; index++) {
-            const dueDate = new Date(Date.UTC(firstYear, firstMonth - 1 + index, dayTo));
+            const monthStart = new Date(Date.UTC(firstYear, firstMonth - 1 + index, 1));
+            const lastDayOfMonth = new Date(Date.UTC(monthStart.getUTCFullYear(), monthStart.getUTCMonth() + 1, 0)).getUTCDate();
+            const dueDate = new Date(Date.UTC(monthStart.getUTCFullYear(), monthStart.getUTCMonth(), Math.min(dayTo, lastDayOfMonth)));
             const dueDateString = dueDate.toISOString().slice(0, 10);
             await db.run(`
                 INSERT INTO financing_installments (financing_id, installment_number, due_date, amount)
