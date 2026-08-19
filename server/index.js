@@ -392,8 +392,8 @@ app.post('/api/financing', async (req, res) => {
     const dayFrom = Number(payment_day_from);
     const dayTo = Number(payment_day_to);
 
-    if (!vehicle_id || !customer_name?.trim() || !customer_dni?.trim() || !customer_phone?.trim()) {
-        return res.status(400).json({ error: 'Completá vehículo, nombre, DNI y teléfono del cliente' });
+    if (!vehicle_id || !customer_name?.trim() || !customer_phone?.trim()) {
+        return res.status(400).json({ error: 'Completá vehículo, nombre y teléfono del cliente' });
     }
     if (!Number.isFinite(amount) || amount <= 0 || !Number.isInteger(count) || count < 1 || count > 120 || !Number.isFinite(quotaAmount) || quotaAmount <= 0) {
         return res.status(400).json({ error: 'Revisá el monto financiado, la cantidad y el importe de las cuotas' });
@@ -426,7 +426,7 @@ app.post('/api/financing', async (req, res) => {
                 payment_day_from, payment_day_to, notes
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
-            vehicle_id, customer_name.trim(), customer_dni.trim(), customer_phone.trim(), customer_address?.trim() || null,
+            vehicle_id, customer_name.trim(), customer_dni?.trim() || '', customer_phone.trim(), customer_address?.trim() || null,
             amount, count, quotaAmount, first_due_month, dayFrom, dayTo, notes?.trim() || null
         ]);
 

@@ -67,7 +67,7 @@ async function initDb() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             vehicle_id INTEGER,
             customer_name TEXT NOT NULL,
-            customer_dni TEXT NOT NULL,
+            customer_dni TEXT,
             customer_phone TEXT NOT NULL,
             customer_address TEXT,
             financed_amount REAL NOT NULL,

@@ -315,7 +315,6 @@ const FinancingView = ({ onAlertCountChange }) => {
                   </div>
                 </Field>
                 <Field label="Nombre y apellido"><input required className="input-field" value={formData.customer_name} onChange={(event) => setFormData({ ...formData, customer_name: event.target.value })} /></Field>
-                <Field label="DNI"><input required className="input-field" value={formData.customer_dni} onChange={(event) => setFormData({ ...formData, customer_dni: event.target.value })} /></Field>
                 <Field label="Teléfono"><input required className="input-field" value={formData.customer_phone} onChange={(event) => setFormData({ ...formData, customer_phone: event.target.value })} /></Field>
                 <Field label="Domicilio"><input className="input-field" value={formData.customer_address} onChange={(event) => setFormData({ ...formData, customer_address: event.target.value })} /></Field>
                 <Field label="Monto financiado"><input required type="number" min="1" className="input-field" value={formData.financed_amount} onChange={(event) => setFormData({ ...formData, financed_amount: event.target.value })} /></Field>
@@ -392,7 +391,7 @@ const PlanCard = ({ plan, expanded, onToggle, onPayment, onUndoPayment, onDelete
               </div>
               <p className="text-sm font-bold text-slate-600 mt-1">{plan.brand || 'Vehículo eliminado'} {plan.model} {plan.year || ''} · {plan.license_plate || 'Sin patente'}</p>
               <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-slate-400 font-medium">
-                <span>DNI {plan.customer_dni}</span><span className="inline-flex items-center gap-1"><Phone size={12} /> {plan.customer_phone}</span>
+                {plan.customer_dni && <span>DNI {plan.customer_dni}</span>}<span className="inline-flex items-center gap-1"><Phone size={12} /> {plan.customer_phone}</span>
               </div>
             </div>
           </div>
