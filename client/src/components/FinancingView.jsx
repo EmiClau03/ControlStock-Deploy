@@ -35,7 +35,7 @@ const getInstallmentState = (installment, paymentDayFrom = 1, today = localDateK
 };
 
 const emptyForm = () => ({
-  vehicle_id: '', customer_name: '', customer_dni: '', customer_phone: '', customer_address: '',
+  vehicle_id: '', customer_name: '', customer_dni: '', customer_phone: '',
   financed_amount: '', installment_count: '', installment_amount: '', first_due_month: nextMonthKey(),
   payment_day_from: 1, payment_day_to: 10, notes: ''
 });
@@ -316,7 +316,6 @@ const FinancingView = ({ onAlertCountChange }) => {
                 </Field>
                 <Field label="Nombre y apellido"><input required className="input-field" value={formData.customer_name} onChange={(event) => setFormData({ ...formData, customer_name: event.target.value })} /></Field>
                 <Field label="Teléfono"><input required className="input-field" value={formData.customer_phone} onChange={(event) => setFormData({ ...formData, customer_phone: event.target.value })} /></Field>
-                <Field label="Domicilio"><input className="input-field" value={formData.customer_address} onChange={(event) => setFormData({ ...formData, customer_address: event.target.value })} /></Field>
                 <Field label="Monto financiado"><input required type="number" min="1" className="input-field" value={formData.financed_amount} onChange={(event) => setFormData({ ...formData, financed_amount: event.target.value })} /></Field>
                 <Field label="Cantidad de cuotas"><input required type="number" min="1" max="120" className="input-field" value={formData.installment_count} onChange={(event) => setFormData({ ...formData, installment_count: event.target.value })} /></Field>
                 <Field label="Importe de cada cuota">
