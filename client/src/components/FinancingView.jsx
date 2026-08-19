@@ -25,17 +25,19 @@ const formatDate = (value) => {
   return match ? `${match[3]}/${match[2]}/${match[1]}` : 'Sin fecha';
 };
 
-const getInstallmentState = (installment, today = localDateKey()) => {
+const getInstallmentState = (installment, paymentDayFrom = 1, today = localDateKey()) => {
   if (installment.status === 'Pagada') return 'paid';
   if (today > installment.due_date) return 'overdue';
   if (today === installment.due_date) return 'due';
-  if (today.slice(0, 7) === installment.due_date.slice(0, 7)) return 'payment-window';
+  const paymentWindowStart = `${installment.due_date.slice(0, 8)}${String(paymentDayFrom).padStart(2, '0')}`;
+  if (today >= paymentWindowStart && today < installment.due_date) return 'payment-window';
   return 'upcoming';
 };
 
 const emptyForm = () => ({
   vehicle_id: '', customer_name: '', customer_dni: '', customer_phone: '', customer_address: '',
-  financed_amount: '', installment_count: '', installment_amount: '', first_due_month: nextMonthKey(), notes: ''
+  financed_amount: '', installment_count: '', installment_amount: '', first_due_month: nextMonthKey(),
+  payment_day_from: 1, payment_day_to: 10, notes: ''
 });
 
 const FinancingView = ({ onAlertCountChange }) => {
@@ -47,6 +49,8 @@ const FinancingView = ({ onAlertCountChange }) => {
   const [expandedPlan, setExpandedPlan] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState(emptyForm());
+  const [vehicleSearch, setVehicleSearch] = useState('');
+  const [vehiclePickerOpen, setVehiclePickerOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [paymentTarget, setPaymentTarget] = useState(null);
   const [paymentData, setPaymentData] = useState({ paid_at: localDateKey(), paid_amount: '', payment_notes: '' });
@@ -75,7 +79,7 @@ const FinancingView = ({ onAlertCountChange }) => {
   const enrichedPlans = useMemo(() => plans.map((plan) => {
     const paid = plan.installments.filter((item) => item.status === 'Pagada');
     const pending = plan.installments.filter((item) => item.status !== 'Pagada');
-    const overdue = pending.filter((item) => ['overdue', 'due'].includes(getInstallmentState(item)));
+    const overdue = pending.filter((item) => ['overdue', 'due'].includes(getInstallmentState(item, plan.payment_day_from || 1)));
     const paidAmount = paid.reduce((sum, item) => sum + Number(item.paid_amount || item.amount || 0), 0);
     const nextPending = pending[0] || null;
     return { ...plan, paid, pending, overdue, paidAmount, nextPending };
@@ -119,11 +123,22 @@ const FinancingView = ({ onAlertCountChange }) => {
 
   const handleCreatePlan = async (event) => {
     event.preventDefault();
+    const dayFrom = Number(formData.payment_day_from);
+    const dayTo = Number(formData.payment_day_to);
+    if (!formData.vehicle_id) {
+      alert('Seleccioná un vehículo de la lista de resultados.');
+      return;
+    }
+    if (dayFrom < 1 || dayTo > 28 || dayFrom > dayTo) {
+      alert('El período de pago debe estar entre los días 1 y 28, y el día inicial no puede superar al final.');
+      return;
+    }
     try {
       setSaving(true);
       await createFinancingPlan(formData);
       setShowForm(false);
       setFormData(emptyForm());
+      setVehicleSearch('');
       await fetchData();
     } catch (error) {
       alert(error.response?.data?.error || 'No se pudo crear la financiación.');
@@ -172,6 +187,18 @@ const FinancingView = ({ onAlertCountChange }) => {
   };
 
   const planTotal = Number(formData.installment_count || 0) * Number(formData.installment_amount || 0);
+  const matchingVehicles = useMemo(() => {
+    const term = vehicleSearch.toLowerCase().trim();
+    return vehicles.filter((vehicle) => !term || [
+      vehicle.brand, vehicle.model, vehicle.year, vehicle.license_plate, vehicle.status
+    ].some((value) => String(value || '').toLowerCase().includes(term)));
+  }, [vehicles, vehicleSearch]);
+
+  const selectVehicle = (vehicle) => {
+    setFormData((current) => ({ ...current, vehicle_id: vehicle.id }));
+    setVehicleSearch(`${vehicle.brand} ${vehicle.model} ${vehicle.year || ''} - ${vehicle.license_plate || 'Sin patente'}`);
+    setVehiclePickerOpen(false);
+  };
 
   return (
     <div className="space-y-8 animate-fade-in pb-20">
@@ -183,7 +210,7 @@ const FinancingView = ({ onAlertCountChange }) => {
             </div>
             <div>
               <h2 className="text-2xl font-black text-white uppercase tracking-tight">Cuotas y financiaciones</h2>
-              <p className="text-sm text-slate-400">Seguimiento de planes propios y cobros mensuales del 1 al 10.</p>
+              <p className="text-sm text-slate-400">Seguimiento de planes propios y cobros mensuales.</p>
             </div>
           </div>
         </div>
@@ -197,7 +224,7 @@ const FinancingView = ({ onAlertCountChange }) => {
           <div className="flex items-start gap-3">
             <AlertTriangle className="text-red-400 shrink-0 mt-0.5" size={22} />
             <div>
-              <h3 className="font-black text-red-300 uppercase tracking-tight">Atención: pagos pendientes al día 10</h3>
+              <h3 className="font-black text-red-300 uppercase tracking-tight">Atención: cuotas pendientes o vencidas</h3>
               <p className="text-sm text-red-200/70">Hay {alertCount} {alertCount === 1 ? 'cuota pendiente o vencida' : 'cuotas pendientes o vencidas'} que requieren seguimiento.</p>
             </div>
           </div>
@@ -211,7 +238,7 @@ const FinancingView = ({ onAlertCountChange }) => {
         <SummaryCard icon={<Wallet className="text-blue-500" />} label="Planes activos" value={stats.active} detail={money(stats.totalFinanced) + ' financiados'} />
         <SummaryCard icon={<CheckCircle2 className="text-emerald-500" />} label="Total cobrado" value={money(stats.collected)} detail="Pagos registrados" />
         <SummaryCard icon={<CircleDollarSign className="text-amber-500" />} label="Saldo en cuotas" value={money(stats.pending)} detail="Capital pendiente de cobro" />
-        <SummaryCard icon={<AlertTriangle className="text-red-500" />} label="Cuotas reclamables" value={alertCount} detail="Pendientes desde el día 10" />
+        <SummaryCard icon={<AlertTriangle className="text-red-500" />} label="Cuotas reclamables" value={alertCount} detail="Cuotas vencidas o que vencen hoy" />
       </div>
 
       <div className="table-container bg-white p-4 shadow-lg flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
@@ -257,18 +284,35 @@ const FinancingView = ({ onAlertCountChange }) => {
       {showForm && (
         <div className="modal-overlay">
           <div className="modal-content !max-w-3xl">
-            <ModalHeader title="Nueva financiación propia" subtitle="Las cuotas vencerán automáticamente el día 10 de cada mes" onClose={() => setShowForm(false)} />
+            <ModalHeader title="Nueva financiación propia" subtitle="Completá los datos del cliente y las condiciones del plan" onClose={() => setShowForm(false)} />
             <form onSubmit={handleCreatePlan} className="p-7 space-y-6 max-h-[75vh] overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Field label="Vehículo financiado" className="md:col-span-2">
-                  <select required className="input-field" value={formData.vehicle_id} onChange={(event) => setFormData({ ...formData, vehicle_id: event.target.value })}>
-                    <option value="">Seleccionar vehículo</option>
-                    {vehicles.map((vehicle) => (
-                      <option key={vehicle.id} value={vehicle.id}>
-                        {vehicle.brand} {vehicle.model} {vehicle.year || ''} - {vehicle.license_plate || 'Sin patente'} ({vehicle.status})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
+                    <input
+                      required
+                      className="input-field pl-11 !bg-white !text-slate-900 placeholder:!text-slate-400"
+                      placeholder="Escribí marca, modelo, año o patente..."
+                      value={vehicleSearch}
+                      onFocus={() => setVehiclePickerOpen(true)}
+                      onChange={(event) => {
+                        setVehicleSearch(event.target.value);
+                        setFormData((current) => ({ ...current, vehicle_id: '' }));
+                        setVehiclePickerOpen(true);
+                      }}
+                    />
+                    {vehiclePickerOpen && (
+                      <div className="absolute z-30 mt-2 w-full max-h-60 overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl">
+                        {matchingVehicles.length ? matchingVehicles.map((vehicle) => (
+                          <button key={vehicle.id} type="button" onClick={() => selectVehicle(vehicle)} className="w-full px-5 py-3 text-left text-slate-900 hover:bg-blue-50 border-b border-slate-100 last:border-0">
+                            <span className="block font-black">{vehicle.brand} {vehicle.model} {vehicle.year || ''}</span>
+                            <span className="text-xs text-slate-500">{vehicle.license_plate || 'Sin patente'} · {vehicle.status}</span>
+                          </button>
+                        )) : <p className="px-5 py-4 text-sm text-slate-500">No se encontraron vehículos.</p>}
+                      </div>
+                    )}
+                  </div>
                 </Field>
                 <Field label="Nombre y apellido"><input required className="input-field" value={formData.customer_name} onChange={(event) => setFormData({ ...formData, customer_name: event.target.value })} /></Field>
                 <Field label="DNI"><input required className="input-field" value={formData.customer_dni} onChange={(event) => setFormData({ ...formData, customer_dni: event.target.value })} /></Field>
@@ -282,12 +326,14 @@ const FinancingView = ({ onAlertCountChange }) => {
                     <button type="button" onClick={handleCalculateInstallment} className="px-3 rounded-xl bg-blue-50 text-blue-600 text-[10px] font-black uppercase">Calcular</button>
                   </div>
                 </Field>
-                <Field label="Primer mes de pago"><input required type="month" className="input-field" value={formData.first_due_month} onChange={(event) => setFormData({ ...formData, first_due_month: event.target.value })} /></Field>
+                <Field label="Cuándo empieza a pagar"><input required type="month" className="input-field" value={formData.first_due_month} onChange={(event) => setFormData({ ...formData, first_due_month: event.target.value })} /></Field>
+                <Field label="Paga desde el día"><input required type="number" min="1" max="28" className="input-field" value={formData.payment_day_from} onChange={(event) => setFormData({ ...formData, payment_day_from: event.target.value })} /></Field>
+                <Field label="Paga hasta el día"><input required type="number" min="1" max="28" className="input-field" value={formData.payment_day_to} onChange={(event) => setFormData({ ...formData, payment_day_to: event.target.value })} /></Field>
                 <Field label="Observaciones" className="md:col-span-2"><textarea rows="3" className="input-field resize-none" value={formData.notes} onChange={(event) => setFormData({ ...formData, notes: event.target.value })} /></Field>
               </div>
               <div className="rounded-xl bg-blue-50 border border-blue-100 p-4 flex flex-wrap justify-between gap-3 text-sm">
-                <span className="font-bold text-blue-800">Período mensual de pago: del 1 al 10</span>
-                <span className="font-black text-blue-950">Total del plan: {money(planTotal)}</span>
+                <span className="font-bold text-blue-800">Paga del día {formData.payment_day_from || '-'} al {formData.payment_day_to || '-'} de cada mes</span>
+                <span className="font-black text-blue-950">Total que termina devolviendo: {money(planTotal)}</span>
               </div>
               <div className="flex gap-3">
                 <button type="button" onClick={() => setShowForm(false)} className="flex-1 px-5 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold">Cancelar</button>
@@ -351,9 +397,10 @@ const PlanCard = ({ plan, expanded, onToggle, onPayment, onUndoPayment, onDelete
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 xl:min-w-[620px]">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 xl:min-w-[720px]">
             <PlanMetric label="Financiado" value={money(plan.financed_amount)} />
             <PlanMetric label="Cuota mensual" value={money(plan.installment_amount)} />
+            <PlanMetric label="Total a devolver" value={money(Number(plan.installment_amount) * Number(plan.installment_count))} />
             <PlanMetric label="Pagadas" value={`${plan.paid.length}/${plan.installment_count}`} />
             <PlanMetric label="Próximo vencimiento" value={plan.nextPending ? formatDate(plan.nextPending.due_date) : 'Completado'} />
           </div>
@@ -382,11 +429,11 @@ const PlanCard = ({ plan, expanded, onToggle, onPayment, onUndoPayment, onDelete
             </thead>
             <tbody className="divide-y divide-slate-100">
               {plan.installments.map((installment) => {
-                const state = getInstallmentState(installment);
+                const state = getInstallmentState(installment, plan.payment_day_from || 1);
                 return (
                   <tr key={installment.id} className={state === 'overdue' || state === 'due' ? 'bg-red-50/60' : ''}>
                     <td className="px-6 py-4 font-black text-slate-700">#{installment.installment_number}</td>
-                    <td className="px-6 py-4 text-sm font-bold text-slate-500">Del 1 al 10</td>
+                    <td className="px-6 py-4 text-sm font-bold text-slate-500">Del {plan.payment_day_from || 1} al {plan.payment_day_to || 10}</td>
                     <td className="px-6 py-4 text-sm font-bold text-slate-600">{formatDate(installment.due_date)}</td>
                     <td className="px-6 py-4 font-black text-slate-800">{money(installment.amount)}</td>
                     <td className="px-6 py-4"><InstallmentBadge state={state} /></td>

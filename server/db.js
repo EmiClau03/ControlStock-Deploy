@@ -74,6 +74,8 @@ async function initDb() {
             installment_count INTEGER NOT NULL,
             installment_amount REAL NOT NULL,
             first_due_month TEXT NOT NULL,
+            payment_day_from INTEGER NOT NULL DEFAULT 1,
+            payment_day_to INTEGER NOT NULL DEFAULT 10,
             notes TEXT,
             status TEXT DEFAULT 'Activo',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -107,6 +109,8 @@ async function initDb() {
     try { await db.exec("ALTER TABLE vehicles ADD COLUMN is_offer INTEGER DEFAULT 0;"); } catch(e) {}
     try { await db.exec("ALTER TABLE vehicles ADD COLUMN offer_price REAL;"); } catch(e) {}
     try { await db.exec("ALTER TABLE vehicles ADD COLUMN is_hotsale INTEGER DEFAULT 0;"); } catch(e) {}
+    try { await db.exec("ALTER TABLE financing_plans ADD COLUMN payment_day_from INTEGER NOT NULL DEFAULT 1;"); } catch(e) {}
+    try { await db.exec("ALTER TABLE financing_plans ADD COLUMN payment_day_to INTEGER NOT NULL DEFAULT 10;"); } catch(e) {}
 
     return db;
 }

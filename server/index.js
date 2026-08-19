@@ -383,11 +383,14 @@ app.get('/api/financing', async (req, res) => {
 app.post('/api/financing', async (req, res) => {
     const {
         vehicle_id, customer_name, customer_dni, customer_phone, customer_address,
-        financed_amount, installment_count, installment_amount, first_due_month, notes
+        financed_amount, installment_count, installment_amount, first_due_month,
+        payment_day_from, payment_day_to, notes
     } = req.body;
     const amount = Number(financed_amount);
     const count = Number(installment_count);
     const quotaAmount = Number(installment_amount);
+    const dayFrom = Number(payment_day_from);
+    const dayTo = Number(payment_day_to);
 
     if (!vehicle_id || !customer_name?.trim() || !customer_dni?.trim() || !customer_phone?.trim()) {
         return res.status(400).json({ error: 'Completá vehículo, nombre, DNI y teléfono del cliente' });
@@ -397,6 +400,10 @@ app.post('/api/financing', async (req, res) => {
     }
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(first_due_month || '')) {
         return res.status(400).json({ error: 'Seleccioná un mes válido para la primera cuota' });
+    }
+
+    if (!Number.isInteger(dayFrom) || !Number.isInteger(dayTo) || dayFrom < 1 || dayTo > 28 || dayFrom > dayTo) {
+        return res.status(400).json({ error: 'Elegí un período de pago válido entre los días 1 y 28' });
     }
 
     let transactionStarted = false;
@@ -415,16 +422,17 @@ app.post('/api/financing', async (req, res) => {
         const result = await db.run(`
             INSERT INTO financing_plans (
                 vehicle_id, customer_name, customer_dni, customer_phone, customer_address,
-                financed_amount, installment_count, installment_amount, first_due_month, notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                financed_amount, installment_count, installment_amount, first_due_month,
+                payment_day_from, payment_day_to, notes
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             vehicle_id, customer_name.trim(), customer_dni.trim(), customer_phone.trim(), customer_address?.trim() || null,
-            amount, count, quotaAmount, first_due_month, notes?.trim() || null
+            amount, count, quotaAmount, first_due_month, dayFrom, dayTo, notes?.trim() || null
         ]);
 
         const [firstYear, firstMonth] = first_due_month.split('-').map(Number);
         for (let index = 0; index < count; index++) {
-            const dueDate = new Date(Date.UTC(firstYear, firstMonth - 1 + index, 10));
+            const dueDate = new Date(Date.UTC(firstYear, firstMonth - 1 + index, dayTo));
             const dueDateString = dueDate.toISOString().slice(0, 10);
             await db.run(`
                 INSERT INTO financing_installments (financing_id, installment_number, due_date, amount)
