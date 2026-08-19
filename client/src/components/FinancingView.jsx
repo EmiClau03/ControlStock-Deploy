@@ -286,7 +286,7 @@ const FinancingView = ({ onAlertCountChange }) => {
       {showForm && (
         <div className="modal-overlay">
           <div className="modal-content !max-w-3xl">
-            <ModalHeader title="Nueva financiación propia" subtitle="Completá los datos del cliente y las condiciones del plan" onClose={() => setShowForm(false)} />
+            <ModalHeader title="Nueva financiación propia" subtitle="Cada financiación guarda su propio período mensual de pago" onClose={() => setShowForm(false)} />
             <form onSubmit={handleCreatePlan} className="p-7 space-y-6 max-h-[75vh] overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Field label="Vehículo financiado" className="md:col-span-2">
@@ -332,7 +332,7 @@ const FinancingView = ({ onAlertCountChange }) => {
                 <Field label="Observaciones" className="md:col-span-2"><textarea rows="3" className="input-field resize-none" value={formData.notes} onChange={(event) => setFormData({ ...formData, notes: event.target.value })} /></Field>
               </div>
               <div className="rounded-xl bg-blue-50 border border-blue-100 p-4 flex flex-wrap justify-between gap-3 text-sm">
-                <span className="font-bold text-blue-800">Paga del día {formData.payment_day_from || '-'} al {formData.payment_day_to || '-'} de cada mes</span>
+                <span className="font-bold text-blue-800">Período personalizado: del día {formData.payment_day_from || '-'} al {formData.payment_day_to || '-'} de cada mes</span>
                 <span className="font-black text-blue-950">Total que termina devolviendo: {money(planTotal)}</span>
               </div>
               <div className="flex gap-3">
