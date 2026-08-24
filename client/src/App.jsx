@@ -128,6 +128,13 @@ function App() {
     return matchesSearch && matchesStatus && matchesPhotoFilter;
   });
 
+  const stockSummary = [
+    { label: 'Stock total', value: vehicles.length, icon: Car, tone: 'blue' },
+    { label: 'Disponibles', value: vehicles.filter(v => v.status === 'Disponible').length, icon: CheckCircle, tone: 'emerald' },
+    { label: 'Reservados', value: vehicles.filter(v => v.status === 'Reservado').length, icon: Clock, tone: 'amber' },
+    { label: 'Vendidos', value: vehicles.filter(v => v.status === 'Vendido').length, icon: Ban, tone: 'violet' }
+  ];
+
   const getStatusBadge = (status) => {
     const styles = {
       'Disponible': 'bg-emerald-100 text-emerald-700 border-emerald-200',
@@ -234,13 +241,27 @@ function App() {
       <main className="app-main max-w-[1600px] mx-auto px-4 sm:px-6 mt-7 sm:mt-10">
         {activeView === 'table' ? (
           <>
-        <div className="mb-6 animate-fade-in">
+        <div className="page-hero mb-6 animate-fade-in">
           <div className="flex items-center gap-2 text-blue-300 text-[10px] font-black uppercase tracking-[0.18em] mb-2">
             <Sparkles size={14} /> Control de inventario
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Stock de vehículos</h2>
           <p className="text-sm text-slate-400 mt-1">Buscá, actualizá y administrá cada unidad desde un solo lugar.</p>
         </div>
+
+        <div className="metrics-grid grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
+          {stockSummary.map(({ label, value, icon: MetricIcon, tone }, index) => (
+            <div key={label} className={`metric-card metric-${tone}`} style={{ '--delay': `${index * 70}ms` }}>
+              <div className="metric-icon"><MetricIcon size={19} /></div>
+              <div className="min-w-0">
+                <p className="metric-label">{label}</p>
+                <p className="metric-value">{loading ? '—' : value}</p>
+              </div>
+              <span className="metric-glow" aria-hidden="true" />
+            </div>
+          ))}
+        </div>
+
         {/* Filters & Stats */}
         <div className="toolbar-panel flex flex-col xl:flex-row gap-4 mb-7 items-stretch xl:items-center justify-between animate-fade-in">
           <div className="flex flex-wrap gap-3 items-center w-full lg:w-auto">
@@ -287,11 +308,70 @@ function App() {
           </div>
         </div>
 
-        {/* Dashboard Table */}
-        <div className="table-container inventory-table animate-fade-in mb-20 overflow-x-auto overflow-y-hidden">
-          <table className="w-full text-left border-collapse min-w-[1200px]">
+        {/* Mobile vehicle cards */}
+        <div className="vehicle-mobile-list lg:hidden mb-16 space-y-3">
+          {loading ? (
+            <div className="vehicle-empty-card"><span className="loading-orbit" /> Cargando vehículos...</div>
+          ) : filteredVehicles.length === 0 ? (
+            <div className="vehicle-empty-card">
+              <Car size={28} />
+              <strong>No se encontraron vehículos</strong>
+              <span>Probá modificando la búsqueda o los filtros.</span>
+            </div>
+          ) : filteredVehicles.map((v, idx) => (
+            <article key={v.id} className="vehicle-mobile-card" style={{ '--delay': `${idx * 45}ms` }}>
+              <div className="vehicle-card-top">
+                <div className="vehicle-avatar"><Car size={20} /></div>
+                <div className="min-w-0 flex-1">
+                  <p className="vehicle-card-eyebrow">Unidad #{v.id}</p>
+                  <h3 className="vehicle-card-title">{v.brand} <span>{v.model}</span></h3>
+                  <p className="vehicle-card-subtitle">{v.version || `${v.year || 'Año sin informar'} · ${v.fuel || 'Combustible sin informar'}`}</p>
+                </div>
+                {getStatusBadge(v.status)}
+              </div>
+
+              <div className="vehicle-card-details">
+                <div><span>Patente</span><strong className="font-mono tracking-wider">{v.license_plate || '—'}</strong></div>
+                <div><span>Año</span><strong>{v.year || '—'}</strong></div>
+                <div><span>Kilómetros</span><strong>{v.mileage?.toLocaleString() || 0} km</strong></div>
+                <div><span>Color</span><strong>{v.color || '—'}</strong></div>
+              </div>
+
+              <div className="vehicle-card-bottom">
+                <div>
+                  <span className="vehicle-price-label">Precio publicado</span>
+                  <strong className="vehicle-price">${v.price?.toLocaleString() || 0}</strong>
+                </div>
+                <button
+                  className={`photo-chip ${v.photoCount === 0 ? 'photo-chip-empty' : ''}`}
+                  onClick={() => { setSelectedVehicle(v); setIsPhotoManagerOpen(true); }}
+                >
+                  <ImageIcon size={15} /> {v.photoCount} fotos
+                </button>
+              </div>
+
+              <div className="vehicle-card-actions">
+                {v.status !== 'Vendido' && (
+                  <button onClick={() => { setSelectedVehicle(v); setIsSaleFormOpen(true); }} className="mobile-action mobile-action-sale">
+                    <CheckCircle size={17} /> Vender
+                  </button>
+                )}
+                <button onClick={() => { setEditingVehicle(v); setIsFormOpen(true); }} className="mobile-action">
+                  <Edit size={17} /> Editar
+                </button>
+                <button onClick={() => handleDelete(v.id)} className="mobile-action mobile-action-delete" aria-label={`Eliminar ${v.brand} ${v.model}`}>
+                  <Trash2 size={17} />
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* Desktop vehicle table */}
+        <div className="table-container inventory-table hidden lg:block animate-fade-in mb-20 overflow-x-auto overflow-y-hidden">
+          <table className="w-full text-left border-collapse min-w-[1280px]">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold text-[11px] uppercase tracking-[0.15em]">
+              <tr className="inventory-head text-slate-500 font-bold text-[10px] uppercase tracking-[0.14em]">
                 <th className="px-6 py-5">ID</th>
                 <th className="px-6 py-5">Marca</th>
                 <th className="px-6 py-5">Modelo</th>
@@ -318,16 +398,22 @@ function App() {
               ) : filteredVehicles.map((v, idx) => (
                 <tr 
                   key={v.id} 
-                  className="hover:bg-slate-50/80 transition-all duration-200 group animate-fade-in"
+                  className="vehicle-row group animate-fade-in"
                   style={{ animationDelay: `${idx * 30}ms` }}
                 >
-                  <td className="px-6 py-5 font-mono text-[10px] text-slate-300">#{v.id}</td>
+                  <td className="px-6 py-5"><span className="vehicle-id">#{v.id}</span></td>
                   <td className="px-6 py-5">
-                    <span className="font-extrabold text-slate-900 text-sm">{v.brand}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="vehicle-table-avatar"><Car size={16} /></span>
+                      <span className="font-black text-slate-900 text-sm">{v.brand}</span>
+                    </div>
                   </td>
-                  <td className="px-6 py-5 text-sm text-slate-600 font-bold">{v.model}</td>
                   <td className="px-6 py-5">
-                    <span className="px-2 py-1 bg-slate-100 rounded text-[11px] font-mono font-bold text-slate-500 tracking-wider">
+                    <span className="block text-sm text-slate-700 font-extrabold">{v.model}</span>
+                    {v.version && <span className="block text-[10px] text-slate-400 font-semibold mt-0.5 max-w-32 truncate">{v.version}</span>}
+                  </td>
+                  <td className="px-6 py-5">
+                    <span className="license-plate">
                       {v.license_plate || '---'}
                     </span>
                   </td>
@@ -336,21 +422,21 @@ function App() {
                   <td className="px-6 py-5 text-sm text-slate-500 tabular-nums font-medium">
                     {v.mileage?.toLocaleString() || 0} <span className="text-[10px] font-bold opacity-40 italic">KM</span>
                   </td>
-                  <td className="px-6 py-5 text-right font-black text-blue-600 text-base tabular-nums">
-                    ${v.price?.toLocaleString()}
+                  <td className="px-6 py-5 text-right">
+                    <span className="table-price">${v.price?.toLocaleString() || 0}</span>
                   </td>
                   <td className="px-6 py-5 text-center">
-                    <span className="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100 uppercase tracking-tighter">
+                    <span className="fuel-chip">
                       {v.fuel}
                     </span>
                   </td>
                   <td className="px-6 py-5">{getStatusBadge(v.status)}</td>
                   <td className="px-6 py-5">
                     <button 
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 ${
+                      className={`photo-chip ${
                         v.photoCount === 0 
-                        ? 'bg-amber-50 text-amber-600 border border-amber-100 hover:bg-amber-100 shadow-sm' 
-                        : 'bg-slate-50 text-slate-500 border border-slate-100 hover:bg-slate-100'
+                        ? 'photo-chip-empty'
+                        : ''
                       }`}
                       onClick={() => { setSelectedVehicle(v); setIsPhotoManagerOpen(true); }}
                     >

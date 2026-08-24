@@ -74,11 +74,39 @@
     mask-image: linear-gradient(to bottom, black, transparent 72%);
   }
 
+  .app-shell::after {
+    content: "";
+    position: fixed;
+    top: 16rem;
+    right: -13rem;
+    z-index: -1;
+    width: 32rem;
+    height: 32rem;
+    border-radius: 999px;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.12), rgba(14, 165, 233, 0.035) 42%, transparent 70%);
+    filter: blur(10px);
+    animation: ambientDrift 14s ease-in-out infinite alternate;
+  }
+
   .app-header {
+    position: relative;
     background: rgba(6, 14, 28, 0.9);
     border-bottom: 1px solid rgba(148, 163, 184, 0.12);
     box-shadow: 0 16px 45px rgba(2, 6, 23, 0.24);
     backdrop-filter: blur(22px) saturate(135%);
+  }
+
+  .app-header::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 1px;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent 4%, rgba(59, 130, 246, 0.75) 22%, rgba(56, 189, 248, 0.35) 50%, transparent 92%);
+    opacity: 0.55;
   }
 
   .brand-mark {
@@ -103,6 +131,17 @@
   .nav-item:hover {
     color: #e2e8f0;
     background: rgba(255, 255, 255, 0.045);
+    transform: translateY(-1px);
+  }
+
+  .nav-item svg {
+    transition: transform 220ms ease, filter 220ms ease;
+  }
+
+  .nav-item:hover svg,
+  .nav-item-active svg {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 7px rgba(147, 197, 253, 0.5));
   }
 
   .nav-item-active {
@@ -131,6 +170,98 @@
     background: linear-gradient(145deg, rgba(17, 29, 49, 0.86), rgba(12, 22, 39, 0.78));
     box-shadow: 0 18px 45px rgba(2, 6, 23, 0.22), inset 0 1px rgba(255, 255, 255, 0.045);
     backdrop-filter: blur(18px);
+  }
+
+  .page-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 1.35rem 1.5rem;
+    border: 1px solid rgba(96, 165, 250, 0.11);
+    border-radius: 1.35rem;
+    background:
+      linear-gradient(105deg, rgba(37, 99, 235, 0.12), rgba(14, 165, 233, 0.03) 44%, transparent 72%),
+      rgba(15, 26, 44, 0.46);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.035), 0 16px 42px rgba(2, 6, 23, 0.14);
+  }
+
+  .page-hero::after {
+    content: "";
+    position: absolute;
+    top: -3rem;
+    right: 3%;
+    width: 15rem;
+    height: 10rem;
+    border-radius: 999px;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.13), transparent 68%);
+    animation: softPulse 5s ease-in-out infinite;
+  }
+
+  .metrics-grid {
+    perspective: 900px;
+  }
+
+  .metric-card {
+    --metric-rgb: 59, 130, 246;
+    position: relative;
+    display: flex;
+    min-height: 92px;
+    align-items: center;
+    gap: 0.9rem;
+    overflow: hidden;
+    padding: 1rem;
+    border: 1px solid rgba(var(--metric-rgb), 0.16);
+    border-radius: 1.15rem;
+    background: linear-gradient(140deg, rgba(var(--metric-rgb), 0.11), rgba(15, 26, 44, 0.72) 48%, rgba(10, 19, 34, 0.8));
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.045), 0 15px 36px rgba(2, 6, 23, 0.17);
+    animation: metricEnter 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--delay);
+    transition: transform 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+  }
+
+  .metric-card:hover {
+    z-index: 1;
+    border-color: rgba(var(--metric-rgb), 0.34);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.07), 0 18px 42px rgba(2, 6, 23, 0.25), 0 0 26px rgba(var(--metric-rgb), 0.08);
+    transform: translateY(-3px);
+  }
+
+  .metric-emerald { --metric-rgb: 16, 185, 129; }
+  .metric-amber { --metric-rgb: 245, 158, 11; }
+  .metric-violet { --metric-rgb: 139, 92, 246; }
+
+  .metric-icon {
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl;
+    color: rgb(var(--metric-rgb));
+    border: 1px solid rgba(var(--metric-rgb), 0.2);
+    background: rgba(var(--metric-rgb), 0.11);
+    box-shadow: 0 8px 20px rgba(var(--metric-rgb), 0.08);
+  }
+
+  .metric-label {
+    @apply truncate text-[10px] font-black uppercase tracking-[0.12em] text-slate-400;
+  }
+
+  .metric-value {
+    @apply mt-1 text-2xl font-black tabular-nums text-white;
+    line-height: 1;
+  }
+
+  .metric-glow {
+    position: absolute;
+    right: -1.5rem;
+    bottom: -2.5rem;
+    width: 7rem;
+    height: 7rem;
+    border-radius: 999px;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(var(--metric-rgb), 0.18), transparent 68%);
+    transition: transform 350ms ease, opacity 350ms ease;
+  }
+
+  .metric-card:hover .metric-glow {
+    opacity: 1;
+    transform: scale(1.25);
   }
 
   .filter-button {
@@ -187,6 +318,12 @@
     box-shadow: 0 24px 65px rgba(2, 6, 23, 0.28), 0 2px 10px rgba(2, 6, 23, 0.1);
   }
 
+  .inventory-head {
+    border-bottom: 1px solid #e2e8f0;
+    background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+    box-shadow: inset 0 -1px rgba(148, 163, 184, 0.08);
+  }
+
   .inventory-table thead {
     position: sticky;
     top: 0;
@@ -195,6 +332,213 @@
 
   .inventory-table tbody tr:hover {
     box-shadow: inset 3px 0 #3b82f6;
+  }
+
+  .inventory-table tbody tr {
+    position: relative;
+  }
+
+  .vehicle-row {
+    border-bottom: 1px solid #f1f5f9;
+    background: white;
+    transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .vehicle-row:nth-child(even) {
+    background: #fbfdff;
+  }
+
+  .vehicle-row:hover {
+    z-index: 1;
+    background: #f5f9ff;
+  }
+
+  .vehicle-id {
+    @apply rounded-lg bg-slate-100 px-2 py-1 font-mono text-[10px] font-bold text-slate-400;
+  }
+
+  .vehicle-table-avatar {
+    @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-blue-600;
+    border: 1px solid #dbeafe;
+    background: linear-gradient(145deg, #eff6ff, #dbeafe);
+    box-shadow: 0 5px 14px rgba(37, 99, 235, 0.08);
+  }
+
+  .license-plate {
+    @apply inline-flex rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-[11px] font-black tracking-wider text-slate-600;
+    box-shadow: inset 0 1px white;
+  }
+
+  .table-price {
+    @apply inline-flex rounded-xl px-3 py-2 text-sm font-black tabular-nums text-blue-700;
+    border: 1px solid #dbeafe;
+    background: linear-gradient(135deg, #eff6ff, #f8fbff);
+  }
+
+  .fuel-chip {
+    @apply inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-slate-500;
+  }
+
+  .photo-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-extrabold text-slate-500 transition-all duration-200;
+  }
+
+  .photo-chip:hover {
+    border-color: #bfdbfe;
+    color: #2563eb;
+    background: #eff6ff;
+  }
+
+  .photo-chip-empty {
+    border-color: #fde68a;
+    color: #d97706;
+    background: #fffbeb;
+    box-shadow: 0 5px 14px rgba(245, 158, 11, 0.08);
+  }
+
+  .vehicle-mobile-card {
+    position: relative;
+    overflow: hidden;
+    padding: 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 1.25rem;
+    background:
+      linear-gradient(145deg, rgba(30, 41, 59, 0.82), rgba(12, 22, 39, 0.92)),
+      rgba(15, 23, 42, 0.9);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.045), 0 18px 38px rgba(2, 6, 23, 0.2);
+    animation: vehicleCardEnter 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--delay);
+  }
+
+  .vehicle-mobile-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #2563eb, #38bdf8, transparent 78%);
+    opacity: 0.7;
+  }
+
+  .vehicle-card-top {
+    @apply flex items-start gap-3;
+  }
+
+  .vehicle-avatar {
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-blue-300;
+    border: 1px solid rgba(96, 165, 250, 0.2);
+    background: linear-gradient(145deg, rgba(37, 99, 235, 0.22), rgba(14, 165, 233, 0.08));
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.13);
+  }
+
+  .vehicle-card-eyebrow {
+    @apply text-[9px] font-black uppercase tracking-[0.15em] text-blue-300/70;
+  }
+
+  .vehicle-card-title {
+    @apply mt-0.5 truncate text-base font-black text-white;
+  }
+
+  .vehicle-card-title span {
+    @apply font-bold text-slate-300;
+  }
+
+  .vehicle-card-subtitle {
+    @apply mt-0.5 truncate text-[10px] font-semibold text-slate-500;
+  }
+
+  .vehicle-card-details {
+    @apply my-4 grid grid-cols-2 gap-px overflow-hidden rounded-xl;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    background: rgba(148, 163, 184, 0.1);
+  }
+
+  .vehicle-card-details > div {
+    padding: 0.7rem 0.8rem;
+    background: rgba(2, 6, 23, 0.24);
+  }
+
+  .vehicle-card-details span,
+  .vehicle-card-details strong {
+    display: block;
+  }
+
+  .vehicle-card-details span {
+    @apply text-[8px] font-black uppercase tracking-[0.12em] text-slate-500;
+  }
+
+  .vehicle-card-details strong {
+    @apply mt-1 truncate text-xs font-extrabold text-slate-200;
+  }
+
+  .vehicle-card-bottom {
+    @apply flex items-end justify-between gap-3;
+  }
+
+  .vehicle-price-label {
+    @apply block text-[8px] font-black uppercase tracking-[0.12em] text-slate-500;
+  }
+
+  .vehicle-price {
+    @apply mt-1 block text-xl font-black tabular-nums text-blue-300;
+  }
+
+  .vehicle-mobile-card .photo-chip:not(.photo-chip-empty) {
+    border-color: rgba(148, 163, 184, 0.15);
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.055);
+  }
+
+  .vehicle-card-actions {
+    @apply mt-4 flex gap-2 border-t border-white/[0.07] pt-3;
+  }
+
+  .mobile-action {
+    @apply inline-flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-extrabold text-slate-300 transition-all duration-200;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(255, 255, 255, 0.045);
+  }
+
+  .mobile-action:hover {
+    color: white;
+    border-color: rgba(148, 163, 184, 0.25);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .mobile-action-sale {
+    color: #6ee7b7;
+    border-color: rgba(16, 185, 129, 0.18);
+    background: rgba(16, 185, 129, 0.08);
+  }
+
+  .mobile-action-delete {
+    flex: 0 0 43px;
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.14);
+  }
+
+  .vehicle-empty-card {
+    @apply flex min-h-40 flex-col items-center justify-center gap-2 rounded-2xl p-6 text-center text-sm text-slate-400;
+    border: 1px dashed rgba(148, 163, 184, 0.2);
+    background: rgba(15, 23, 42, 0.52);
+  }
+
+  .vehicle-empty-card strong {
+    @apply text-base font-black text-slate-200;
+  }
+
+  .vehicle-empty-card span:not(.loading-orbit) {
+    @apply text-xs text-slate-500;
+  }
+
+  .loading-orbit {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid rgba(96, 165, 250, 0.18);
+    border-top-color: #60a5fa;
+    border-radius: 999px;
+    animation: spin 0.75s linear infinite;
   }
 
   .premium-card {
@@ -210,6 +554,8 @@
   }
 
   .btn-primary {
+    position: relative;
+    overflow: hidden;
     @apply inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white transition-all duration-200 active:scale-[0.98];
     border: 1px solid rgba(147, 197, 253, 0.2);
     box-shadow: 0 10px 26px rgba(37, 99, 235, 0.25), inset 0 1px rgba(255, 255, 255, 0.16);
@@ -219,6 +565,23 @@
     background: #3b82f6;
     box-shadow: 0 14px 32px rgba(37, 99, 235, 0.34), inset 0 1px rgba(255, 255, 255, 0.2);
     transform: translateY(-1px);
+  }
+
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    top: -40%;
+    bottom: -40%;
+    left: -65%;
+    width: 38%;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+    transform: skewX(-20deg);
+    transition: left 520ms ease;
+  }
+
+  .btn-primary:hover::after {
+    left: 125%;
   }
 
   .btn-secondary {
@@ -326,6 +689,30 @@
   50% { opacity: 0.8; transform: scale(0.98); }
 }
 .animate-pulse-slow { animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+@keyframes ambientDrift {
+  from { transform: translate3d(0, -18px, 0) scale(0.96); opacity: 0.7; }
+  to { transform: translate3d(-7rem, 5rem, 0) scale(1.12); opacity: 1; }
+}
+
+@keyframes softPulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.92); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+
+@keyframes metricEnter {
+  from { opacity: 0; transform: translateY(16px) rotateX(5deg); }
+  to { opacity: 1; transform: translateY(0) rotateX(0); }
+}
+
+@keyframes vehicleCardEnter {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 @media (max-width: 639px) {
   .app-header .btn-primary,
