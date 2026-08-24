@@ -9,7 +9,7 @@ import {
   MapPin, ChevronLeft, Map as MapIcon, BarChart2, CalendarDays, UserRound,
   FileDown, BriefcaseBusiness, Trophy
 } from 'lucide-react';
-import { getSalesStats } from '../api';
+import { getFinancingPlans, getSalesStats } from '../api';
 import ArgentinaMap from './ArgentinaMap';
 
 const parseSaleDate = (value) => {
@@ -34,6 +34,7 @@ const getPreviousMonthKey = (monthKey) => {
 const StatisticsView = ({ vehicles }) => {
   const [activeTab, setActiveTab] = useState('inventory'); // 'inventory' or 'sales'
   const [salesData, setSalesData] = useState([]);
+  const [financingPlans, setFinancingPlans] = useState([]);
   const [loadingSales, setLoadingSales] = useState(true);
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [salesViewType, setSalesViewType] = useState('chart'); // 'chart' or 'map'
@@ -63,23 +64,38 @@ const StatisticsView = ({ vehicles }) => {
 
   const fetchSales = async () => {
     try {
-      const { data } = await getSalesStats();
+      const [{ data }, financingResponse] = await Promise.all([
+        getSalesStats(),
+        getFinancingPlans().catch((error) => {
+          console.error('Error fetching financing for report:', error);
+          return { data: [] };
+        })
+      ]);
       setSalesData(data);
+      setFinancingPlans(financingResponse.data);
       // Auto-select current month or fallback to most recent month with sales
       const now = new Date();
       const currentKey = getMonthKey(now);
-      const monthsWithSales = new Set();
+      const monthsWithActivity = new Set();
       data.forEach(s => {
         const d = parseSaleDate(s.sale_date);
         if (d) {
-          monthsWithSales.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+          monthsWithActivity.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
         }
       });
-      if (monthsWithSales.has(currentKey)) {
+      financingResponse.data.forEach((plan) => {
+        plan.installments?.forEach((installment) => {
+          if (installment.due_date && String(installment.due_date).slice(0, 7) <= currentKey) {
+            monthsWithActivity.add(String(installment.due_date).slice(0, 7));
+          }
+          if (installment.paid_at) monthsWithActivity.add(String(installment.paid_at).slice(0, 7));
+        });
+      });
+      if (monthsWithActivity.has(currentKey)) {
         setSelectedMonth(currentKey);
-      } else if (monthsWithSales.size > 0) {
-        // Pick the most recent month with sales
-        const sorted = [...monthsWithSales].sort((a, b) => b.localeCompare(a));
+      } else if (monthsWithActivity.size > 0) {
+        // Pick the most recent month with sales or financing activity
+        const sorted = [...monthsWithActivity].sort((a, b) => b.localeCompare(a));
         setSelectedMonth(sorted[0]);
       } else {
         setSelectedMonth('All');
@@ -104,11 +120,23 @@ const StatisticsView = ({ vehicles }) => {
         map[key] = label.charAt(0).toUpperCase() + label.slice(1);
       }
     });
+    financingPlans.forEach((plan) => {
+      plan.installments?.forEach((installment) => {
+        [installment.due_date, installment.paid_at].filter(Boolean).forEach((value) => {
+          const date = parseSaleDate(value);
+          if (!date) return;
+          const key = getMonthKey(date);
+          if (key > currentMonthKey) return;
+          const label = date.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+          map[key] = label.charAt(0).toUpperCase() + label.slice(1);
+        });
+      });
+    });
     return Object.entries(map).sort((a, b) => b[0].localeCompare(a[0]));
-  }, [salesData]);
+  }, [salesData, financingPlans, currentMonthKey]);
 
   const stats = useMemo(() => {
-    if (!vehicles.length && !salesData.length) return null;
+    if (!vehicles.length && !salesData.length && !financingPlans.length) return null;
 
     // 1. Inventory Stats
     const totalUnits = vehicles.length;
@@ -238,7 +266,7 @@ const StatisticsView = ({ vehicles }) => {
       revenueTrend, paymentData, salesHistory,
       provinceData, localityData
     };
-  }, [vehicles, salesData, selectedProvince, selectedMonth]);
+  }, [vehicles, salesData, financingPlans, selectedProvince, selectedMonth]);
 
   if (!stats) return null;
 
@@ -271,9 +299,13 @@ const StatisticsView = ({ vehicles }) => {
 
   const selectedMonthLabel = availableMonths.find(([key]) => key === selectedMonth)?.[1] || selectedMonth;
   const isClosedMonth = Boolean(selectedMonth && selectedMonth !== 'All' && selectedMonth < currentMonthKey);
+  const hasFinancingActivity = financingPlans.some((plan) => plan.installments?.some((installment) => (
+    String(installment.due_date || '').startsWith(selectedMonth)
+    || String(installment.paid_at || '').startsWith(selectedMonth)
+  )));
 
   const handleDownloadMonthlyReport = async () => {
-    if (!selectedMonth || selectedMonth === 'All' || !stats.salesHistory.length) return;
+    if (!selectedMonth || selectedMonth === 'All' || (!stats.salesHistory.length && !hasFinancingActivity)) return;
 
     try {
       setGeneratingReport(true);
@@ -288,6 +320,7 @@ const StatisticsView = ({ vehicles }) => {
         monthLabel: selectedMonthLabel,
         sales: stats.salesHistory,
         previousSales,
+        financingPlans,
         isClosedMonth,
       });
     } catch (error) {
@@ -441,7 +474,7 @@ const StatisticsView = ({ vehicles }) => {
                     )}
                   </div>
                   <p className="text-sm text-slate-300 max-w-2xl">
-                    Resumen empresarial simple con facturación, ticket promedio, comparación mensual, vendedores, medios de pago, regiones y detalle de cada operación.
+                    Resumen empresarial simple con ventas, facturación, vendedores, financiaciones, cuotas cobradas, deuda pendiente y detalle de cada operación.
                   </p>
                   <p className="text-[10px] text-blue-300/70 font-bold uppercase tracking-widest mt-3">
                     Al cambiar de mes, el período anterior queda cerrado automáticamente y listo para descargar.
@@ -451,7 +484,7 @@ const StatisticsView = ({ vehicles }) => {
               <button
                 type="button"
                 onClick={handleDownloadMonthlyReport}
-                disabled={generatingReport || loadingSales || selectedMonth === 'All' || !stats.salesHistory.length}
+                disabled={generatingReport || loadingSales || selectedMonth === 'All' || (!stats.salesHistory.length && !hasFinancingActivity)}
                 className="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-white text-blue-950 font-black text-xs uppercase tracking-widest hover:bg-blue-50 shadow-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all"
               >
                 <FileDown size={18} />
