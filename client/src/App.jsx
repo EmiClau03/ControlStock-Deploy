@@ -13,7 +13,11 @@ import {
   Ban,
   AlertCircle,
   LogOut,
-  CreditCard
+  CreditCard,
+  LayoutDashboard,
+  MessageSquareText,
+  ChartNoAxesCombined,
+  Sparkles
 } from 'lucide-react';
 import { getVehicles, deleteVehicle, getFinancingPlans, API_BASE_URL } from './api';
 import VehicleForm from './components/VehicleForm';
@@ -139,65 +143,67 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen pb-12 font-sans">
+    <div className="app-shell min-h-screen pb-12 font-sans">
       {/* Header */}
-      <header className="bg-slate-950/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-30 transition-all duration-300">
-        <div className="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-4 group cursor-pointer animate-fade-in">
-            <div className="bg-white p-1.5 rounded-2xl shadow-xl shadow-blue-500/20 group-hover:scale-105 transition-all duration-300 animate-float">
+      <header className="app-header sticky top-0 z-30">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 group animate-fade-in min-w-0">
+            <div className="brand-mark bg-white p-1.5 rounded-2xl group-hover:scale-[1.03] transition-all duration-300">
               <img 
                 src={`${import.meta.env.BASE_URL}logo_original.png`}
                 alt="Automotores Marcos" 
-                className="h-12 w-auto object-contain"
+                className="h-10 sm:h-12 w-auto object-contain"
               />
             </div>
-            <div className="hidden sm:block">
-              <h1 className="text-xl font-black tracking-tighter text-white uppercase leading-none">Automotores Marcos</h1>
-              <p className="text-[10px] font-bold text-blue-400/80 tracking-[0.2em] uppercase mt-1">Gestión Profesional</p>
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-xl font-black tracking-tight text-white leading-none truncate">Automotores Marcos</h1>
+              <p className="text-[9px] sm:text-[10px] font-bold text-blue-300 tracking-[0.16em] uppercase mt-1.5">Panel de gestión</p>
             </div>
           </div>
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <button 
                 onClick={() => setIsImportOpen(true)}
-                className="btn-secondary group"
+                className="btn-secondary group !px-3 sm:!px-5 !py-2.5"
+                title="Importar stock"
               >
                 <FileUp size={18} className="group-hover:-translate-y-0.5 transition-transform text-white/60" />
-                <span className="hidden sm:inline text-white/80">Importar Stock</span>
+                <span className="hidden md:inline text-white/80">Importar</span>
               </button>
               <button 
                 onClick={() => { setEditingVehicle(null); setIsFormOpen(true); }}
-                className="btn-primary shadow-lg shadow-blue-500/20"
+                className="btn-primary !px-3 sm:!px-5 !py-2.5"
               >
                 <Plus size={20} />
-                <span>Nuevo Vehículo</span>
+                <span className="hidden sm:inline">Nuevo vehículo</span>
               </button>
               
               <button 
                 onClick={handleLogout}
-                className="p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 border border-red-500/20"
+                className="header-icon-button"
                 title="Cerrar Sesión"
               >
-                <LogOut size={20} />
+                <LogOut size={18} />
               </button>
-            </div>
-            
-            {/* Stats Toggle */}
-            <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5 shadow-inner">
+          </div>
+        </div>
+
+        {/* Navegación principal */}
+        <div className="border-t border-white/[0.06]">
+          <div className="app-nav max-w-[1600px] mx-auto px-4 sm:px-6 flex gap-1.5 overflow-x-auto">
               <button 
                 onClick={() => setActiveView('table')}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition-all tracking-widest uppercase ${activeView === 'table' ? 'bg-blue-600 text-white shadow-xl shadow-blue-900/40' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`nav-item ${activeView === 'table' ? 'nav-item-active' : ''}`}
               >
-                Stock
+                <LayoutDashboard size={17} /> Stock
               </button>
               <button 
                 onClick={() => {
                   setActiveView('leads');
                   setNewLeadsCount(0); // Reset count when viewing
                 }}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition-all tracking-widest uppercase relative ${activeView === 'leads' ? 'bg-blue-600 text-white shadow-xl shadow-blue-900/40' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`nav-item relative ${activeView === 'leads' ? 'nav-item-active' : ''}`}
               >
-                Consultas
+                <MessageSquareText size={17} /> Consultas
                 {newLeadsCount > 0 && activeView !== 'leads' && (
                   <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] text-white animate-bounce-slow shadow-lg">
                     {newLeadsCount}
@@ -206,31 +212,37 @@ function App() {
               </button>
               <button 
                 onClick={() => setActiveView('statistics')}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition-all tracking-widest uppercase ${activeView === 'statistics' ? 'bg-blue-600 text-white shadow-xl shadow-blue-900/40' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`nav-item ${activeView === 'statistics' ? 'nav-item-active' : ''}`}
               >
-                Estadísticas
+                <ChartNoAxesCombined size={17} /> Estadísticas
               </button>
               <button
                 onClick={() => setActiveView('financing')}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition-all tracking-widest uppercase relative inline-flex items-center gap-1.5 ${activeView === 'financing' ? 'bg-blue-600 text-white shadow-xl shadow-blue-900/40' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`nav-item relative ${activeView === 'financing' ? 'nav-item-active' : ''}`}
               >
-                <CreditCard size={14} /> Cuotas
+                <CreditCard size={17} /> Cuotas
                 {financingAlertCount > 0 && (
                   <span className="absolute -top-1 -right-1 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-red-500 text-[10px] text-white animate-pulse shadow-lg">
                     {financingAlertCount}
                   </span>
                 )}
               </button>
-            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-[1600px] mx-auto px-6 mt-10">
+      <main className="app-main max-w-[1600px] mx-auto px-4 sm:px-6 mt-7 sm:mt-10">
         {activeView === 'table' ? (
           <>
+        <div className="mb-6 animate-fade-in">
+          <div className="flex items-center gap-2 text-blue-300 text-[10px] font-black uppercase tracking-[0.18em] mb-2">
+            <Sparkles size={14} /> Control de inventario
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Stock de vehículos</h2>
+          <p className="text-sm text-slate-400 mt-1">Buscá, actualizá y administrá cada unidad desde un solo lugar.</p>
+        </div>
         {/* Filters & Stats */}
-        <div className="flex flex-col lg:flex-row gap-6 mb-8 items-center justify-between animate-fade-in">
+        <div className="toolbar-panel flex flex-col xl:flex-row gap-4 mb-7 items-stretch xl:items-center justify-between animate-fade-in">
           <div className="flex flex-wrap gap-3 items-center w-full lg:w-auto">
             <div className="relative flex-grow sm:flex-grow-0">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -255,10 +267,10 @@ function App() {
             </select>
             <button 
               onClick={() => setShowNoPhotosOnly(!showNoPhotosOnly)}
-              className={`px-4 py-2.5 rounded-xl border font-semibold transition-all flex items-center gap-2.5 shadow-sm sm:w-auto w-full justify-center ${
+              className={`filter-button sm:w-auto w-full justify-center ${
                 showNoPhotosOnly 
-                ? 'bg-amber-500/10 border-amber-500/50 text-amber-500' 
-                : 'bg-slate-900 border-white/5 text-slate-400 hover:border-white/10'
+                ? 'filter-button-active'
+                : ''
               }`}
             >
               <AlertCircle size={18} className={showNoPhotosOnly ? 'animate-pulse' : ''} />
@@ -266,13 +278,17 @@ function App() {
             </button>
           </div>
           
-          <div className="bg-white/5 px-4 py-2 rounded-full border border-white/5 text-[13px] text-slate-400 font-bold tracking-tight shadow-sm">
-            <span className="text-blue-400">{filteredVehicles.length}</span> VEHÍCULOS EN STOCK
+          <div className="inventory-counter">
+            <span>{filteredVehicles.length}</span>
+            <div>
+              <strong>Vehículos</strong>
+              <small>en este resultado</small>
+            </div>
           </div>
         </div>
 
         {/* Dashboard Table */}
-        <div className="table-container animate-fade-in mb-20 overflow-x-auto overflow-y-hidden shadow-sm rounded-xl">
+        <div className="table-container inventory-table animate-fade-in mb-20 overflow-x-auto overflow-y-hidden">
           <table className="w-full text-left border-collapse min-w-[1200px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold text-[11px] uppercase tracking-[0.15em]">
@@ -343,7 +359,7 @@ function App() {
                     </button>
                   </td>
                   <td className="px-6 py-5 text-right">
-                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
+                    <div className="flex items-center justify-end gap-1 opacity-100 xl:opacity-0 xl:group-hover:opacity-100 transition-all duration-300 xl:translate-x-3 xl:group-hover:translate-x-0">
                       {v.status !== 'Vendido' && (
                         <button 
                           onClick={() => { setSelectedVehicle(v); setIsSaleFormOpen(true); }}
