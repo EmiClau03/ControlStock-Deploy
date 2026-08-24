@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle, Car, CheckCircle2, ChevronDown, ChevronUp, CircleDollarSign,
-  CreditCard, Phone, Plus, Search, Trash2, Undo2, Wallet, X
+  CreditCard, MessageCircle, Phone, Plus, Search, Trash2, Undo2, Wallet, X
 } from 'lucide-react';
 import {
   createFinancingPlan, deleteFinancingPlan, getFinancingPlans, getFinancingVehicles,
@@ -23,6 +23,17 @@ const nextMonthKey = () => {
 const formatDate = (value) => {
   const match = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
   return match ? `${match[3]}/${match[2]}/${match[1]}` : 'Sin fecha';
+};
+
+const getPaymentReminderUrl = (plan, installment) => {
+  const phone = String(plan.customer_phone || '').replace(/\D/g, '');
+  const vehicle = [plan.brand, plan.model, plan.year].filter(Boolean).join(' ');
+  const message = [
+    `Hola ${plan.customer_name}, te contactamos de Automotores Marcos para recordarte que la cuota #${installment.installment_number} de ${money(installment.amount)} venció el ${formatDate(installment.due_date)}.`,
+    vehicle ? `Corresponde al plan de financiación de tu ${vehicle}.` : '',
+    'Por favor, comunicate con nosotros para coordinar el pago. Muchas gracias.'
+  ].filter(Boolean).join(' ');
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 };
 
 const getInstallmentState = (installment, paymentDayFrom = 1, today = localDateKey()) => {
@@ -442,7 +453,21 @@ const PlanCard = ({ plan, expanded, onToggle, onPayment, onUndoPayment, onDelete
                       {installment.status === 'Pagada' ? (
                         <button onClick={() => onUndoPayment(plan, installment)} className="inline-flex items-center gap-1 text-xs font-bold text-slate-400 hover:text-amber-600"><Undo2 size={14} /> Anular</button>
                       ) : (
-                        <button onClick={() => onPayment(plan, installment)} className="px-3 py-2 rounded-lg bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider">Registrar pago</button>
+                        <div className="inline-flex items-center justify-end gap-2">
+                          {state === 'overdue' && (
+                            <a
+                              href={getPaymentReminderUrl(plan, installment)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white text-[10px] font-black uppercase tracking-wider transition-colors"
+                              title={`Enviar recordatorio de pago a ${plan.customer_name}`}
+                              aria-label={`Enviar por WhatsApp el recordatorio de la cuota ${installment.installment_number}`}
+                            >
+                              <MessageCircle size={14} /> WhatsApp
+                            </a>
+                          )}
+                          <button onClick={() => onPayment(plan, installment)} className="px-3 py-2 rounded-lg bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider">Registrar pago</button>
+                        </div>
                       )}
                     </td>
                   </tr>
