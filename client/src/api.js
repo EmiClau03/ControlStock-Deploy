@@ -29,6 +29,7 @@ export const importExcel = (file) => {
 export const getVehiclesNoPhotos = () => api.get('/stats/no-photos');
 export const recordSale = (data) => api.post('/sales', data);
 export const getSalesStats = () => api.get('/sales/stats');
+export const updateSaleSeller = (id, sellerName) => api.put(`/sales/${id}/seller`, { seller_name: sellerName });
 export const getFinancingPlans = () => api.get('/financing');
 export const getFinancingVehicles = () => api.get('/financing/vehicles');
 export const createFinancingPlan = (data) => api.post('/financing', data);

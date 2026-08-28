@@ -9,8 +9,14 @@ import {
   MapPin, ChevronLeft, Map as MapIcon, BarChart2, CalendarDays, UserRound,
   FileDown, BriefcaseBusiness, Trophy
 } from 'lucide-react';
-import { getFinancingPlans, getSalesStats } from '../api';
+import { getFinancingPlans, getSalesStats, updateSaleSeller } from '../api';
 import ArgentinaMap from './ArgentinaMap';
+
+const SELLER_OPTIONS = ['Tomi', 'Ruben', 'Santi', 'Emi'];
+const isAssignedSeller = (value) => {
+  const seller = String(value || '').trim();
+  return Boolean(seller && seller !== 'No asignado' && seller !== 'Sin asignar');
+};
 
 const parseSaleDate = (value) => {
   if (!value) return null;
@@ -196,14 +202,15 @@ const StatisticsView = ({ vehicles }) => {
 
     const sellerMap = {};
     filteredSalesData.forEach((sale) => {
-      const seller = sale.seller_name || 'Sin asignar';
+      if (!isAssignedSeller(sale.seller_name)) return;
+      const seller = sale.seller_name.trim();
       if (!sellerMap[seller]) sellerMap[seller] = { name: seller, sales: 0, revenue: 0 };
       sellerMap[seller].sales += 1;
       sellerMap[seller].revenue += Number(sale.final_price || 0);
     });
     const sellerPerformance = Object.values(sellerMap)
       .sort((a, b) => b.sales - a.sales || b.revenue - a.revenue);
-    const topSeller = sellerPerformance.find((seller) => seller.name !== 'Sin asignar') || sellerPerformance[0] || null;
+    const topSeller = sellerPerformance[0] || null;
 
     const salesHistory = [...filteredSalesData].sort((a, b) => {
       const dateA = parseSaleDate(a.sale_date)?.getTime() || 0;
@@ -623,14 +630,20 @@ const StatisticsView = ({ vehicles }) => {
             </ChartCard>
           </div>
 
-          <SalesHistory sales={stats.salesHistory} loading={loadingSales} />
+          <SalesHistory
+            sales={stats.salesHistory}
+            loading={loadingSales}
+            onSellerUpdated={(saleId, sellerName) => setSalesData((current) => current.map((sale) => (
+              String(sale.id) === String(saleId) ? { ...sale, seller_name: sellerName } : sale
+            )))}
+          />
         </div>
       )}
     </div>
   );
 };
 
-const SalesHistory = ({ sales, loading }) => (
+const SalesHistory = ({ sales, loading, onSellerUpdated }) => (
   <div className="table-container bg-white shadow-xl overflow-hidden">
     <div className="p-6 md:p-8 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <div className="flex items-center gap-3">
@@ -685,9 +698,7 @@ const SalesHistory = ({ sales, loading }) => (
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{sale.year || 'Año no informado'}</div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black ${sale.seller_name ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-400'}`}>
-                      <UserRound size={12} /> {sale.seller_name || 'Sin asignar'}
-                    </span>
+                    <SellerEditor sale={sale} onUpdated={onSellerUpdated} />
                   </td>
                   <td className="px-6 py-4 text-sm font-bold text-slate-600">{sale.buyer_name || 'Sin informar'}</td>
                   <td className="px-6 py-4 text-sm font-medium text-slate-500">{location || 'Sin informar'}</td>
@@ -704,6 +715,39 @@ const SalesHistory = ({ sales, loading }) => (
     )}
   </div>
 );
+
+const SellerEditor = ({ sale, onUpdated }) => {
+  const [saving, setSaving] = useState(false);
+
+  const handleChange = async (event) => {
+    const sellerName = event.target.value;
+    try {
+      setSaving(true);
+      const { data } = await updateSaleSeller(sale.id, sellerName);
+      onUpdated(sale.id, data.seller_name);
+    } catch (error) {
+      alert(error.response?.data?.error || 'No se pudo modificar el vendedor.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="relative inline-flex items-center">
+      <UserRound size={12} className={`absolute left-3 pointer-events-none ${isAssignedSeller(sale.seller_name) ? 'text-blue-600' : 'text-slate-400'}`} />
+      <select
+        aria-label={`Vendedor de la venta ${sale.id}`}
+        className={`pl-8 pr-8 py-2 rounded-xl border text-xs font-black outline-none cursor-pointer disabled:opacity-60 ${isAssignedSeller(sale.seller_name) ? 'bg-blue-50 border-blue-100 text-blue-700' : 'bg-slate-100 border-slate-200 text-slate-500'}`}
+        value={isAssignedSeller(sale.seller_name) ? sale.seller_name : ''}
+        onChange={handleChange}
+        disabled={saving}
+      >
+        <option value="">No asignado</option>
+        {SELLER_OPTIONS.map((seller) => <option key={seller} value={seller}>{seller}</option>)}
+      </select>
+    </div>
+  );
+};
 
 const StatCard = ({ icon, title, value, subtitle }) => (
   <div className="table-container p-6 bg-white shadow-xl hover:scale-[1.02] transition-all duration-300">

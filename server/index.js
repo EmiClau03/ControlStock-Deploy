@@ -299,10 +299,11 @@ app.post('/api/import-excel', upload.single('file'), async (req, res) => {
 // Sales Endpoints
 app.post('/api/sales', async (req, res) => {
     const { vehicle_id, final_price, seller_name, buyer_name, buyer_province, buyer_locality, sale_date, payment_method, notes } = req.body;
-    const validSellers = ['Tomi', 'Ruben', 'Santi'];
+    const validSellers = ['Tomi', 'Ruben', 'Santi', 'Emi'];
+    const normalizedSeller = seller_name?.trim() || null;
 
-    if (!validSellers.includes(seller_name)) {
-        return res.status(400).json({ error: 'Seleccioná un vendedor válido: Tomi, Ruben o Santi' });
+    if (normalizedSeller && !validSellers.includes(normalizedSeller)) {
+        return res.status(400).json({ error: 'Seleccioná un vendedor válido' });
     }
 
     try {
@@ -312,7 +313,7 @@ app.post('/api/sales', async (req, res) => {
         await db.run(`
             INSERT INTO sales (vehicle_id, final_price, seller_name, buyer_name, buyer_province, buyer_locality, sale_date, payment_method, notes)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [vehicle_id, final_price, seller_name, buyer_name, buyer_province, buyer_locality, sale_date, payment_method, notes]);
+        `, [vehicle_id, final_price, normalizedSeller, buyer_name, buyer_province, buyer_locality, sale_date, payment_method, notes]);
 
         // Update vehicle status
         await db.run('UPDATE vehicles SET status = ? WHERE id = ?', ['Vendido', vehicle_id]);
@@ -321,6 +322,23 @@ app.post('/api/sales', async (req, res) => {
         res.json({ message: 'Venta registrada con éxito' });
     } catch (error) {
         await db.run('ROLLBACK');
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/api/sales/:id/seller', async (req, res) => {
+    const validSellers = ['Tomi', 'Ruben', 'Santi', 'Emi'];
+    const normalizedSeller = req.body.seller_name?.trim() || null;
+
+    if (normalizedSeller && !validSellers.includes(normalizedSeller)) {
+        return res.status(400).json({ error: 'Seleccioná un vendedor válido' });
+    }
+
+    try {
+        const result = await db.run('UPDATE sales SET seller_name = ? WHERE id = ?', [normalizedSeller, req.params.id]);
+        if (!result.changes) return res.status(404).json({ error: 'La venta no existe' });
+        res.json({ id: Number(req.params.id), seller_name: normalizedSeller, message: 'Vendedor actualizado con éxito' });
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });

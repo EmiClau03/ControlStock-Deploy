@@ -16,6 +16,11 @@ const clean = (value, fallback = 'Sin informar') => {
   return normalized || fallback;
 };
 
+const isAssignedSeller = (value) => {
+  const seller = String(value || '').trim();
+  return Boolean(seller && seller !== 'No asignado' && seller !== 'Sin asignar');
+};
+
 const formatDate = (value) => {
   const match = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (!match) return 'Sin fecha';
@@ -41,13 +46,15 @@ export const summarizeMonthlySales = (sales, previousSales = []) => {
   const provinceMap = {};
 
   sales.forEach((sale) => {
-    const seller = clean(sale.seller_name, 'Sin asignar');
     const payment = clean(sale.payment_method);
     const province = clean(sale.buyer_province);
 
-    if (!sellerMap[seller]) sellerMap[seller] = { name: seller, sales: 0, revenue: 0 };
-    sellerMap[seller].sales += 1;
-    sellerMap[seller].revenue += Number(sale.final_price || 0);
+    if (isAssignedSeller(sale.seller_name)) {
+      const seller = sale.seller_name.trim();
+      if (!sellerMap[seller]) sellerMap[seller] = { name: seller, sales: 0, revenue: 0 };
+      sellerMap[seller].sales += 1;
+      sellerMap[seller].revenue += Number(sale.final_price || 0);
+    }
     paymentMap[payment] = (paymentMap[payment] || 0) + 1;
     provinceMap[province] = (provinceMap[province] || 0) + 1;
   });
@@ -73,9 +80,9 @@ export const summarizeMonthlySales = (sales, previousSales = []) => {
     sellerPerformance,
     paymentPerformance,
     provincePerformance,
-    topSeller: sellerPerformance.find((seller) => seller.name !== 'Sin asignar') || sellerPerformance[0] || null,
+    topSeller: sellerPerformance[0] || null,
     topProvince: provincePerformance[0] || null,
-    unassignedSales: sales.filter((sale) => !sale.seller_name).length,
+    unassignedSales: sales.filter((sale) => !isAssignedSeller(sale.seller_name)).length,
   };
 };
 
@@ -288,7 +295,7 @@ export const downloadMonthlySalesReport = ({ monthKey, monthLabel, sales, previo
       body: sales.map((sale) => [
         formatDate(sale.sale_date),
         `${clean(sale.brand)} ${clean(sale.model, '')} ${sale.year || ''}`.trim(),
-        clean(sale.seller_name, 'Sin asignar'),
+        clean(sale.seller_name, 'No asignado'),
         clean(sale.buyer_name),
         [sale.buyer_locality, sale.buyer_province].filter(Boolean).map((value) => clean(value)).join(', ') || 'Sin informar',
         clean(sale.payment_method),

@@ -91,15 +91,15 @@ const SaleForm = ({ vehicle, onClose, onSave }) => {
                 <UserCheck size={12} className="text-blue-400" /> Vendedor responsable
               </label>
               <select
-                required
                 className="input-field !bg-slate-950/50 !border-white/10 cursor-pointer"
                 value={formData.seller_name}
                 onChange={(e) => setFormData({ ...formData, seller_name: e.target.value })}
               >
-                <option value="" disabled>Seleccionar vendedor</option>
+                <option value="">No asignado</option>
                 <option value="Tomi">Tomi</option>
                 <option value="Ruben">Ruben</option>
                 <option value="Santi">Santi</option>
+                <option value="Emi">Emi</option>
               </select>
             </div>
 
