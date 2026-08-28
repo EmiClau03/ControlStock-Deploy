@@ -7,7 +7,7 @@ import {
   TrendingUp, Activity, Package, DollarSign, 
   PieChart as PieIcon, BarChart3, Clock, ShoppingCart, LayoutDashboard,
   MapPin, ChevronLeft, Map as MapIcon, BarChart2, CalendarDays, UserRound,
-  FileDown, BriefcaseBusiness, Trophy
+  FileDown, BriefcaseBusiness, Trophy, Pencil, X
 } from 'lucide-react';
 import { getFinancingPlans, getSalesStats, updateSaleSeller } from '../api';
 import ArgentinaMap from './ArgentinaMap';
@@ -718,6 +718,7 @@ const SalesHistory = ({ sales, loading, onSellerUpdated }) => (
 
 const SellerEditor = ({ sale, onUpdated }) => {
   const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const handleChange = async (event) => {
     const sellerName = event.target.value;
@@ -725,6 +726,7 @@ const SellerEditor = ({ sale, onUpdated }) => {
       setSaving(true);
       const { data } = await updateSaleSeller(sale.id, sellerName);
       onUpdated(sale.id, data.seller_name);
+      setEditing(false);
     } catch (error) {
       alert(error.response?.data?.error || 'No se pudo modificar el vendedor.');
     } finally {
@@ -732,19 +734,40 @@ const SellerEditor = ({ sale, onUpdated }) => {
     }
   };
 
-  return (
-    <div className="relative inline-flex items-center">
-      <UserRound size={12} className={`absolute left-3 pointer-events-none ${isAssignedSeller(sale.seller_name) ? 'text-blue-600' : 'text-slate-400'}`} />
-      <select
-        aria-label={`Vendedor de la venta ${sale.id}`}
-        className={`pl-8 pr-8 py-2 rounded-xl border text-xs font-black outline-none cursor-pointer disabled:opacity-60 ${isAssignedSeller(sale.seller_name) ? 'bg-blue-50 border-blue-100 text-blue-700' : 'bg-slate-100 border-slate-200 text-slate-500'}`}
-        value={isAssignedSeller(sale.seller_name) ? sale.seller_name : ''}
-        onChange={handleChange}
-        disabled={saving}
+  if (!editing) {
+    return (
+      <button
+        type="button"
+        onClick={() => setEditing(true)}
+        title="Cambiar vendedor"
+        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-black transition-all hover:ring-2 hover:ring-blue-200 ${isAssignedSeller(sale.seller_name) ? 'bg-blue-50 border-blue-100 text-blue-700' : 'bg-slate-100 border-slate-200 text-slate-500'}`}
       >
-        <option value="">No asignado</option>
-        {SELLER_OPTIONS.map((seller) => <option key={seller} value={seller}>{seller}</option>)}
-      </select>
+        <UserRound size={12} />
+        {isAssignedSeller(sale.seller_name) ? sale.seller_name : 'No asignado'}
+        <Pencil size={11} className="ml-1 opacity-60" />
+      </button>
+    );
+  }
+
+  return (
+    <div className="inline-flex items-center gap-2">
+      <div className="relative inline-flex items-center">
+        <UserRound size={12} className="absolute left-3 pointer-events-none text-blue-600" />
+        <select
+          autoFocus
+          aria-label={`Vendedor de la venta ${sale.id}`}
+          className="pl-8 pr-8 py-2 rounded-xl border border-blue-300 bg-white text-xs font-black text-slate-700 outline-none cursor-pointer ring-2 ring-blue-100 disabled:opacity-60"
+          value={isAssignedSeller(sale.seller_name) ? sale.seller_name : ''}
+          onChange={handleChange}
+          disabled={saving}
+        >
+          <option value="">No asignado</option>
+          {SELLER_OPTIONS.map((seller) => <option key={seller} value={seller}>{seller}</option>)}
+        </select>
+      </div>
+      <button type="button" onClick={() => setEditing(false)} disabled={saving} title="Cancelar" className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 disabled:opacity-50">
+        <X size={14} />
+      </button>
     </div>
   );
 };
