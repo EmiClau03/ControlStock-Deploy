@@ -720,8 +720,7 @@ const SellerEditor = ({ sale, onUpdated }) => {
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
 
-  const handleChange = async (event) => {
-    const sellerName = event.target.value;
+  const handleSelect = async (sellerName) => {
     try {
       setSaving(true);
       const { data } = await updateSaleSeller(sale.id, sellerName);
@@ -750,24 +749,37 @@ const SellerEditor = ({ sale, onUpdated }) => {
   }
 
   return (
-    <div className="inline-flex items-center gap-2">
-      <div className="relative inline-flex items-center">
-        <UserRound size={12} className="absolute left-3 pointer-events-none text-blue-600" />
-        <select
-          autoFocus
-          aria-label={`Vendedor de la venta ${sale.id}`}
-          className="pl-8 pr-8 py-2 rounded-xl border border-blue-300 bg-white text-xs font-black text-slate-700 outline-none cursor-pointer ring-2 ring-blue-100 disabled:opacity-60"
-          value={isAssignedSeller(sale.seller_name) ? sale.seller_name : ''}
-          onChange={handleChange}
-          disabled={saving}
-        >
-          <option value="">No asignado</option>
-          {SELLER_OPTIONS.map((seller) => <option key={seller} value={seller}>{seller}</option>)}
-        </select>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/75 p-4" onClick={() => !saving && setEditing(false)}>
+      <div role="dialog" aria-modal="true" aria-label="Cambiar vendedor" className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+        <div className="mb-5 flex items-start justify-between gap-4">
+          <div>
+            <h4 className="text-lg font-black text-slate-900">Cambiar vendedor</h4>
+            <p className="mt-1 text-xs font-bold text-slate-400">{sale.brand} {sale.model} · Venta #{sale.id}</p>
+          </div>
+          <button type="button" onClick={() => setEditing(false)} disabled={saving} title="Cancelar" className="p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 disabled:opacity-50">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="grid grid-cols-1 gap-2">
+          {[{ value: '', label: 'No asignado' }, ...SELLER_OPTIONS.map((seller) => ({ value: seller, label: seller }))].map((option) => {
+            const selectedValue = isAssignedSeller(sale.seller_name) ? sale.seller_name : '';
+            const selected = selectedValue === option.value;
+            return (
+              <button
+                key={option.value || 'unassigned'}
+                type="button"
+                onClick={() => handleSelect(option.value)}
+                disabled={saving}
+                className={`flex items-center justify-between rounded-2xl border px-5 py-4 text-left text-sm font-black transition-all disabled:opacity-50 ${selected ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-100' : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50/50'}`}
+              >
+                <span className="inline-flex items-center gap-2"><UserRound size={16} /> {option.label}</span>
+                {selected && <span className="text-[10px] uppercase tracking-widest">Actual</span>}
+              </button>
+            );
+          })}
+        </div>
+        {saving && <p className="mt-4 text-center text-xs font-black uppercase tracking-widest text-blue-600">Guardando cambio...</p>}
       </div>
-      <button type="button" onClick={() => setEditing(false)} disabled={saving} title="Cancelar" className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 disabled:opacity-50">
-        <X size={14} />
-      </button>
     </div>
   );
 };
