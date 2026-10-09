@@ -310,7 +310,7 @@ function renderVehicles() {
         </div>
         <div class="flex items-center justify-between gap-2">
           <div class="flex flex-col">
-            ${vehicle.isOffer ? `
+            ${vehicle.isOffer && vehicle.precioOferta ? `
               <span class="text-xs text-slate-400 line-through decoration-red-500/50 decoration-2 font-medium">
                 ${vehicle.precio}
               </span>
@@ -318,8 +318,8 @@ function renderVehicles() {
                 ${vehicle.precioOferta}
               </span>
             ` : `
-              <span class="text-xl font-heading font-bold text-brand-500">
-                ${vehicle.precio}
+              <span class="text-sm font-semibold text-slate-500">
+                Consultar precio
               </span>
             `}
           </div>
@@ -403,11 +403,7 @@ function renderOffers() {
         <span class="hotsale-old-price text-xs font-medium">${vehicle.precio}</span>
         <span class="text-xl font-heading font-bold hotsale-price">${vehicle.precioOferta}</span>
       </div>
-    ` : `
-      <div class="flex flex-col">
-        <span class="text-xl font-heading font-bold hotsale-price">${vehicle.precio}</span>
-      </div>
-    `;
+    ` : '';
     
     return `
     <div class="flex-none w-[85vw] sm:w-96 snap-start">
@@ -646,7 +642,7 @@ function openVehicleModal(vehicleId) {
               Vendido
             </span>
             <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded mt-1 uppercase tracking-tight">NO DISPONIBLE</span>
-          ` : vehicle.isOffer ? `
+          ` : vehicle.isOffer && vehicle.precioOferta ? `
             <span class="text-sm md:text-base text-slate-400 line-through decoration-red-500/50 decoration-2 font-medium mb-1">
               ${vehicle.precio}
             </span>
@@ -655,8 +651,8 @@ function openVehicleModal(vehicleId) {
             </span>
             <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded mt-1 uppercase tracking-tight shadow-sm border border-red-200">¡OFERTA IMPERDIBLE!</span>
           ` : `
-            <span class="text-2xl md:text-3xl font-heading font-bold text-brand-500 whitespace-nowrap">
-              ${vehicle.precio}
+            <span class="text-sm md:text-base font-semibold text-slate-500 whitespace-nowrap">
+              Consultar precio
             </span>
           `}
         </div>
