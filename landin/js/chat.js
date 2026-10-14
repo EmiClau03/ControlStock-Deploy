@@ -48,8 +48,10 @@
             <!-- Botón Flotante Redondo -->
             <button id="ai-chat-toggle-btn" 
                     aria-label="Abrir Asesor Virtual Ciruela"
-                    class="w-14 h-14 bg-gradient-to-r from-purple-700 via-indigo-700 to-blue-600 hover:from-purple-800 hover:to-blue-700 text-white rounded-full flex items-center justify-center shadow-xl shadow-purple-600/30 transition-all duration-300 hover:scale-110 active:scale-95 relative">
-                <span id="ai-chat-btn-icon" class="text-2xl transition-transform duration-300">🍒</span>
+                    class="w-16 h-16 rounded-full overflow-hidden shadow-xl shadow-purple-600/40 transition-all duration-300 hover:scale-110 active:scale-95 relative border-2 border-purple-400/60 bg-white">
+                <span id="ai-chat-btn-icon" class="w-full h-full flex items-center justify-center">
+                    <img src="/assets/ciruela-icon.jpg" alt="Ciruela" class="w-full h-full object-cover rounded-full" id="ciruela-btn-img">
+                </span>
                 <span class="absolute -top-1 -right-1 flex h-4 w-4">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 text-[9px] text-white font-bold items-center justify-center">1</span>
@@ -64,8 +66,8 @@
                 <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white p-4 flex items-center justify-between border-b border-white/10 shadow-md">
                     <div class="flex items-center gap-3">
                         <div class="relative">
-                            <div class="w-10 h-10 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-lg shadow-inner">
-                                <span>🍒</span>
+                            <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-purple-400/60 shadow-inner bg-white">
+                                <img src="/assets/ciruela-icon.jpg" alt="Ciruela" class="w-full h-full object-cover">
                             </div>
                             <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full"></span>
                         </div>
@@ -209,7 +211,10 @@
         }, 10);
 
         teaser.style.display = 'none';
-        icon.className = 'fa-solid fa-chevron-down text-xl';
+        // Mostrar flecha de cierre sobre la imagen
+        const imgEl = document.getElementById('ciruela-btn-img');
+        if (imgEl) imgEl.style.opacity = '0.4';
+        icon.innerHTML = '<i class="fa-solid fa-chevron-down text-white text-xl absolute inset-0 flex items-center justify-center" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"></i>';
 
         scrollToBottom();
         setTimeout(() => {
@@ -229,7 +234,9 @@
             win.classList.add('hidden');
         }, 300);
 
-        if (icon) icon.innerHTML = '🍒';
+        if (icon) {
+            icon.innerHTML = '<img src="/assets/ciruela-icon.jpg" alt="Ciruela" class="w-full h-full object-cover rounded-full" id="ciruela-btn-img">';
+        }
     }
 
     // Agregar mensaje del usuario a la vista y al historial
@@ -330,8 +337,8 @@
 
         div.innerHTML = `
             <div class="flex items-start gap-2">
-                <div class="w-7 h-7 rounded-full bg-purple-900/90 text-white flex-shrink-0 flex items-center justify-center text-xs shadow-sm mt-0.5">
-                    <span>🍒</span>
+                <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 shadow-sm mt-0.5 border border-purple-200 bg-white">
+                    <img src="/assets/ciruela-icon.jpg" alt="Ciruela" class="w-full h-full object-cover">
                 </div>
                 <div class="bg-white text-slate-800 rounded-2xl rounded-tl-sm px-4 py-3 text-xs sm:text-sm shadow-sm border border-slate-100 leading-relaxed">
                     ${formattedText}
@@ -377,8 +384,8 @@
         div.id = 'ai-typing-indicator';
         div.className = 'flex items-center gap-2 max-w-[80%]';
         div.innerHTML = `
-            <div class="w-7 h-7 rounded-full bg-slate-900 text-white flex-shrink-0 flex items-center justify-center text-[11px] shadow-sm">
-                <i class="fa-solid fa-robot"></i>
+            <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 shadow-sm border border-purple-200 bg-white">
+                <img src="/assets/ciruela-icon.jpg" alt="Ciruela" class="w-full h-full object-cover">
             </div>
             <div class="bg-white border border-slate-100 text-slate-500 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce"></span>
