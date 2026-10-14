@@ -7,7 +7,7 @@
     let isOpen = false;
     let isLoading = false;
     let messageHistory = [];
-    const STORAGE_KEY = 'am_chat_history_v1';
+    const STORAGE_KEY = 'am_chat_history_v2';
 
     // Cargar historial previo de sessionStorage si existe
     function loadSavedHistory() {
@@ -40,16 +40,16 @@
 
         container.innerHTML = `
             <!-- Teaser Tooltip flotante (se oculta al abrir el chat) -->
-            <div id="ai-chat-teaser" class="mb-3 bg-white text-slate-800 text-xs font-medium px-3 py-2 rounded-xl shadow-xl border border-slate-100 flex items-center gap-2 cursor-pointer transition-all duration-300 hover:scale-105 animate-bounce">
+            <div id="ai-chat-teaser" class="mb-3 bg-white text-slate-800 text-xs font-medium px-3.5 py-2 rounded-xl shadow-xl border border-slate-100 flex items-center gap-2 cursor-pointer transition-all duration-300 hover:scale-105 animate-bounce">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                <span>¿Buscás auto? <strong>Te asesoro con IA 👋</strong></span>
+                <span>¿Buscás auto? <strong>Preguntale a Ciruela 🍒</strong></span>
             </div>
 
             <!-- Botón Flotante Redondo -->
             <button id="ai-chat-toggle-btn" 
-                    aria-label="Abrir Asesor Virtual"
-                    class="w-14 h-14 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-full flex items-center justify-center shadow-xl shadow-blue-600/30 transition-all duration-300 hover:scale-110 active:scale-95 relative">
-                <i id="ai-chat-btn-icon" class="fa-solid fa-robot text-2xl transition-transform duration-300"></i>
+                    aria-label="Abrir Asesor Virtual Ciruela"
+                    class="w-14 h-14 bg-gradient-to-r from-purple-700 via-indigo-700 to-blue-600 hover:from-purple-800 hover:to-blue-700 text-white rounded-full flex items-center justify-center shadow-xl shadow-purple-600/30 transition-all duration-300 hover:scale-110 active:scale-95 relative">
+                <span id="ai-chat-btn-icon" class="text-2xl transition-transform duration-300">🍒</span>
                 <span class="absolute -top-1 -right-1 flex h-4 w-4">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 text-[9px] text-white font-bold items-center justify-center">1</span>
@@ -61,18 +61,18 @@
                  class="hidden fixed sm:absolute bottom-0 sm:bottom-16 right-0 sm:right-0 w-full sm:w-[380px] md:w-[420px] h-[100dvh] sm:h-[580px] max-h-[100dvh] sm:max-h-[85vh] bg-white rounded-none sm:rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden z-[50] transition-all duration-300 transform scale-95 opacity-0">
                 
                 <!-- Header -->
-                <div class="bg-gradient-to-r from-slate-900 via-brand-900 to-blue-900 text-white p-4 flex items-center justify-between border-b border-white/10 shadow-md">
+                <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white p-4 flex items-center justify-between border-b border-white/10 shadow-md">
                     <div class="flex items-center gap-3">
                         <div class="relative">
-                            <div class="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-400/40 flex items-center justify-center text-blue-300 shadow-inner">
-                                <i class="fa-solid fa-headset text-lg"></i>
+                            <div class="w-10 h-10 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-lg shadow-inner">
+                                <span>🍒</span>
                             </div>
                             <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full"></span>
                         </div>
                         <div>
                             <h3 class="font-heading font-bold text-sm tracking-wide flex items-center gap-1.5">
-                                Marcos • Asesor Virtual
-                                <span class="bg-blue-500/30 text-blue-200 text-[10px] font-semibold px-1.5 py-0.5 rounded">IA</span>
+                                Ciruela • Asesora Virtual 🍒
+                                <span class="bg-purple-500/30 text-purple-200 text-[10px] font-semibold px-1.5 py-0.5 rounded">IA</span>
                             </h3>
                             <p class="text-[11px] text-slate-300">Automotores Marcos • En línea</p>
                         </div>
@@ -106,19 +106,19 @@
                                placeholder="Escribí qué auto buscás o tu duda..." 
                                maxlength="300"
                                autocomplete="off"
-                               class="flex-1 bg-slate-100 focus:bg-white text-slate-800 placeholder-slate-400 text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:outline-none transition-all">
+                               class="flex-1 bg-slate-100 focus:bg-white text-slate-800 placeholder-slate-400 text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-purple-500 focus:outline-none transition-all">
                         <button id="ai-chat-send-btn" 
                                 type="submit" 
-                                class="w-10 h-10 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-xl flex items-center justify-center shadow-md transition-all active:scale-95 disabled:pointer-events-none">
+                                class="w-10 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:bg-slate-300 text-white rounded-xl flex items-center justify-center shadow-md transition-all active:scale-95 disabled:pointer-events-none">
                             <i class="fa-solid fa-paper-plane text-xs"></i>
                         </button>
                     </form>
                     <div class="flex items-center justify-between mt-1.5 px-1">
                         <span class="text-[10px] text-slate-400 flex items-center gap-1">
-                            <i class="fa-solid fa-sparkles text-blue-500"></i> Respuestas en segundos con IA
+                            <i class="fa-solid fa-sparkles text-purple-500"></i> Respuestas en segundos con Ciruela
                         </span>
-                        <a href="https://wa.me/5493562529773" target="_blank" class="text-[10px] text-emerald-600 hover:underline flex items-center gap-1 font-medium">
-                            <i class="fa-brands fa-whatsapp"></i> Hablar con un humano
+                        <a href="https://wa.me/5493562529773?text=Hola%2C%20quiero%20hacer%20una%20consulta%20con%20un%20vendedor" target="_blank" class="text-[10px] text-emerald-600 hover:underline flex items-center gap-1 font-medium">
+                            <i class="fa-brands fa-whatsapp"></i> Hablar con un vendedor
                         </a>
                     </div>
                 </div>
@@ -138,18 +138,20 @@
 
     // Saludo inicial predeterminado
     function renderInitialGreeting() {
-        const welcomeText = '¡Hola! Te doy la bienvenida a **Automotores Marcos**. Soy tu asesor virtual inteligente.\n\n¿Qué tipo de vehículo estás buscando hoy o qué consulta tenés?';
+        const welcomeText = '¡Hola! Soy **Ciruela 🍒**, tu asesora virtual en **Automotores Marcos**.\n\n¿Qué tipo de vehículo estás buscando hoy o qué duda tenés? Si buscás un modelo puntual que no tengamos en stock, ¡avisame y te anoto en nuestra lista de espera para avisarte apenas ingrese!';
         const initialQuickReplies = [
             '🚗 Ver autos y SUVs',
             '🔥 Ver ofertas destacadas',
             '💳 ¿Cómo es la financiación?',
-            '🤝 Entregar un usado (permuta)'
+            '📝 Avisarme de nuevos ingresos',
+            '🤝 Entregar mi usado (permuta)'
         ];
 
         addBotMessage({
             reply: welcomeText,
             quickReplies: initialQuickReplies,
-            vehicles: []
+            vehicles: [],
+            whatsappLink: null
         });
     }
 
@@ -227,7 +229,7 @@
             win.classList.add('hidden');
         }, 300);
 
-        icon.className = 'fa-solid fa-robot text-2xl';
+        if (icon) icon.innerHTML = '🍒';
     }
 
     // Agregar mensaje del usuario a la vista y al historial
@@ -239,7 +241,7 @@
         const div = document.createElement('div');
         div.className = 'flex justify-end';
         div.innerHTML = `
-            <div class="bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[85%] text-xs sm:text-sm shadow-sm leading-relaxed break-words">
+            <div class="bg-gradient-to-r from-purple-700 to-indigo-700 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[85%] text-xs sm:text-sm shadow-sm leading-relaxed break-words">
                 ${escapeHtml(text)}
             </div>
         `;
@@ -253,7 +255,8 @@
             sender: 'bot',
             text: data.reply,
             vehicles: data.vehicles || [],
-            quickReplies: data.quickReplies || []
+            quickReplies: data.quickReplies || [],
+            whatsappLink: data.whatsappLink || null
         });
         saveHistory();
 
@@ -278,20 +281,28 @@
                 <div class="grid grid-cols-1 gap-2 mt-2 w-full">
                     ${data.vehicles.map(v => `
                         <div class="bg-white border border-slate-200 rounded-xl p-2.5 shadow-sm hover:shadow-md transition-shadow flex gap-3 items-center">
-                            <div class="w-20 h-16 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                            <div class="w-20 h-16 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 flex items-center justify-center cursor-pointer"
+                                 onclick="if(window.openVehicleModal) window.openVehicleModal(${v.id})">
                                 ${v.photoUrl 
-                                    ? `<img src="${v.photoUrl}" alt="${v.brand} ${v.model}" class="w-full h-full object-cover">` 
+                                    ? `<img src="${v.photoUrl}" alt="${v.brand} ${v.model}" class="w-full h-full object-cover hover:scale-105 transition-transform">` 
                                     : `<i class="fa-solid fa-car text-slate-300 text-xl"></i>`}
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="font-bold text-xs text-slate-800 truncate">${v.brand} ${v.model}</h4>
                                 <p class="text-[11px] text-slate-500">${v.year} • ${v.mileage ? v.mileage.toLocaleString() + ' km' : '0 km'} • ${v.fuel || ''}</p>
                                 <div class="flex items-center justify-between mt-1">
-                                    <span class="text-xs font-bold text-blue-700">${v.is_offer && v.offer_price ? '$' + v.offer_price.toLocaleString() : (v.price ? '$' + v.price.toLocaleString() : 'Consultar')}</span>
-                                    <button onclick="window.askForVehicle('${v.brand} ${v.model} (${v.year})')" 
-                                            class="text-[10px] bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white px-2 py-1 rounded-md font-medium transition-colors">
-                                        Me interesa
-                                    </button>
+                                    <span class="text-xs font-bold text-purple-700">${v.is_offer && v.offer_price ? '$' + v.offer_price.toLocaleString() : (v.price ? '$' + v.price.toLocaleString() : 'Consultar')}</span>
+                                    <div class="flex items-center gap-1">
+                                        <button onclick="if(window.openVehicleModal) window.openVehicleModal(${v.id})" 
+                                                class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded-md font-medium transition-colors"
+                                                title="Ver fotos y ficha completa">
+                                            Ver fotos
+                                        </button>
+                                        <button onclick="window.askForVehicle('${v.brand} ${v.model} (${v.year})')" 
+                                                class="text-[10px] bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white px-2 py-1 rounded-md font-medium transition-colors">
+                                            Me interesa
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -300,14 +311,32 @@
             `;
         }
 
+        // Bloque de WhatsApp directo si hay link generado por Ciruela
+        let whatsappCta = '';
+        if (data.whatsappLink) {
+            whatsappCta = `
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex flex-col gap-1.5 w-full">
+                    <span class="text-[11px] font-semibold text-slate-700 flex items-center gap-1.5">
+                        <i class="fa-brands fa-whatsapp text-emerald-500 text-sm"></i> ¿Querés hablar directo con un vendedor?
+                    </span>
+                    <a href="${data.whatsappLink}" target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs px-3.5 py-2.5 rounded-xl shadow-md shadow-emerald-500/20 transition-all hover:scale-102 active:scale-95">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span>Contactar por WhatsApp ahora</span>
+                    </a>
+                </div>
+            `;
+        }
+
         div.innerHTML = `
             <div class="flex items-start gap-2">
-                <div class="w-7 h-7 rounded-full bg-slate-900 text-white flex-shrink-0 flex items-center justify-center text-[11px] shadow-sm mt-0.5">
-                    <i class="fa-solid fa-robot"></i>
+                <div class="w-7 h-7 rounded-full bg-purple-900/90 text-white flex-shrink-0 flex items-center justify-center text-xs shadow-sm mt-0.5">
+                    <span>🍒</span>
                 </div>
                 <div class="bg-white text-slate-800 rounded-2xl rounded-tl-sm px-4 py-3 text-xs sm:text-sm shadow-sm border border-slate-100 leading-relaxed">
                     ${formattedText}
                     ${vehiclesHtml}
+                    ${whatsappCta}
                 </div>
             </div>
         `;
