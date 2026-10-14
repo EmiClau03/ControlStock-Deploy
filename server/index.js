@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
@@ -7,6 +8,7 @@ const morgan = require('morgan');
 const xlsx = require('xlsx');
 const sharp = require('sharp');
 const { initDb } = require('./db');
+const { processChatMessage } = require('./chatbot');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -595,6 +597,63 @@ app.get('/api/public/catalog', async (req, res) => {
 // ═══════════════════════════════════════════
 //  LEADS API
 // ═══════════════════════════════════════════
+
+// ═══════════════════════════════════════════
+//  CHATBOT ASESOR IA (GEMINI)
+// ═══════════════════════════════════════════
+app.post('/api/public/chat', async (req, res) => {
+    try {
+        const { message, history } = req.body;
+        if (!message || typeof message !== 'string') {
+            return res.status(400).json({ error: 'El mensaje es obligatorio' });
+        }
+
+        const chatResponse = await processChatMessage({ message, history, db });
+
+        // Si se capturó un lead (nombre/teléfono), guardarlo automáticamente en la tabla leads
+        if (chatResponse.leadCaptured && chatResponse.leadCaptured.telefono) {
+            try {
+                const { nombre = 'Interesado Chat', apellido = '', telefono, vehiculo = 'Chatbot Asesor', mensaje = '' } = chatResponse.leadCaptured;
+                await db.run(
+                    'INSERT INTO leads (nombre, apellido, telefono, mensaje, vehiculo) VALUES (?, ?, ?, ?, ?)',
+                    [nombre || 'Cliente Chatbot', apellido || '', telefono, mensaje || `Consulta vía Asesor IA: ${message}`, vehiculo || 'Consulta General']
+                );
+                console.log(`🤖 Lead capturado automáticamente por el Chatbot: ${nombre} (${telefono})`);
+            } catch (leadError) {
+                console.error('Error al guardar lead automático desde chatbot:', leadError);
+            }
+        }
+
+        // Si hay vehículos recomendados, adjuntar sus datos y fotos principales
+        let vehiclesData = [];
+        if (Array.isArray(chatResponse.recommendedVehicleIds) && chatResponse.recommendedVehicleIds.length > 0) {
+            const placeholders = chatResponse.recommendedVehicleIds.map(() => '?').join(',');
+            const vehicles = await db.all(
+                `SELECT v.id, v.brand, v.model, v.year, v.color, v.mileage, v.price, v.fuel, v.is_offer, v.offer_price, v.status
+                 FROM vehicles v WHERE v.id IN (${placeholders})`,
+                chatResponse.recommendedVehicleIds
+            );
+
+            vehiclesData = await Promise.all(
+                vehicles.map(async (v) => {
+                    const photo = await db.get('SELECT filename FROM photos WHERE vehicle_id = ? ORDER BY id ASC LIMIT 1', v.id);
+                    return {
+                        ...v,
+                        photoUrl: photo ? `/uploads/${photo.filename}` : null
+                    };
+                })
+            );
+        }
+
+        res.json({
+            ...chatResponse,
+            vehicles: vehiclesData
+        });
+    } catch (error) {
+        console.error('Error en /api/public/chat:', error);
+        res.status(500).json({ error: 'Error procesando el mensaje del chat' });
+    }
+});
 
 // Crear una consulta (Público)
 app.post('/api/public/leads', async (req, res) => {

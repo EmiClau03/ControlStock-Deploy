@@ -1162,3 +1162,12 @@ body {
     margin-left: 0;
   }
 }
+
+/* Chatbot Quick Replies Scrollbar Hide */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
