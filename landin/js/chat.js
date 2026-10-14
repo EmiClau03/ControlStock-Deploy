@@ -117,7 +117,7 @@
                         <span class="text-[10px] text-slate-400 flex items-center gap-1">
                             <i class="fa-solid fa-sparkles text-purple-500"></i> Respuestas en segundos con Ciruela
                         </span>
-                        <a href="https://wa.me/5493562529773?text=Hola%2C%20quiero%20hacer%20una%20consulta%20con%20un%20vendedor" target="_blank" class="text-[10px] text-emerald-600 hover:underline flex items-center gap-1 font-medium">
+                        <a href="#" onclick="event.preventDefault(); const url = (window.getWhatsAppUrl ? window.getWhatsAppUrl('Hola, quiero hablar con un vendedor') : 'https://wa.me/5493562563478?text=Hola'); window.open(url, '_blank');" class="text-[10px] text-emerald-600 hover:underline flex items-center gap-1 font-medium">
                             <i class="fa-brands fa-whatsapp"></i> Hablar con un vendedor
                         </a>
                     </div>

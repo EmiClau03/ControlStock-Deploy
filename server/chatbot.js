@@ -4,6 +4,29 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
  * Servicio del Chatbot Asesor IA con Google Gemini para Automotores Marcos
  */
 
+// Configuración de vendedores de WhatsApp con rotación ponderada
+// Vendedor 3 (3562563478) tiene 30% más de asignación (peso 1.3 frente a 1.0)
+const WA_VENDORS = [
+    { number: '5493562529773', weight: 1.0 }, // Vendedor 1
+    { number: '5493562572881', weight: 1.0 }, // Vendedor 2
+    { number: '5493562563478', weight: 1.3 }  // Vendedor 3 (+30% más de consultas)
+];
+
+function getRandomVendorNumber() {
+    const totalWeight = WA_VENDORS.reduce((acc, v) => acc + v.weight, 0);
+    let random = Math.random() * totalWeight;
+    for (const v of WA_VENDORS) {
+        if (random < v.weight) return v.number;
+        random -= v.weight;
+    }
+    return WA_VENDORS[2].number;
+}
+
+function buildWhatsAppUrl(messageText) {
+    const num = getRandomVendorNumber();
+    return `https://wa.me/${num}?text=${encodeURIComponent(messageText)}`;
+}
+
 // Inicializar cliente Gemini si existe la API KEY
 function getGeminiClient() {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -64,7 +87,7 @@ function generateFallbackResponse(userMessage, availableVehicles) {
             reply: `¡Muchas gracias! Ya registré tu número (${phoneMatch[0]}). Soy Ciruela 🍒 y ya le pasé tu consulta a uno de nuestros vendedores de Automotores Marcos para que te escriba por WhatsApp a la brevedad.`,
             recommendedVehicleIds: availableVehicles.slice(0, 2).map(v => v.id),
             quickReplies: ['Ver más autos', 'Consultar financiación', 'Hablar por WhatsApp'],
-            whatsappLink: `https://wa.me/5493562529773?text=Hola!%20Dej%C3%A9%20mis%20datos%20con%20Ciruela%20en%20la%20web%20y%20quiero%20hacer%20una%20consulta`,
+            whatsappLink: buildWhatsAppUrl('Hola! Dejé mis datos con Ciruela en la web y quiero hacer una consulta'),
             leadCaptured: {
                 nombre: 'Cliente Web',
                 apellido: '',
@@ -80,7 +103,7 @@ function generateFallbackResponse(userMessage, availableVehicles) {
             reply: '¡En Automotores Marcos te damos todas las facilidades para que te lleves tu vehículo! 🍒\n\n• **Recibimos usados** en parte de pago al mejor valor.\n• **Financiación SOLO CON DNI** (fácil, rápida y en cuotas).\n• **Recibimos cheques**.\n• **Recibimos dólares sin intereses**.\n\n¿Querés que te preparemos una propuesta a medida o coordinamos para ver algún auto?',
             recommendedVehicleIds: availableVehicles.slice(0, 3).map(v => v.id),
             quickReplies: ['Quiero entregar mi usado', 'Financiar solo con DNI', 'Pagar en dólares', 'Hablar con vendedor'],
-            whatsappLink: 'https://wa.me/5493562529773?text=Hola!%20Quiero%20consultar%20por%20financiaci%C3%B3n%20con%20DNI%20o%20recibir%20usado',
+            whatsappLink: buildWhatsAppUrl('Hola! Quiero consultar por financiación con DNI o recibir usado'),
             leadCaptured: null
         };
     }
@@ -102,7 +125,7 @@ function generateFallbackResponse(userMessage, availableVehicles) {
             reply: '¡Acá tenés nuestras mejores oportunidades y ofertas destacadas! Recordá que recibimos tu usado, financiamos solo con DNI y aceptamos cheques y dólares sin intereses. ¿Te gustaría que te armemos un plan?',
             recommendedVehicleIds: selection.map(v => v.id),
             quickReplies: ['Quiero ver financiación', '¿Aceptan permuta?', 'Hablar con vendedor'],
-            whatsappLink: 'https://wa.me/5493562529773?text=Hola!%20Vi%20las%20ofertas%20en%20la%20web%20con%20Ciruela',
+            whatsappLink: buildWhatsAppUrl('Hola! Vi las ofertas en la web con Ciruela'),
             leadCaptured: null
         };
     }
@@ -142,7 +165,11 @@ Información clave de la agencia y BENEFICIOS EXCLUSIVOS DE COMPRA:
   * FINANCIACIÓN SOLO CON DNI: Fácil, rápida y con mínimos requisitos.
   * RECIBIMOS CHEQUES.
   * RECIBIMOS DÓLARES SIN INTERESES (al mejor tipo de cambio, sin ningún recargo ni comisión).
-- WhatsApp oficial de ventas: 3562-529773 (número para enlaces: 5493562529773).
+- Teléfonos de WhatsApp de los vendedores para rotación comercial:
+  * 3562-529773
+  * 3562-572881
+  * 3562-563478
+  (El enlace de WhatsApp puede usar cualquiera de ellos con formato https://wa.me/5493562563478?text=...).
 
 Inventario actual en salón (ÚNICAMENTE podés recomendar vehículos que estén en esta lista):
 ${JSON.stringify(availableVehicles, null, 2)}
@@ -228,6 +255,10 @@ DEBES RESPONDER EXCLUSIVAMENTE CON UN OBJETO JSON VÁLIDO CON ESTA ESTRUCTURA EX
             const responseText = result.response.text();
             
             const parsed = JSON.parse(responseText);
+            if (parsed.whatsappLink && typeof parsed.whatsappLink === 'string') {
+                const vendorPhone = getRandomVendorNumber();
+                parsed.whatsappLink = parsed.whatsappLink.replace(/wa\.me\/\d+/, `wa.me/${vendorPhone}`);
+            }
             return parsed;
         } catch (geminiError) {
             console.warn(`Intento con ${modelName} falló (${geminiError.message.slice(0, 80)}). Probando siguiente opción...`);

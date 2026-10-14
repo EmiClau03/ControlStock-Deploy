@@ -3,13 +3,31 @@
    Initialization, navigation, and animations
    ============================================ */
 
-// Configuración de WhatsApp (Rotación de vendedores)
-const WA_NUMBERS = ['5493562529773', '5493562572881']; 
+// Configuración de WhatsApp (Rotación ponderada de vendedores)
+// Los 3 números se intercalan, con un 30% más de consultas para 3562563478
+const WA_VENDORS = [
+  { number: '5493562529773', weight: 1.0 }, // Vendedor 1
+  { number: '5493562572881', weight: 1.0 }, // Vendedor 2
+  { number: '5493562563478', weight: 1.3 }  // Vendedor 3 (+30% de asignación)
+];
+
+function getWhatsAppVendorNumber() {
+  const totalWeight = WA_VENDORS.reduce((acc, v) => acc + v.weight, 0);
+  let random = Math.random() * totalWeight;
+  for (const v of WA_VENDORS) {
+    if (random < v.weight) return v.number;
+    random -= v.weight;
+  }
+  return WA_VENDORS[2].number;
+}
 
 function getWhatsAppUrl(mensaje) {
-  const num = WA_NUMBERS[Math.floor(Math.random() * WA_NUMBERS.length)];
+  const num = getWhatsAppVendorNumber();
   return `https://wa.me/${num}?text=${encodeURIComponent(mensaje)}`;
 }
+
+window.getWhatsAppVendorNumber = getWhatsAppVendorNumber;
+window.getWhatsAppUrl = getWhatsAppUrl;
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
